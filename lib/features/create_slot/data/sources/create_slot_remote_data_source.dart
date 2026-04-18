@@ -1,5 +1,5 @@
 import 'package:injectable/injectable.dart';
-import '../../domain/entities/create_slot_request.dart';
+import '../create_slot_request.dart';
 
 abstract class CreateSlotRemoteDataSource {
   Future<void> createSlot(CreateSlotRequest request);

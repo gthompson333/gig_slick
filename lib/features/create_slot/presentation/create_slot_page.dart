@@ -3,15 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../injection.dart';
 
-import 'bloc/create_slot_bloc.dart';
-import 'bloc/create_slot_event.dart';
-import 'bloc/create_slot_state.dart';
-import 'widgets/date_selector.dart';
-import 'widgets/payout_section.dart';
-import 'widgets/genre_selection.dart';
-import 'widgets/schedule_details.dart';
-import 'widgets/venue_notes.dart';
-import 'widgets/performer_preview_card.dart';
+import '../bloc/create_slot_bloc.dart';
+import '../bloc/create_slot_event.dart';
+import '../bloc/create_slot_state.dart';
+import 'date_selector.dart';
+import 'payout_section.dart';
+import 'genre_selection.dart';
+import 'schedule_details.dart';
+import 'venue_notes.dart';
+import 'performer_preview_card.dart';
 
 class CreateSlotPage extends StatelessWidget {
   const CreateSlotPage({super.key});
@@ -147,45 +147,66 @@ class CreateSlotView extends StatelessWidget {
               ),
               child: BlocBuilder<CreateSlotBloc, CreateSlotState>(
                 builder: (context, state) {
-                  return ElevatedButton(
-                    onPressed: state.isSubmitting
-                        ? null
-                        : () {
-                            context
-                                .read<CreateSlotBloc>()
-                                .add(const CreateSlotEvent.submitRequested());
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFFBF00),
-                      disabledBackgroundColor:
-                          const Color(0xFFFFBF00).withValues(alpha: 0.5),
-                      foregroundColor: const Color(0xFF402D00),
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 8,
-                      shadowColor:
-                          const Color(0xFFFFBF00).withValues(alpha: 0.4),
-                    ),
-                    child: state.isSubmitting
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Color(0xFF402D00),
-                              strokeWidth: 3,
+                  final canSubmit = state.selectedDate != null && !state.isSubmitting;
+
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (state.errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Text(
+                            state.errorMessage!,
+                            style: const TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
                             ),
-                          )
-                        : const Text(
-                            'ACTIVATE & COPY LINK',
-                            style: TextStyle(
-                              fontFamily: 'Plus Jakarta Sans',
-                              fontWeight: FontWeight.w900,
-                              fontSize: 14,
-                              letterSpacing: 2.0,
-                            ),
+                            textAlign: TextAlign.center,
                           ),
+                        ),
+                      ElevatedButton(
+                        onPressed: canSubmit
+                            ? () {
+                                context
+                                    .read<CreateSlotBloc>()
+                                    .add(const CreateSlotEvent.submitRequested());
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFFBF00),
+                          disabledBackgroundColor:
+                              const Color(0xFFFFBF00).withValues(alpha: 0.2),
+                          foregroundColor: const Color(0xFF402D00),
+                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          minimumSize: const Size(double.infinity, 54),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 8,
+                          shadowColor:
+                              const Color(0xFFFFBF00).withValues(alpha: 0.4),
+                        ),
+                        child: state.isSubmitting
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Color(0xFF402D00),
+                                  strokeWidth: 3,
+                                ),
+                              )
+                            : const Text(
+                                'ACTIVATE & COPY LINK',
+                                style: TextStyle(
+                                  fontFamily: 'Plus Jakarta Sans',
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 14,
+                                  letterSpacing: 2.0,
+                                ),
+                              ),
+                      ),
+                    ],
                   );
                 },
               ),

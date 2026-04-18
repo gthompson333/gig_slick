@@ -18,11 +18,11 @@ class MagicLinkCard extends StatelessWidget {
         color: const Color(0x991B1B1B), // Glass background
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha: 0.5),
             blurRadius: 32,
             offset: const Offset(0, 16),
           ),
@@ -51,7 +51,7 @@ class MagicLinkCard extends StatelessWidget {
                 Text(
                   'Share this link with performers to allow them to apply directly to your open slots.',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 14,
                     height: 1.5,
                     fontFamily: 'Inter',
@@ -62,10 +62,10 @@ class MagicLinkCard extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.05),
+                      color: Colors.white.withValues(alpha: 0.05),
                     ),
                   ),
                   child: Center(
@@ -101,7 +101,7 @@ class MagicLinkCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFFFBF00).withOpacity(0.1),
+                          color: const Color(0xFFFFBF00).withValues(alpha: 0.1),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),

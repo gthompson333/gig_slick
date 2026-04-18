@@ -34,7 +34,7 @@ class ScheduledSlotsFeed extends StatelessWidget {
               Text(
                 'Viewing next 14 days',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.35),
+                  color: Colors.white.withValues(alpha: 0.35),
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),

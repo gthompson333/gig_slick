@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../domain/entities/create_slot_request.dart';
-import '../../domain/repositories/create_slot_repository.dart';
+import '../data/create_slot_request.dart';
+import '../data/repositories/create_slot_repository.dart';
 import 'create_slot_event.dart';
 import 'create_slot_state.dart';
 
@@ -29,17 +29,38 @@ class CreateSlotBloc extends Bloc<CreateSlotEvent, CreateSlotState> {
       emit(state.copyWith(selectedGenres: currentGenres));
     });
 
+    on<DateChanged>((event, emit) {
+      emit(state.copyWith(selectedDate: event.date));
+    });
+
+    on<LoadInTimeChanged>((event, emit) {
+      emit(state.copyWith(loadInTime: event.time));
+    });
+
+    on<SetTimesChanged>((event, emit) {
+      emit(state.copyWith(setTimes: event.times));
+    });
+
+    on<VenueNotesChanged>((event, emit) {
+      emit(state.copyWith(venueNotes: event.notes));
+    });
+
     on<SubmitRequested>((event, emit) async {
+      if (state.selectedDate == null) {
+        emit(state.copyWith(errorMessage: 'Please select a date first'));
+        return;
+      }
+
       emit(state.copyWith(isSubmitting: true, errorMessage: null));
       try {
         final request = CreateSlotRequest(
-          date: DateTime.now(), // Stubbed
+          date: state.selectedDate!,
           baseGuarantee: state.baseGuarantee,
           is7030Split: state.is7030Split,
           targetGenres: state.selectedGenres,
-          loadInTime: '7:00 PM', // Stubbed
-          setTimes: '9:00 PM', // Stubbed
-          venueNotes: '', // Stubbed
+          loadInTime: state.loadInTime,
+          setTimes: state.setTimes,
+          venueNotes: state.venueNotes,
         );
         await _repository.createSlot(request);
         emit(state.copyWith(isSubmitting: false, isSuccess: true));

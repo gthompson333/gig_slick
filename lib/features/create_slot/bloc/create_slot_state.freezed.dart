@@ -22,6 +22,10 @@ mixin _$CreateSlotState {
   List<String> get selectedGenres => throw _privateConstructorUsedError;
   bool get isSubmitting => throw _privateConstructorUsedError;
   bool get isSuccess => throw _privateConstructorUsedError;
+  DateTime? get selectedDate => throw _privateConstructorUsedError;
+  String get loadInTime => throw _privateConstructorUsedError;
+  String get setTimes => throw _privateConstructorUsedError;
+  String get venueNotes => throw _privateConstructorUsedError;
   String? get errorMessage => throw _privateConstructorUsedError;
 
   /// Create a copy of CreateSlotState
@@ -44,6 +48,10 @@ abstract class $CreateSlotStateCopyWith<$Res> {
     List<String> selectedGenres,
     bool isSubmitting,
     bool isSuccess,
+    DateTime? selectedDate,
+    String loadInTime,
+    String setTimes,
+    String venueNotes,
     String? errorMessage,
   });
 }
@@ -68,6 +76,10 @@ class _$CreateSlotStateCopyWithImpl<$Res, $Val extends CreateSlotState>
     Object? selectedGenres = null,
     Object? isSubmitting = null,
     Object? isSuccess = null,
+    Object? selectedDate = freezed,
+    Object? loadInTime = null,
+    Object? setTimes = null,
+    Object? venueNotes = null,
     Object? errorMessage = freezed,
   }) {
     return _then(
@@ -92,6 +104,22 @@ class _$CreateSlotStateCopyWithImpl<$Res, $Val extends CreateSlotState>
                 ? _value.isSuccess
                 : isSuccess // ignore: cast_nullable_to_non_nullable
                       as bool,
+            selectedDate: freezed == selectedDate
+                ? _value.selectedDate
+                : selectedDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            loadInTime: null == loadInTime
+                ? _value.loadInTime
+                : loadInTime // ignore: cast_nullable_to_non_nullable
+                      as String,
+            setTimes: null == setTimes
+                ? _value.setTimes
+                : setTimes // ignore: cast_nullable_to_non_nullable
+                      as String,
+            venueNotes: null == venueNotes
+                ? _value.venueNotes
+                : venueNotes // ignore: cast_nullable_to_non_nullable
+                      as String,
             errorMessage: freezed == errorMessage
                 ? _value.errorMessage
                 : errorMessage // ignore: cast_nullable_to_non_nullable
@@ -117,6 +145,10 @@ abstract class _$$CreateSlotStateImplCopyWith<$Res>
     List<String> selectedGenres,
     bool isSubmitting,
     bool isSuccess,
+    DateTime? selectedDate,
+    String loadInTime,
+    String setTimes,
+    String venueNotes,
     String? errorMessage,
   });
 }
@@ -140,6 +172,10 @@ class __$$CreateSlotStateImplCopyWithImpl<$Res>
     Object? selectedGenres = null,
     Object? isSubmitting = null,
     Object? isSuccess = null,
+    Object? selectedDate = freezed,
+    Object? loadInTime = null,
+    Object? setTimes = null,
+    Object? venueNotes = null,
     Object? errorMessage = freezed,
   }) {
     return _then(
@@ -164,6 +200,22 @@ class __$$CreateSlotStateImplCopyWithImpl<$Res>
             ? _value.isSuccess
             : isSuccess // ignore: cast_nullable_to_non_nullable
                   as bool,
+        selectedDate: freezed == selectedDate
+            ? _value.selectedDate
+            : selectedDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        loadInTime: null == loadInTime
+            ? _value.loadInTime
+            : loadInTime // ignore: cast_nullable_to_non_nullable
+                  as String,
+        setTimes: null == setTimes
+            ? _value.setTimes
+            : setTimes // ignore: cast_nullable_to_non_nullable
+                  as String,
+        venueNotes: null == venueNotes
+            ? _value.venueNotes
+            : venueNotes // ignore: cast_nullable_to_non_nullable
+                  as String,
         errorMessage: freezed == errorMessage
             ? _value.errorMessage
             : errorMessage // ignore: cast_nullable_to_non_nullable
@@ -182,6 +234,10 @@ class _$CreateSlotStateImpl implements _CreateSlotState {
     required final List<String> selectedGenres,
     required this.isSubmitting,
     required this.isSuccess,
+    this.selectedDate,
+    this.loadInTime = '7:00 PM',
+    this.setTimes = '9:00 PM',
+    this.venueNotes = '',
     this.errorMessage,
   }) : _selectedGenres = selectedGenres;
 
@@ -202,11 +258,22 @@ class _$CreateSlotStateImpl implements _CreateSlotState {
   @override
   final bool isSuccess;
   @override
+  final DateTime? selectedDate;
+  @override
+  @JsonKey()
+  final String loadInTime;
+  @override
+  @JsonKey()
+  final String setTimes;
+  @override
+  @JsonKey()
+  final String venueNotes;
+  @override
   final String? errorMessage;
 
   @override
   String toString() {
-    return 'CreateSlotState(baseGuarantee: $baseGuarantee, is7030Split: $is7030Split, selectedGenres: $selectedGenres, isSubmitting: $isSubmitting, isSuccess: $isSuccess, errorMessage: $errorMessage)';
+    return 'CreateSlotState(baseGuarantee: $baseGuarantee, is7030Split: $is7030Split, selectedGenres: $selectedGenres, isSubmitting: $isSubmitting, isSuccess: $isSuccess, selectedDate: $selectedDate, loadInTime: $loadInTime, setTimes: $setTimes, venueNotes: $venueNotes, errorMessage: $errorMessage)';
   }
 
   @override
@@ -226,6 +293,14 @@ class _$CreateSlotStateImpl implements _CreateSlotState {
                 other.isSubmitting == isSubmitting) &&
             (identical(other.isSuccess, isSuccess) ||
                 other.isSuccess == isSuccess) &&
+            (identical(other.selectedDate, selectedDate) ||
+                other.selectedDate == selectedDate) &&
+            (identical(other.loadInTime, loadInTime) ||
+                other.loadInTime == loadInTime) &&
+            (identical(other.setTimes, setTimes) ||
+                other.setTimes == setTimes) &&
+            (identical(other.venueNotes, venueNotes) ||
+                other.venueNotes == venueNotes) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage));
   }
@@ -238,6 +313,10 @@ class _$CreateSlotStateImpl implements _CreateSlotState {
     const DeepCollectionEquality().hash(_selectedGenres),
     isSubmitting,
     isSuccess,
+    selectedDate,
+    loadInTime,
+    setTimes,
+    venueNotes,
     errorMessage,
   );
 
@@ -260,6 +339,10 @@ abstract class _CreateSlotState implements CreateSlotState {
     required final List<String> selectedGenres,
     required final bool isSubmitting,
     required final bool isSuccess,
+    final DateTime? selectedDate,
+    final String loadInTime,
+    final String setTimes,
+    final String venueNotes,
     final String? errorMessage,
   }) = _$CreateSlotStateImpl;
 
@@ -273,6 +356,14 @@ abstract class _CreateSlotState implements CreateSlotState {
   bool get isSubmitting;
   @override
   bool get isSuccess;
+  @override
+  DateTime? get selectedDate;
+  @override
+  String get loadInTime;
+  @override
+  String get setTimes;
+  @override
+  String get venueNotes;
   @override
   String? get errorMessage;
 

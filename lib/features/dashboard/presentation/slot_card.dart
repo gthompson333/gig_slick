@@ -19,10 +19,10 @@ class SlotCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF1B1B1B).withOpacity(0.5),
+        color: const Color(0xFF1B1B1B).withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withOpacity(0.05),
+          color: Colors.white.withValues(alpha: 0.05),
         ),
       ),
       child: Row(
@@ -46,13 +46,13 @@ class SlotCard extends StatelessWidget {
                   Icon(
                     Icons.schedule,
                     size: 14,
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                   ),
                   const SizedBox(width: 6),
                   Text(
                     '${DateFormat('h:mm a').format(slot.startTime)} - ${DateFormat('h:mm a').format(slot.endTime)}',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -67,10 +67,10 @@ class SlotCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(99),
                   border: Border.all(
-                    color: color.withOpacity(0.2),
+                    color: color.withValues(alpha: 0.2),
                   ),
                 ),
                 child: Text(
@@ -118,7 +118,7 @@ class SlotCard extends StatelessWidget {
               else
                 Icon(
                   Icons.chevron_right,
-                  color: Colors.white.withOpacity(0.35),
+                  color: Colors.white.withValues(alpha: 0.35),
                 ),
             ],
           ),
