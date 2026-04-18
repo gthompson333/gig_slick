@@ -1,4 +1,5 @@
 class CreateSlotRequest {
+  final String venueId;
   final DateTime date;
   final double baseGuarantee;
   final bool is7030Split;
@@ -8,6 +9,7 @@ class CreateSlotRequest {
   final String venueNotes;
 
   CreateSlotRequest({
+    required this.venueId,
     required this.date,
     required this.baseGuarantee,
     required this.is7030Split,
@@ -19,6 +21,7 @@ class CreateSlotRequest {
 
   Map<String, dynamic> toJson() {
     return {
+      'venueId': venueId,
       'date': date,
       'baseGuarantee': baseGuarantee,
       'is7030Split': is7030Split,

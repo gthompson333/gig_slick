@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/theme/app_colors.dart';
 import '../bloc/create_slot_bloc.dart';
 import '../bloc/create_slot_event.dart';
 import '../bloc/create_slot_state.dart';
@@ -9,13 +10,21 @@ class PayoutSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return BlocBuilder<CreateSlotBloc, CreateSlotState>(
       builder: (context, state) {
         return Container(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
-            color: const Color(0xFF1B1B1B),
-            borderRadius: BorderRadius.circular(24),
+            color: AppColors.surfaceMid,
+            borderRadius: BorderRadius.circular(32),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.white.withValues(alpha: 0.02),
+                offset: const Offset(0, -1),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -23,33 +32,30 @@ class PayoutSection extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Base Guarantee',
-                    style: TextStyle(
-                      fontFamily: 'Plus Jakarta Sans',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Color(0xFFE2E2E2),
+                    style: textTheme.titleLarge?.copyWith(
+                      color: AppColors.textSecondary,
                     ),
                   ),
                   Text(
                     '\$${state.baseGuarantee.toInt()}',
-                    style: const TextStyle(
+                    style: textTheme.headlineMedium?.copyWith(
+                      color: AppColors.electricAmber,
                       fontWeight: FontWeight.w900,
-                      fontSize: 24,
-                      color: Color(0xFFFFBF00),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
               SliderTheme(
                 data: SliderThemeData(
-                  activeTrackColor: const Color(0xFFFFBF00),
-                  inactiveTrackColor: const Color(0xFF353535),
-                  thumbColor: const Color(0xFFFFBF00),
-                  overlayColor: const Color(0xFFFFBF00).withValues(alpha: 0.2),
-                  trackHeight: 8,
+                  activeTrackColor: AppColors.electricAmber,
+                  inactiveTrackColor: AppColors.surfaceHigh,
+                  thumbColor: AppColors.electricAmber,
+                  overlayColor: AppColors.electricAmber.withValues(alpha: 0.1),
+                  trackHeight: 4,
+                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
                 ),
                 child: Slider(
                   value: state.baseGuarantee,
@@ -63,58 +69,52 @@ class PayoutSection extends StatelessWidget {
                   },
                 ),
               ),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     '\$100 MIN',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.5,
-                      color: Color(0xFFD4C5AB),
+                    style: textTheme.labelSmall?.copyWith(
+                      color: AppColors.textTertiary,
                     ),
                   ),
                   Text(
                     '\$500 MAX',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.5,
-                      color: Color(0xFFD4C5AB),
+                    style: textTheme.labelSmall?.copyWith(
+                      color: AppColors.textTertiary,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1F1F1F),
-                  borderRadius: BorderRadius.circular(16),
+                  color: AppColors.surfaceHigh.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(24),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '70/30 Door Split',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: Color(0xFFE2E2E2),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '70/30 Door Split',
+                            style: textTheme.titleLarge?.copyWith(
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Standard Performer Bonus',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFFD4C5AB),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Standard Performer Bonus',
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textTertiary,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     Switch(
                       value: state.is7030Split,
@@ -123,10 +123,10 @@ class PayoutSection extends StatelessWidget {
                             .read<CreateSlotBloc>()
                             .add(CreateSlotEvent.splitToggled(value));
                       },
-                      activeThumbColor: const Color(0xFF6D5000),
-                      activeTrackColor: const Color(0xFFFFBF00),
-                      inactiveThumbColor: const Color(0xFFD4C5AB),
-                      inactiveTrackColor: const Color(0xFF353535),
+                      activeThumbColor: Colors.black,
+                      activeTrackColor: AppColors.electricAmber,
+                      inactiveThumbColor: AppColors.textTertiary,
+                      inactiveTrackColor: AppColors.surfaceHigh,
                     ),
                   ],
                 ),

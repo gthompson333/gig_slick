@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/theme/app_colors.dart';
 import '../bloc/create_slot_bloc.dart';
 import '../bloc/create_slot_event.dart';
 import '../bloc/create_slot_state.dart';
@@ -9,6 +10,8 @@ class ScheduleDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return BlocBuilder<CreateSlotBloc, CreateSlotState>(
       builder: (context, state) {
         return Row(
@@ -17,22 +20,27 @@ class ScheduleDetails extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 8, bottom: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4, bottom: 8),
                     child: Text(
                       'LOAD-IN',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFD4C5AB),
+                      style: textTheme.labelSmall?.copyWith(
+                        color: AppColors.textTertiary,
+                        letterSpacing: 2,
                       ),
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1B1B1B),
-                      borderRadius: BorderRadius.circular(16),
+                      color: AppColors.surfaceMid,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.white.withValues(alpha: 0.02),
+                          offset: const Offset(0, -1),
+                        ),
+                      ],
                     ),
                     child: TextFormField(
                       initialValue: state.loadInTime,
@@ -46,10 +54,8 @@ class ScheduleDetails extends StatelessWidget {
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
                       ),
-                      style: const TextStyle(
-                        color: Color(0xFFE2E2E2),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                      style: textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
@@ -61,22 +67,27 @@ class ScheduleDetails extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 8, bottom: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4, bottom: 8),
                     child: Text(
                       'SET TIMES',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFD4C5AB),
+                      style: textTheme.labelSmall?.copyWith(
+                        color: AppColors.textTertiary,
+                        letterSpacing: 2,
                       ),
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1B1B1B),
-                      borderRadius: BorderRadius.circular(16),
+                      color: AppColors.surfaceMid,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.white.withValues(alpha: 0.02),
+                          offset: const Offset(0, -1),
+                        ),
+                      ],
                     ),
                     child: TextFormField(
                       initialValue: state.setTimes,
@@ -90,10 +101,8 @@ class ScheduleDetails extends StatelessWidget {
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
                       ),
-                      style: const TextStyle(
-                        color: Color(0xFFE2E2E2),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                      style: textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),

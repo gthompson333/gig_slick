@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'firebase_options.dart';
 import 'injection.dart';
@@ -23,19 +23,9 @@ class GigSlickApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Gig Slick',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF121212),
-        primaryColor: const Color(0xFFFFC107),
-        textTheme: TextTheme(
-          displayLarge: GoogleFonts.plusJakartaSans(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-          bodyLarge: GoogleFonts.inter(color: Colors.white70),
-        ),
-      ),
+      theme: AppTheme.darkTheme,
       routerConfig: appRouter,
+      debugShowCheckedModeBanner: false,
     );
   }
 }

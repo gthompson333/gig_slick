@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../core/constants/constants.dart';
 import '../data/create_slot_request.dart';
 import '../data/repositories/create_slot_repository.dart';
 import 'create_slot_event.dart';
@@ -54,6 +55,7 @@ class CreateSlotBloc extends Bloc<CreateSlotEvent, CreateSlotState> {
       emit(state.copyWith(isSubmitting: true, errorMessage: null));
       try {
         final request = CreateSlotRequest(
+          venueId: AppConstants.kDefaultVenueId,
           date: state.selectedDate!,
           baseGuarantee: state.baseGuarantee,
           is7030Split: state.is7030Split,

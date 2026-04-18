@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 import '../data/entities/slot.dart';
 import 'slot_card.dart';
 
@@ -12,6 +13,8 @@ class ScheduledSlotsFeed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -21,72 +24,73 @@ class ScheduledSlotsFeed extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Text(
+              Text(
                 'Scheduled Slots',
-                style: TextStyle(
-                  color: Color(0xFFFFBF00),
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  fontFamily: 'Plus Jakarta Sans',
+                style: textTheme.headlineMedium?.copyWith(
+                  color: AppColors.electricAmber,
                   letterSpacing: -0.5,
                 ),
               ),
               Text(
-                'Viewing next 14 days',
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.35),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+                'Next 14 Days',
+                style: textTheme.labelSmall?.copyWith(
+                  color: AppColors.textTertiary,
                 ),
               ),
             ],
           ),
         ),
         if (slots.isEmpty)
-          _buildEmptyState()
+          _buildEmptyState(context)
         else
           ...slots.map((slot) => SlotCard(slot: slot)),
       ],
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.symmetric(vertical: 64, horizontal: 32),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1,
-        ),
+        color: AppColors.surfaceMid,
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white.withValues(alpha: 0.02),
+            offset: const Offset(0, -1),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.calendar_today_outlined,
-            color: Colors.white.withValues(alpha: 0.2),
-            size: 48,
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'No slots scheduled',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              fontFamily: 'Plus Jakarta Sans',
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: AppColors.surfaceHigh,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.calendar_today_outlined,
+              color: AppColors.textTertiary,
+              size: 32,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 24),
+          Text(
+            'No slots scheduled',
+            style: textTheme.titleLarge?.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
           Text(
             'Tap "Create Slot" to start filling\nyour calendar.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.4),
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+            style: textTheme.bodyMedium?.copyWith(
+              color: AppColors.textTertiary,
               height: 1.5,
             ),
           ),

@@ -1,7 +1,9 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../injection.dart';
+import '../../../core/theme/app_colors.dart';
 import '../bloc/dashboard_bloc.dart';
 import '../bloc/dashboard_event.dart';
 import '../bloc/dashboard_state.dart';
@@ -25,73 +27,85 @@ class DashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // TopAppBar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.bolt,
-                    color: Color(0xFFFFBF00),
-                    size: 32,
-                  ),
-                  const SizedBox(width: 12),
-                  const Text(
-                    'The Commonwealth',
-                    style: TextStyle(
-                      color: Color(0xFFFFBF00),
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      fontFamily: 'Plus Jakarta Sans',
-                      letterSpacing: -1,
-                    ),
-                  ),
-                ],
-              ),
+      backgroundColor: AppColors.surfaceLow,
+      body: BlocBuilder<DashboardBloc, DashboardState>(
+        builder: (context, state) {
+          return state.when(
+            initial: () => const Center(
+              child: CircularProgressIndicator(color: AppColors.electricAmber),
             ),
-            Expanded(
-              child: BlocBuilder<DashboardBloc, DashboardState>(
-                builder: (context, state) {
-                  return state.when(
-                    initial: () => const Center(
-                      child: CircularProgressIndicator(color: Color(0xFFFFBF00)),
-                    ),
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(color: Color(0xFFFFBF00)),
-                    ),
-                    loaded: (slots, magicLink) => SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        children: [
-                          MagicLinkCard(linkUrl: magicLink),
-                          ScheduledSlotsFeed(slots: slots),
-                          const SizedBox(height: 100), // Padding for FAB
-                        ],
+            loading: () => const Center(
+              child: CircularProgressIndicator(color: AppColors.electricAmber),
+            ),
+            loaded: (slots, magicLink) => CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                // Glassmorphic App Bar
+                SliverAppBar(
+                  expandedHeight: 140,
+                  collapsedHeight: 80,
+                  pinned: true,
+                  stretch: true,
+                  backgroundColor: Colors.transparent,
+                  flexibleSpace: ClipRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: FlexibleSpaceBar(
+                        centerTitle: true,
+                        title: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset(
+                              'assets/images/logo.png',
+                              height: 24,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              'The Commonwealth',
+                              style: textTheme.titleLarge?.copyWith(
+                                color: AppColors.electricAmber,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                        background: Container(
+                          color: AppColors.background.withValues(alpha: 0.5),
+                        ),
                       ),
                     ),
-                    error: (message) => Center(
-                      child: Text(
-                        'Error: $message',
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    ),
-                  );
-                },
+                  ),
+                ),
+
+                // Main Content
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      MagicLinkCard(linkUrl: magicLink),
+                      const SizedBox(height: 16),
+                      ScheduledSlotsFeed(slots: slots),
+                    ]),
+                  ),
+                ),
+              ],
+            ),
+            error: (message) => Center(
+              child: Text(
+                'Error: $message',
+                style: const TextStyle(color: Colors.red),
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/create-slot'),
-        backgroundColor: const Color(0xFFFFBF00),
+        backgroundColor: AppColors.electricAmber,
         foregroundColor: Colors.black,
         elevation: 8,
         label: const Text(

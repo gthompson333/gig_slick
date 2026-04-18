@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/theme/app_colors.dart';
 import '../bloc/create_slot_bloc.dart';
 import '../bloc/create_slot_event.dart';
 import '../bloc/create_slot_state.dart';
@@ -17,25 +18,24 @@ class GenreSelection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return BlocBuilder<CreateSlotBloc, CreateSlotState>(
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'TARGET GENRES',
-              style: TextStyle(
-                fontFamily: 'Plus Jakarta Sans',
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
+              style: textTheme.labelSmall?.copyWith(
+                color: AppColors.textTertiary,
                 letterSpacing: 2.0,
-                color: Color(0xFFD4C5AB),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 12,
+              runSpacing: 12,
               children: availableGenres.map((genre) {
                 final isSelected = state.selectedGenres.contains(genre);
                 return GestureDetector(
@@ -44,21 +44,21 @@ class GenreSelection extends StatelessWidget {
                         .read<CreateSlotBloc>()
                         .add(CreateSlotEvent.genreToggled(genre));
                   },
-                  child: Container(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
+                      horizontal: 20,
+                      vertical: 10,
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? const Color(0xFFFFBF00)
-                          : const Color(0xFF353535),
-                      borderRadius: BorderRadius.circular(99),
+                          ? AppColors.electricAmber
+                          : AppColors.surfaceMid,
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: const Color(0xFFFFBF00)
-                                    .withValues(alpha: 0.3),
+                                color: AppColors.electricAmber.withValues(alpha: 0.1),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),
@@ -67,13 +67,12 @@ class GenreSelection extends StatelessWidget {
                     ),
                     child: Text(
                       genre,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight:
-                            isSelected ? FontWeight.w800 : FontWeight.w600,
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
                         color: isSelected
-                            ? const Color(0xFF6D5000)
-                            : const Color(0xFFE2E2E2),
+                            ? Colors.black
+                            : AppColors.textSecondary,
+                        letterSpacing: isSelected ? 0.5 : 0,
                       ),
                     ),
                   ),

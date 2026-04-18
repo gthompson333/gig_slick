@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../injection.dart';
+import '../../../core/theme/app_colors.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -37,23 +37,24 @@ class _SignInViewState extends State<SignInView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF121212), // Kinetic Darkroom Base
+      backgroundColor: AppColors.surfaceLow,
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.message, style: GoogleFonts.inter()),
+                content: Text(state.message),
                 backgroundColor: Colors.redAccent,
               ),
             );
           } else if (state is AuthAuthenticated) {
-            // Usually Route to Dashboard here
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Successfully authenticated via: \${state.method}', style: GoogleFonts.inter(color: Colors.black)),
-                backgroundColor: const Color(0xFFFFBF00),
+              const SnackBar(
+                content: Text('Successfully authenticated'),
+                backgroundColor: AppColors.electricAmber,
               ),
             );
           }
@@ -63,43 +64,46 @@ class _SignInViewState extends State<SignInView> {
 
           return SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 16),
-                  Image.asset(
-                    'assets/images/logo.png',
-                    height: 100,
+                  const SizedBox(height: 40),
+                  Center(
+                    child: Hero(
+                      tag: 'app_logo',
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        height: 120,
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   Text(
                     'Gig Slick',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 42,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFFFFBF00), // Electric Amber
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      fontSize: 48,
+                      color: AppColors.electricAmber,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'The Venue Manager’s Toolkit.',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      color: Colors.white54,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: AppColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 48),
-                  _buildTextField(
+                  const SizedBox(height: 64),
+                  _buildTonalTextField(
                     controller: _inputController,
                     hint: 'Phone Number',
-                    icon: Icons.phone_outlined,
+                    icon: Icons.phone_android_rounded,
                   ),
                   const SizedBox(height: 32),
                   SizedBox(
-                    height: 56,
+                    height: 64,
                     child: ElevatedButton(
                       onPressed: isLoading
                           ? null
@@ -111,10 +115,10 @@ class _SignInViewState extends State<SignInView> {
                                   );
                             },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFFBF00),
+                        backgroundColor: AppColors.electricAmber,
                         foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         elevation: 0,
                       ),
@@ -124,94 +128,41 @@ class _SignInViewState extends State<SignInView> {
                               width: 24,
                               child: CircularProgressIndicator(
                                 color: Colors.black,
-                                strokeWidth: 2.5,
+                                strokeWidth: 3,
                               ),
                             )
                           : Text(
                               'Get Started',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 16,
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                color: Colors.black,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  /*
-                  Row(
-                    children: [
-                      const Expanded(child: Divider(color: Colors.white24)),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'Or continue with',
-                          style: GoogleFonts.inter(color: Colors.white54, fontSize: 14),
-                        ),
-                      ),
-                      const Expanded(child: Divider(color: Colors.white24)),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-                  Column(
-                    children: [
-                      _buildSocialButton(
-                        onPressed: isLoading
-                            ? null
-                            : () => context.read<AuthBloc>().add(SignInWithPasskeyRequested()),
-                        icon: Icons.fingerprint,
-                        label: 'Sign in with FaceID / Passkey',
-                        backgroundColor: Colors.transparent,
-                        foregroundColor: Colors.white,
-                        borderSide: const BorderSide(color: Colors.white24, width: 1.5),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildSocialButton(
-                        onPressed: isLoading
-                            ? null
-                            : () => context.read<AuthBloc>().add(SignInWithAppleRequested()),
-                        icon: Icons.apple,
-                        label: 'Continue with Apple',
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        borderSide: const BorderSide(color: Colors.white12, width: 1.5),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildSocialButton(
-                        onPressed: isLoading
-                            ? null
-                            : () => context.read<AuthBloc>().add(SignInWithGoogleRequested()),
-                        icon: Icons.g_mobiledata, // Standard Google logo placeholder
-                        label: 'Continue with Google',
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                      ),
-                    ],
-                  ),
-                  */
-                  const SizedBox(height: 24),
-                  TextButton(
-                    onPressed: isLoading
+                  const SizedBox(height: 40),
+                  GestureDetector(
+                    onTap: isLoading
                         ? null
                         : () {
                             context.read<AuthBloc>().add(SignInAsGuestRequested());
                           },
                     child: Text(
                       'Continue as Guest',
-                      style: GoogleFonts.inter(
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w500,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
                         decoration: TextDecoration.underline,
-                        decorationColor: Colors.white70,
+                        decorationColor: AppColors.textTertiary,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 64),
                   Text(
-                    'By continuing, you agree to the Gig Slick Terms of Service and Privacy Policy.',
+                    'By continuing, you agree to the Gig Slick\nTerms of Service and Privacy Policy.',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      color: Colors.white38,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: AppColors.textTertiary,
                     ),
                   )
                 ],
@@ -223,30 +174,43 @@ class _SignInViewState extends State<SignInView> {
     );
   }
 
-  Widget _buildTextField({
+  Widget _buildTonalTextField({
     required TextEditingController controller,
     required String hint,
     required IconData icon,
-    bool obscureText = false,
   }) {
+    final theme = Theme.of(context);
+    
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E), // Tonal Layering
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.surfaceMid,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
       child: TextField(
         controller: controller,
-        obscureText: obscureText,
-        style: GoogleFonts.inter(color: Colors.white),
+        keyboardType: TextInputType.phone,
+        style: theme.textTheme.bodyLarge,
+        cursorColor: AppColors.electricAmber,
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: GoogleFonts.inter(color: Colors.white38),
-          prefixIcon: Icon(icon, color: Colors.white54),
+          hintStyle: theme.textTheme.bodyLarge?.copyWith(
+            color: AppColors.textTertiary,
+          ),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.only(left: 16, right: 12),
+            child: Icon(icon, color: AppColors.electricAmber.withValues(alpha: 0.7)),
+          ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
         ),
       ),
     );
   }
-
 }

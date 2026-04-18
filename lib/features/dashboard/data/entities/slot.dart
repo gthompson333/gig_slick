@@ -13,6 +13,7 @@ enum SlotStatus {
 class Slot with _$Slot {
   const factory Slot({
     required String id,
+    required String venueId,
     @TimestampConverter() required DateTime date,
     @TimestampConverter() required DateTime startTime,
     @TimestampConverter() required DateTime endTime,

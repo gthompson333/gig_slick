@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../../core/constants/constants.dart';
 import '../entities/slot.dart';
 
 abstract class DashboardRemoteDataSource {
@@ -18,6 +19,7 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
   Stream<List<Slot>> getScheduledSlotsStream() {
     return _firestore
         .collection('slots')
+        .where('venueId', isEqualTo: AppConstants.kDefaultVenueId)
         .orderBy('date', descending: false)
         .snapshots()
         .map((snapshot) {

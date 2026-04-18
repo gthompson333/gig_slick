@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/theme/app_colors.dart';
 import '../bloc/create_slot_bloc.dart';
 import '../bloc/create_slot_event.dart';
 import '../bloc/create_slot_state.dart';
@@ -11,11 +11,14 @@ class DateSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return BlocBuilder<CreateSlotBloc, CreateSlotState>(
       builder: (context, state) {
-        final dateText = state.selectedDate != null
+        final isSelected = state.selectedDate != null;
+        final dateText = isSelected
             ? DateFormat('EEEE, MMMM d, y').format(state.selectedDate!)
-            : 'SLOT DATE AND TIME';
+            : 'SET SLOT DATE AND TIME';
 
         return ElevatedButton(
           onPressed: () async {
@@ -28,10 +31,10 @@ class DateSelector extends StatelessWidget {
                 return Theme(
                   data: Theme.of(context).copyWith(
                     colorScheme: const ColorScheme.dark(
-                      primary: Color(0xFFFFBF00),
-                      onPrimary: Color(0xFF402D00),
-                      surface: Color(0xFF1B1B1B),
-                      onSurface: Color(0xFFE2E2E2),
+                      primary: AppColors.electricAmber,
+                      onPrimary: Colors.black,
+                      surface: AppColors.surfaceMid,
+                      onSurface: AppColors.textPrimary,
                     ),
                   ),
                   child: child!,
@@ -43,27 +46,29 @@ class DateSelector extends StatelessWidget {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFFFBF00),
-            foregroundColor: const Color(0xFF402D00),
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            backgroundColor: isSelected ? AppColors.electricAmber : AppColors.surfaceMid,
+            foregroundColor: isSelected ? Colors.black : AppColors.textSecondary,
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            minimumSize: const Size(double.infinity, 60),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            elevation: 8,
-            shadowColor: const Color(0xFFFFBF00).withValues(alpha: 0.25),
+            elevation: 0,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.calendar_today, size: 20),
+              Icon(
+                isSelected ? Icons.calendar_today : Icons.calendar_today_outlined,
+                size: 18,
+              ),
               const SizedBox(width: 12),
               Text(
-                dateText,
-                style: const TextStyle(
-                  fontFamily: 'Plus Jakarta Sans',
-                  fontWeight: FontWeight.w800,
-                  fontSize: 14,
-                  letterSpacing: 2.0,
+                dateText.toUpperCase(),
+                style: textTheme.labelSmall?.copyWith(
+                  color: isSelected ? Colors.black : AppColors.textSecondary,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.5,
                 ),
               ),
             ],

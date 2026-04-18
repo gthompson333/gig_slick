@@ -1,58 +1,58 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 
 class PerformerPreviewCard extends StatelessWidget {
   const PerformerPreviewCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'PERFORMER VIEW PREVIEW',
-          style: TextStyle(
-            fontFamily: 'Plus Jakarta Sans',
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
+          style: textTheme.labelSmall?.copyWith(
+            color: AppColors.textTertiary,
             letterSpacing: 2.0,
-            color: Color(0xFFD4C5AB),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
         Container(
           clipBehavior: Clip.hardEdge,
           decoration: BoxDecoration(
-            color: const Color(0xFF2A2A2A),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: const Color(0xFF504532).withValues(alpha: 0.15),
-            ),
-            boxShadow: const [
+            color: AppColors.surfaceHigh,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
               BoxShadow(
-                color: Colors.black45,
-                blurRadius: 24,
-                offset: Offset(0, 12),
+                color: Colors.black.withValues(alpha: 0.4),
+                blurRadius: 32,
+                offset: const Offset(0, 16),
+              ),
+              BoxShadow(
+                color: Colors.white.withValues(alpha: 0.02),
+                offset: const Offset(0, -1),
               ),
             ],
           ),
           child: Stack(
             children: [
-              // Background Accent
+              // Background Glow
               Positioned(
-                top: -48,
-                right: -48,
+                top: -60,
+                right: -60,
                 child: Container(
-                  width: 128,
-                  height: 128,
+                  width: 180,
+                  height: 180,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFBF00).withValues(alpha: 0.2),
+                    color: AppColors.electricAmber.withValues(alpha: 0.05),
                     shape: BoxShape.circle,
                   ),
-                  // Emulating blur-3xl conceptually
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(28),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -60,115 +60,110 @@ class PerformerPreviewCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFFFAFF3),
-                                    shape: BoxShape.circle,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.kineticCyan,
+                                      shape: BoxShape.circle,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                const Text(
-                                  'NEW OPPORTUNITY',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 2.0,
-                                    color: Color(0xFFFFAFF3),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    'NEW OPPORTUNITY',
+                                    style: textTheme.labelSmall?.copyWith(
+                                      color: AppColors.kineticCyan,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1.5,
+                                    ),
                                   ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'The Electric Loft',
+                                style: textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  color: AppColors.textPrimary,
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              'The Electric Loft',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w900,
-                                color: Color(0xFFE2E2E2),
                               ),
-                            ),
-                            const Text(
-                              'Downtown Arts District',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFFD4C5AB),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Downtown Arts District',
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: AppColors.textTertiary,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+                            horizontal: 16,
+                            vertical: 10,
                           ),
                           decoration: BoxDecoration(
                             color: Colors.black.withValues(alpha: 0.4),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: const Color(0xFF504532)
-                                  .withValues(alpha: 0.1),
-                            ),
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                          child: const Text(
+                          child: Text(
                             '\$350+',
-                            style: TextStyle(
-                              color: Color(0xFFFFBF00),
+                            style: textTheme.titleLarge?.copyWith(
+                              color: AppColors.electricAmber,
                               fontWeight: FontWeight.w900,
-                              fontSize: 18,
+                              fontFamily: 'Inter',
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
-                    const Row(
+                    const SizedBox(height: 32),
+                    Row(
                       children: [
-                        CircleAvatar(
-                          radius: 24,
-                          backgroundColor: Color(0xFF1F1F1F),
+                        const CircleAvatar(
+                          radius: 26,
+                          backgroundColor: AppColors.surfaceMid,
                           backgroundImage: NetworkImage(
-                            'https://lh3.googleusercontent.com/aida-public/AB6AXuCvVe6WjRsDFkbzE9_iOa0ckN66JfQd0X_qkDXAmuLw3326Uz86x3IH7F00sJUq1zcdZjko1ZQGg-fdsW79QYpZK56pvdUlrRU_pNbMZ4Wynkm-P14kAba_JjEeha9is3DghgSltm1gu1SqCS07oVa1wlPdUF_EwZqwgs-wbyUKBkE44Tf2t2apHcV2Db2_ApG5dkuDOdaKwVZzTY8iQ1qLime9yksQ3FyOeKZZfmdPxNM02aC2cvAT_XC3u7PrgBnpIBdZMuJRJ18V',
+                            'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-1.2.1&auto=format&fit=crop&w=128&q=80',
                           ),
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Friday, May 22',
-                              style: TextStyle(
-                                color: Color(0xFFE2E2E2),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                              style: textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimary,
                               ),
                             ),
+                            const SizedBox(height: 2),
                             Text(
                               '9:00 PM Performance',
-                              style: TextStyle(
-                                color: Color(0xFFD4C5AB),
-                                fontSize: 12,
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: AppColors.textTertiary,
                               ),
                             ),
                           ],
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
                     Row(
                       children: [
-                        _buildTag('FOLK'),
-                        const SizedBox(width: 8),
-                        _buildTag('METAL'),
-                        const SizedBox(width: 8),
-                        _buildTag('LOAD-IN 7PM'),
+                        _tag(context, 'FOLK'),
+                        const SizedBox(width: 10),
+                        _tag(context, 'METAL'),
+                        const SizedBox(width: 10),
+                        _tag(context, 'LOAD-IN 7PM'),
                       ],
                     ),
                   ],
@@ -181,19 +176,20 @@ class PerformerPreviewCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTag(String label) {
+  Widget _tag(BuildContext context, String label) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1F1F),
-        borderRadius: BorderRadius.circular(4),
+        color: AppColors.surfaceMid,
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          fontSize: 9,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFFD4C5AB),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          fontSize: 10,
+          fontWeight: FontWeight.w900,
+          color: AppColors.textSecondary,
+          letterSpacing: 1.0,
         ),
       ),
     );
