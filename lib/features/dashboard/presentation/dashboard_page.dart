@@ -90,12 +90,7 @@ class DashboardView extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final result = await context.push<bool>('/create-slot');
-          if (result == true && context.mounted) {
-            context.read<DashboardBloc>().add(const DashboardEvent.loadRequested());
-          }
-        },
+        onPressed: () => context.push('/create-slot'),
         backgroundColor: const Color(0xFFFFBF00),
         foregroundColor: Colors.black,
         elevation: 8,

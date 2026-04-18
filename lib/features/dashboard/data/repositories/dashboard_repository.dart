@@ -1,6 +1,6 @@
 import '../entities/slot.dart';
 
 abstract class DashboardRepository {
-  Future<List<Slot>> getScheduledSlots();
+  Stream<List<Slot>> getScheduledSlotsStream();
   Future<String> getMagicLinkUrl();
 }

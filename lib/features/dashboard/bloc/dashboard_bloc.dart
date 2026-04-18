@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
+import '../data/entities/slot.dart';
 import '../data/repositories/dashboard_repository.dart';
 import 'dashboard_event.dart';
 import 'dashboard_state.dart';
@@ -13,12 +14,16 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<LoadDashboardRequested>((event, emit) async {
       emit(const DashboardState.loading());
       try {
-        final slots = await _repository.getScheduledSlots();
         final magicLink = await _repository.getMagicLinkUrl();
-        emit(DashboardState.loaded(
-          slots: slots,
-          magicLink: magicLink,
-        ));
+        await emit.forEach<List<Slot>>(
+          _repository.getScheduledSlotsStream(),
+          onData: (slots) => DashboardState.loaded(
+            slots: slots,
+            magicLink: magicLink,
+          ),
+          onError: (error, stackTrace) =>
+              DashboardState.error(message: error.toString()),
+        );
       } catch (e) {
         emit(DashboardState.error(message: e.toString()));
       }

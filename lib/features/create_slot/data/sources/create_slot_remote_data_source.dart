@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 import '../create_slot_request.dart';
 
@@ -7,10 +8,12 @@ abstract class CreateSlotRemoteDataSource {
 
 @LazySingleton(as: CreateSlotRemoteDataSource)
 class CreateSlotRemoteDataSourceImpl implements CreateSlotRemoteDataSource {
+  final FirebaseFirestore _firestore;
+
+  CreateSlotRemoteDataSourceImpl(this._firestore);
+
   @override
   Future<void> createSlot(CreateSlotRequest request) async {
-    // Delay to simulate network request
-    await Future.delayed(const Duration(seconds: 1));
-    return;
+    await _firestore.collection('slots').add(request.toJson());
   }
 }
