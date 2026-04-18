@@ -86,3 +86,4 @@
 # Other
 coverage/
 test/generated_tests/
+lib/firebase_options.dart
