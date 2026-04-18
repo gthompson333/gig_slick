@@ -87,3 +87,8 @@
 coverage/
 test/generated_tests/
 lib/firebase_options.dart
+
+# Generated Files
+*.freezed.dart
+*.g.dart
+lib/injection.config.dart
