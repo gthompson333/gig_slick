@@ -1,0 +1,88 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+.project
+.settings/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you actually want to
+# keep. But it also contains settings, which are internal to VS Code.
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/GeneratedConfig.xcconfig
+**/ios/Flutter/framework_info.json
+**/ios/Flutter/intermediate/
+**/ios/GeneratedPluginRegistrant.h
+**/ios/GeneratedPluginRegistrant.m
+**/ios/.generated/
+**/ios/.symlinks/
+**/ios/Pods/
+**/ios/ServiceDefinitions.json
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.pub-cache/
+**/.pub/
+**/build/
+
+# Web related
+**/node_modules/
+**/package-lock.json
+**/yarn.lock
+**/web/stacktrace.js
+**/web/stacktrace.js.map
+
+# Android related
+**/android/app/src/main/res/drawable-xhdpi/status_bar_background.png
+**/android/app/src/main/res/drawable-xhdpi/ic_launcher.png
+**/android/app/src/main/res/drawable-hdpi/ic_launcher.png
+**/android/app/src/main/res/drawable-mdpi/ic_launcher.png
+**/android/app/src/main/res/drawable-xxhdpi/ic_launcher.png
+**/android/app/src/main/res/drawable-xxxhdpi/ic_launcher.png
+**/android/key.properties
+**/android/app/google-services.json
+**/android/.gradle/
+**/android/local.properties
+**/android/gen/
+**/*.jks
+**/*.keystore
+
+# iOS related
+**/ios/Config/FirebaseConfigs/
+**/ios/Runner/GoogleService-Info.plist
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Generated.xcconfig
+
+# Symbolication related
+**/app.*.symbols
+**/app.*.map.json
+
+# Executable related
+**/bin/cache/
+**/bin/mining/
+
+# Other
+coverage/
+test/generated_tests/

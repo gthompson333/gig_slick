@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Commonwealth | Venue Dashboard</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries,typography,aspect-ratio"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ffb4ab",
+                    "secondary": "#ffffff",
+                    "tertiary": "#ffdbf6",
+                    "secondary-fixed": "#00fbfb",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-fixed": "#002020",
+                    "surface-container-low": "#1b1b1b",
+                    "surface-container-highest": "#353535",
+                    "on-secondary": "#003737",
+                    "primary-fixed-dim": "#fbbc00",
+                    "error-container": "#93000a",
+                    "surface-variant": "#353535",
+                    "on-tertiary-fixed": "#380038",
+                    "primary-fixed": "#ffdfa0",
+                    "on-surface-variant": "#d4c5ab",
+                    "outline-variant": "#504532",
+                    "inverse-primary": "#795900",
+                    "on-background": "#e2e2e2",
+                    "on-secondary-fixed-variant": "#004f4f",
+                    "surface-container-high": "#2a2a2a",
+                    "tertiary-fixed-dim": "#ffabf3",
+                    "tertiary-fixed": "#ffd7f5",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-tertiary-container": "#980097",
+                    "inverse-on-surface": "#303030",
+                    "on-tertiary-fixed-variant": "#810081",
+                    "on-secondary-container": "#007070",
+                    "surface-dim": "#131313",
+                    "on-primary-container": "#6d5000",
+                    "inverse-surface": "#e2e2e2",
+                    "on-primary": "#402d00",
+                    "surface-bright": "#393939",
+                    "primary-container": "#ffbf00",
+                    "on-primary-fixed": "#261a00",
+                    "surface-container": "#1f1f1f",
+                    "tertiary-container": "#ffaff3",
+                    "on-surface": "#e2e2e2",
+                    "on-tertiary": "#5b005b",
+                    "secondary-fixed-dim": "#00dddd",
+                    "secondary-container": "#00fbfb",
+                    "outline": "#9c8f78",
+                    "surface": "#131313",
+                    "primary": "#ffe2ab",
+                    "surface-tint": "#fbbc00",
+                    "on-error": "#690005",
+                    "on-primary-fixed-variant": "#5c4300",
+                    "background": "#131313"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-card {
+        background: rgba(27, 27, 27, 0.6);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      body {
+        background-color: #000000;
+        color: #e2e2e2;
+        min-height: max(884px, 100dvh);
+      }
+    @keyframes slide-up {
+  from { transform: translate(-50%, 1rem); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+.animate-in {
+  animation: slide-up 0.4s ease-out forwards;
+}
+</style>
+</head>
+<body class="font-body selection:bg-primary-container selection:text-on-primary-container bg-black">
+<!-- TopAppBar -->
+<header class="header-component sticky top-0 w-full bg-black/80 backdrop-blur-md z-50">
+<nav class="app-bar-widget max-w-4xl mx-auto flex items-center justify-center py-8 px-6">
+<div class="brand-group flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-3xl text-[#FFBF00] font-bold">bolt</span>
+<h1 class="text-2xl font-extrabold text-[#FFBF00] font-headline tracking-tight">The Commonwealth</h1>
+</div>
+</nav>
+</header>
+<main class="px-6 max-w-2xl mx-auto pb-12 pt-4">
+<!-- MagicLinkCard Component -->
+<section class="mb-10" id="MagicLinkCard">
+<div class="glass-card rounded-2xl p-6 border border-white/10 shadow-2xl">
+<div class="flex flex-col gap-5">
+<div>
+<h2 class="font-headline text-2xl text-on-surface font-extrabold tracking-tight">Performers Link</h2>
+</div>
+<p class="text-on-surface/70 text-sm leading-relaxed">Share this link with performers to allow them to apply directly to your open slots.</p>
+<div class="flex flex-col gap-4">
+<div class="bg-black/40 p-4 rounded-xl border border-white/5 text-center">
+<span class="text-[#FFBF00] text-sm font-mono font-bold tracking-tight">stageslot.link/commonwealth</span>
+</div>
+<button class="bg-[#FFBF00] text-black w-full py-4 rounded-xl font-black text-sm flex items-center justify-center gap-2 hover:brightness-110 transition-all active:scale-[0.98] shadow-lg shadow-[#FFBF00]/10 uppercase tracking-wider"><span class="material-symbols-outlined text-[20px] font-bold">share</span> Share Link</button>
+</div>
+</div>
+</div>
+</section>
+<!-- ScheduledSlotsFeed Component -->
+<section class="space-y-6" id="ScheduledSlotsFeed">
+<div class="flex justify-between items-end mb-2">
+<h3 class="font-headline text-xl font-extrabold text-[#FFBF00] tracking-tight">Scheduled Slots</h3>
+<span class="text-on-surface-variant text-xs font-medium">Viewing next 14 days</span>
+</div>
+<div class="flex flex-col gap-4">
+<!-- SlotCard: Pending -->
+<article class="SlotCard bg-surface-container-low/50 rounded-xl p-5 flex items-center justify-between group hover:bg-surface-container-high transition-colors cursor-pointer border border-white/5">
+<div class="flex flex-col gap-1">
+<span class="text-on-surface font-bold text-lg font-headline">Friday, April 10</span>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="text-sm font-medium">9:00 PM - 12:00 AM</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<span class="bg-[#FFBF00]/10 text-[#FFBF00] px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-[#FFBF00]/20">
+                            3 Pending
+                        </span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+</article>
+<!-- SlotCard: Confirmed -->
+<article class="SlotCard bg-surface-container-low/50 rounded-xl p-5 flex items-center justify-between group hover:bg-surface-container-high transition-colors cursor-pointer border border-white/5">
+<div class="flex flex-col gap-1">
+<span class="text-on-surface font-bold text-lg font-headline">Saturday, April 11</span>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="text-sm font-medium">8:00 PM - 11:30 PM</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<span class="bg-[#00FFFF]/10 text-[#00FFFF] px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-[#00FFFF]/20">
+                            Confirmed
+                        </span>
+<div class="flex items-center gap-2">
+<img alt="Electric Echoes" class="w-6 h-6 rounded-full border border-[#00FFFF]/30 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqFdIzvL_gXYh9ZMVxl9pM3i627JH01naFF1GoZMIbBU3PfJfm_oObVqHOla8tFxf2nsvTBONZvuoN20wIkMotSGnjofTRIRGAYwH33pStrbyyUq05SQagbwb5XHVRBShNCrZY9FSYdqGo99Xq4NC2IYVXe3H41aIg9YFMrqBqw5-25E52c_5QIkIDtMOgruaEGhhUCi8nO3L_Ds4YSguYPrYd4psFtYcNYTpfCvU-c0CCTj1lSrnvxuyLZxdGG_CWXLFwtY5EQ4IE"/>
+<span class="text-xs text-[#00FFFF] font-bold">Electric Echoes</span>
+</div>
+</div>
+</article>
+<!-- SlotCard: Pending -->
+<article class="SlotCard bg-surface-container-low/50 rounded-xl p-5 flex items-center justify-between group hover:bg-surface-container-high transition-colors cursor-pointer border border-white/5">
+<div class="flex flex-col gap-1">
+<span class="text-on-surface font-bold text-lg font-headline">Thursday, April 16</span>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="text-sm font-medium">7:30 PM - 10:00 PM</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<span class="bg-[#FFBF00]/10 text-[#FFBF00] px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-[#FFBF00]/20">
+                            1 Pending
+                        </span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+</article>
+<!-- SlotCard: Confirmed -->
+<article class="SlotCard bg-surface-container-low/50 rounded-xl p-5 flex items-center justify-between group hover:bg-surface-container-high transition-colors cursor-pointer border border-white/5">
+<div class="flex flex-col gap-1">
+<span class="text-on-surface font-bold text-lg font-headline">Friday, April 17</span>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="text-sm font-medium">9:00 PM - 1:00 AM</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<span class="bg-[#00FFFF]/10 text-[#00FFFF] px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-[#00FFFF]/20">
+                            Confirmed
+                        </span>
+<div class="flex items-center gap-2">
+<img alt="The Low End" class="w-6 h-6 rounded-full border border-[#00FFFF]/30 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyDf9O7vJsZ3_SJxGXhkkV9TITRgAVZXU-MsFyKkn8-P1Hl238XZXB3cRG1PgfUl8bhEaZ_44c8kgvibjTUwUiSyEDSrLR2jIwRFCN4pn1NaOnCwJEZ-l4QO2Jr1OGcSO_as2xXhFoEGNTdvF1LAgejx_gLM9vpCanThYGaIbcBzW-BwX_ywy5tLpV3RuWtqifEDaAJYGeveS5hdBIxNBlrZALvR0BIzERoxt8zeyWwYd9ciKRXnhMmtrxZftT3DzbQlFv1gCMaQvo"/>
+<span class="text-xs text-[#00FFFF] font-bold">The Low End</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+</main>
+<!-- QuickPostFAB Component -->
+<div class="fixed bottom-8 right-6 z-[60]" id="QuickPostFAB">
+<button class="flex items-center gap-2 bg-[#FFBF00] text-black px-6 py-4 rounded-full font-black shadow-[0_8px_30px_rgb(255,191,0,0.3)] hover:scale-105 active:scale-95 transition-all group uppercase tracking-wider text-sm">
+<span class="material-symbols-outlined font-bold">add</span>
+<span>Create Slot</span>
+</button>
+</div>
+<!-- Snackbar Component -->
+<div class="fixed bottom-28 left-1/2 -translate-x-1/2 w-[90%] max-w-md h-14 glass-card bg-surface-container-high/80 backdrop-blur-[20px] rounded-full flex items-center justify-between px-6 shadow-2xl border border-white/15 z-[70] animate-in">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center">
+<span class="material-symbols-outlined text-[#00FFFF] text-xl drop-shadow-[0_0_8px_rgba(0,255,255,0.6)] font-bold">
+        check
+      </span>
+</div>
+<span class="text-[#E2E2E2] font-body text-sm font-medium whitespace-nowrap">Link copied to clipboard</span>
+</div>
+<button class="text-[#FFBF00] font-label text-xs font-bold uppercase tracking-wider hover:brightness-110 active:opacity-70 transition-all">
+    Dismiss
+  </button>
+</div>
+</body></html>
