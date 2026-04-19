@@ -21,7 +21,7 @@ class CreateVenueBloc extends Bloc<CreateVenueEvent, CreateVenueState> {
     emit(CreateVenueLoading());
     try {
       await _repository.createVenue(name: event.name, genres: event.genres);
-      emit(CreateVenueSuccess());
+      emit(CreateVenueSuccess(venueName: event.name));
     } catch (e) {
       emit(CreateVenueFailure(error: e.toString()));
     }

@@ -51,15 +51,7 @@ class _CreateVenueViewState extends State<CreateVenueView> {
       body: BlocConsumer<CreateVenueBloc, CreateVenueState>(
         listener: (context, state) {
           if (state is CreateVenueSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Venue created successfully!'),
-                backgroundColor: AppColors.kineticCyan,
-              ),
-            );
-            if (context.mounted) {
-              context.go('/dashboard');
-            }
+            _showSecureVenueSheet(context, state.venueName);
           } else if (state is CreateVenueFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -106,9 +98,13 @@ class _CreateVenueViewState extends State<CreateVenueView> {
                     onPressed: isLoading
                         ? null
                         : () {
+                            if (_nameController.text.trim().isEmpty) {
+                              _showValidationAlert(context);
+                              return;
+                            }
                             context.read<CreateVenueBloc>().add(
                                   CreateVenueSubmitted(
-                                    name: _nameController.text,
+                                    name: _nameController.text.trim(),
                                     genres: const [],
                                   ),
                                 );
@@ -143,6 +139,112 @@ class _CreateVenueViewState extends State<CreateVenueView> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _showValidationAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surfaceMid,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Text(
+          'Missing Name',
+          style: TextStyle(color: AppColors.electricAmber),
+        ),
+        content: const Text(
+          'Please enter a name for your venue to continue.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'OK',
+              style: TextStyle(color: AppColors.electricAmber, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSecureVenueSheet(BuildContext context, String venueName) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(32),
+        decoration: const BoxDecoration(
+          color: AppColors.surfaceMid,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Icon(
+              Icons.verified_user_rounded,
+              color: AppColors.electricAmber,
+              size: 48,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Secure $venueName',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Link your phone number to lock in your venue and manage gigs from anywhere.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context); // Close sheet
+                context.push('/secure-account');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.electricAmber,
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              child: const Text(
+                'Secure Now',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close sheet
+                context.go('/dashboard');
+              },
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: Text(
+                'Skip for now',
+                style: TextStyle(
+                  color: AppColors.textTertiary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

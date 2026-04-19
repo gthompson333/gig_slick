@@ -6,7 +6,11 @@ class CreateVenueInitial extends CreateVenueState {}
 
 class CreateVenueLoading extends CreateVenueState {}
 
-class CreateVenueSuccess extends CreateVenueState {}
+class CreateVenueSuccess extends CreateVenueState {
+  final String venueName;
+
+  CreateVenueSuccess({required this.venueName});
+}
 
 class CreateVenueFailure extends CreateVenueState {
   final String error;

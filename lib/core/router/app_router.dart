@@ -6,6 +6,8 @@ import '../../features/create_venue/presentation/create_venue_page.dart';
 import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/create_slot/presentation/create_slot_page.dart';
 
+import '../../features/sign_in/presentation/secure_account_page.dart';
+
 final GoRouter appRouter = GoRouter(
   initialLocation: '/onboarding',
   redirect: (context, state) {
@@ -27,6 +29,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/sign-in',
       builder: (context, state) => const SignInPage(),
+    ),
+    GoRoute(
+      path: '/secure-account',
+      builder: (context, state) => const SecureAccountPage(),
     ),
     GoRoute(
       path: '/create-venue',
