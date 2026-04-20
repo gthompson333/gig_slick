@@ -155,9 +155,6 @@ class DashboardView extends StatelessWidget {
   }
 
   void _showLogoutDialog(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-    final isAnonymous = user?.isAnonymous ?? true;
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -172,9 +169,7 @@ class DashboardView extends StatelessWidget {
               ),
         ),
         content: Text(
-          isAnonymous
-              ? 'Are you sure you want to log out? Log in with your phone number before you leave to ensure you can get back to your venue.'
-              : 'Are you sure you want to log out of GigSlick?',
+          'Are you sure you want to log out?',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
                 height: 1.5,
