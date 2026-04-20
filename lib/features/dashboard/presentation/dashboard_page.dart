@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../injection.dart';
@@ -55,16 +56,31 @@ class DashboardView extends StatelessWidget {
                 slivers: [
                   // Glassmorphic App Bar
                   SliverAppBar(
-                    expandedHeight: 140,
+                    expandedHeight: 110,
                     collapsedHeight: 80,
                     pinned: true,
                     stretch: true,
                     backgroundColor: Colors.transparent,
+                    actions: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: IconButton(
+                          onPressed: () => _showLogoutDialog(context),
+                          icon: const Icon(
+                            Icons.logout_rounded,
+                            color: AppColors.textSecondary,
+                            size: 24,
+                          ),
+                          tooltip: 'Log Out',
+                        ),
+                      ),
+                    ],
                     flexibleSpace: ClipRect(
                       child: BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                         child: FlexibleSpaceBar(
                           centerTitle: true,
+                          titlePadding: const EdgeInsets.only(bottom: 12),
                           title: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -134,6 +150,75 @@ class DashboardView extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(99),
         ),
+      ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final isAnonymous = user?.isAnonymous ?? true;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surfaceHigh,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          'Log Out?',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w900,
+              ),
+        ),
+        content: Text(
+          isAnonymous
+              ? 'Are you sure you want to log out? Log in with your phone number before you leave to ensure you can get back to your venue.'
+              : 'Are you sure you want to log out of GigSlick?',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+                height: 1.5,
+              ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'CANCEL',
+              style: TextStyle(
+                color: AppColors.textTertiary,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await FirebaseAuth.instance.signOut();
+              if (context.mounted) {
+                context.go('/onboarding');
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.electricAmber,
+              foregroundColor: Colors.black,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(99),
+              ),
+            ),
+            child: const Text(
+              'LOG OUT',
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
