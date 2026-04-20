@@ -12,5 +12,6 @@ class DashboardState with _$DashboardState {
     required String magicLink,
     required String venueName,
   }) = _Loaded;
+  const factory DashboardState.noVenue() = _NoVenue;
   const factory DashboardState.error({required String message}) = _Error;
 }

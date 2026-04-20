@@ -16,7 +16,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       try {
         final venueData = await _repository.getVenueForUser();
         if (venueData == null) {
-          emit(const DashboardState.error(message: 'No venue found for this account.'));
+          emit(const DashboardState.noVenue());
           return;
         }
 

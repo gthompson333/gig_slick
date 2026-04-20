@@ -31,80 +31,91 @@ class DashboardView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.surfaceLow,
-      body: BlocBuilder<DashboardBloc, DashboardState>(
-        builder: (context, state) {
-          return state.when(
-            initial: () => const Center(
-              child: CircularProgressIndicator(color: AppColors.electricAmber),
-            ),
-            loading: () => const Center(
-              child: CircularProgressIndicator(color: AppColors.electricAmber),
-            ),
-            loaded: (slots, magicLink, venueName) => CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                // Glassmorphic App Bar
-                SliverAppBar(
-                  expandedHeight: 140,
-                  collapsedHeight: 80,
-                  pinned: true,
-                  stretch: true,
-                  backgroundColor: Colors.transparent,
-                  flexibleSpace: ClipRect(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: FlexibleSpaceBar(
-                        centerTitle: true,
-                        title: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Image.asset(
-                              'assets/images/logo.png',
-                              height: 24,
-                            ),
-                            const SizedBox(width: 10),
-                            Flexible(
-                              child: Text(
-                                venueName,
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.titleLarge?.copyWith(
-                                  color: AppColors.electricAmber,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: -0.5,
+      body: BlocListener<DashboardBloc, DashboardState>(
+        listener: (context, state) {
+          state.maybeWhen(
+            noVenue: () => context.go('/create-venue'),
+            orElse: () {},
+          );
+        },
+        child: BlocBuilder<DashboardBloc, DashboardState>(
+          builder: (context, state) {
+            return state.when(
+              initial: () => const Center(
+                child: CircularProgressIndicator(color: AppColors.electricAmber),
+              ),
+              loading: () => const Center(
+                child: CircularProgressIndicator(color: AppColors.electricAmber),
+              ),
+              noVenue: () => const Center(
+                child: CircularProgressIndicator(color: AppColors.electricAmber),
+              ),
+              loaded: (slots, magicLink, venueName) => CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  // Glassmorphic App Bar
+                  SliverAppBar(
+                    expandedHeight: 140,
+                    collapsedHeight: 80,
+                    pinned: true,
+                    stretch: true,
+                    backgroundColor: Colors.transparent,
+                    flexibleSpace: ClipRect(
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: FlexibleSpaceBar(
+                          centerTitle: true,
+                          title: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset(
+                                'assets/images/logo.png',
+                                height: 24,
+                              ),
+                              const SizedBox(width: 10),
+                              Flexible(
+                                child: Text(
+                                  venueName,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: textTheme.titleLarge?.copyWith(
+                                    color: AppColors.electricAmber,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: -0.5,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        background: Container(
-                          color: AppColors.background.withValues(alpha: 0.5),
+                            ],
+                          ),
+                          background: Container(
+                            color: AppColors.background.withValues(alpha: 0.5),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
 
-                // Main Content
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      PerformerLinkCard(linkUrl: magicLink),
-                      const SizedBox(height: 16),
-                      ScheduledSlotsFeed(slots: slots),
-                    ]),
+                  // Main Content
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        PerformerLinkCard(linkUrl: magicLink),
+                        const SizedBox(height: 16),
+                        ScheduledSlotsFeed(slots: slots),
+                      ]),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            error: (message) => Center(
-              child: Text(
-                'Error: $message',
-                style: const TextStyle(color: Colors.red),
+                ],
               ),
-            ),
-          );
-        },
+              error: (message) => Center(
+                child: Text(
+                  'Error: $message',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/create-slot'),
