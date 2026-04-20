@@ -31,12 +31,6 @@ class ScheduledSlotsFeed extends StatelessWidget {
                   letterSpacing: -0.5,
                 ),
               ),
-              Text(
-                'Next 14 Days',
-                style: textTheme.labelSmall?.copyWith(
-                  color: AppColors.textTertiary,
-                ),
-              ),
             ],
           ),
         ),

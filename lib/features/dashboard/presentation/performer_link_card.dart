@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/theme/app_colors.dart';
 
-class MagicLinkCard extends StatelessWidget {
+class PerformerLinkCard extends StatelessWidget {
   final String linkUrl;
 
-  const MagicLinkCard({
+  const PerformerLinkCard({
     super.key,
     required this.linkUrl,
   });
@@ -31,14 +31,14 @@ class MagicLinkCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Performer Access',
+              'Performer Link',
               style: textTheme.headlineMedium?.copyWith(
                 letterSpacing: -0.5,
               ),
             ),
             const SizedBox(height: 12),
             Text(
-              'Share this link with performers to allow them to apply directly to your open slots.',
+              'Share this link with performers to allow them to browse and apply for open slots at your venue.',
               style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
                 height: 1.5,
@@ -95,7 +95,7 @@ class MagicLinkCard extends StatelessWidget {
                     const Icon(Icons.copy_rounded, color: Colors.black, size: 20),
                     const SizedBox(width: 12),
                     Text(
-                      'COPY SHARE LINK',
+                      'COPY GIG LINK',
                       style: textTheme.labelSmall?.copyWith(
                         color: Colors.black,
                         fontWeight: FontWeight.w900,

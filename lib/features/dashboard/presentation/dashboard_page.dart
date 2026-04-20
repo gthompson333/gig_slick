@@ -7,7 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../bloc/dashboard_bloc.dart';
 import '../bloc/dashboard_event.dart';
 import '../bloc/dashboard_state.dart';
-import 'magic_link_card.dart';
+import 'performer_link_card.dart';
 import 'scheduled_slots_feed.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -40,7 +40,7 @@ class DashboardView extends StatelessWidget {
             loading: () => const Center(
               child: CircularProgressIndicator(color: AppColors.electricAmber),
             ),
-            loaded: (slots, magicLink) => CustomScrollView(
+            loaded: (slots, magicLink, venueName) => CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
                 // Glassmorphic App Bar
@@ -63,12 +63,15 @@ class DashboardView extends StatelessWidget {
                               height: 24,
                             ),
                             const SizedBox(width: 10),
-                            Text(
-                              'The Commonwealth',
-                              style: textTheme.titleLarge?.copyWith(
-                                color: AppColors.electricAmber,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -0.5,
+                            Flexible(
+                              child: Text(
+                                venueName,
+                                overflow: TextOverflow.ellipsis,
+                                style: textTheme.titleLarge?.copyWith(
+                                  color: AppColors.electricAmber,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: -0.5,
+                                ),
                               ),
                             ),
                           ],
@@ -86,7 +89,7 @@ class DashboardView extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      MagicLinkCard(linkUrl: magicLink),
+                      PerformerLinkCard(linkUrl: magicLink),
                       const SizedBox(height: 16),
                       ScheduledSlotsFeed(slots: slots),
                     ]),

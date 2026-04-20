@@ -11,8 +11,13 @@ class DashboardRepositoryImpl implements DashboardRepository {
   DashboardRepositoryImpl(this._remoteDataSource);
 
   @override
-  Stream<List<Slot>> getScheduledSlotsStream() {
-    return _remoteDataSource.getScheduledSlotsStream();
+  Future<Map<String, dynamic>?> getVenueForUser() {
+    return _remoteDataSource.getVenueForUser();
+  }
+
+  @override
+  Stream<List<Slot>> getScheduledSlotsStream(String venueId) {
+    return _remoteDataSource.getScheduledSlotsStream(venueId);
   }
 
   @override

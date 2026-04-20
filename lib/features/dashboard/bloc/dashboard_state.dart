@@ -10,6 +10,7 @@ class DashboardState with _$DashboardState {
   const factory DashboardState.loaded({
     required List<Slot> slots,
     required String magicLink,
+    required String venueName,
   }) = _Loaded;
   const factory DashboardState.error({required String message}) = _Error;
 }

@@ -1,25 +1,42 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../../core/constants/constants.dart';
 import '../entities/slot.dart';
 
 abstract class DashboardRemoteDataSource {
-  Stream<List<Slot>> getScheduledSlotsStream();
+  Stream<List<Slot>> getScheduledSlotsStream(String venueId);
+  Future<Map<String, dynamic>?> getVenueForUser();
   Future<String> getMagicLinkUrl();
 }
 
 @LazySingleton(as: DashboardRemoteDataSource)
 class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
   final FirebaseFirestore _firestore;
+  final FirebaseAuth _auth;
 
-  DashboardRemoteDataSourceImpl(this._firestore);
+  DashboardRemoteDataSourceImpl(this._firestore, this._auth);
 
   @override
-  Stream<List<Slot>> getScheduledSlotsStream() {
+  Future<Map<String, dynamic>?> getVenueForUser() async {
+    final user = _auth.currentUser;
+    if (user == null) return null;
+
+    final query = await _firestore
+        .collection('venues')
+        .where('ownerId', isEqualTo: user.uid)
+        .limit(1)
+        .get();
+
+    if (query.docs.isEmpty) return null;
+    return query.docs.first.data();
+  }
+
+  @override
+  Stream<List<Slot>> getScheduledSlotsStream(String venueId) {
     return _firestore
         .collection('slots')
-        .where('venueId', isEqualTo: AppConstants.kDefaultVenueId)
+        .where('venueId', isEqualTo: venueId)
         .orderBy('date', descending: false)
         .snapshots()
         .map((snapshot) {

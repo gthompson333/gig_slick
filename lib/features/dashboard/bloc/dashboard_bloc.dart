@@ -14,12 +14,25 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<LoadDashboardRequested>((event, emit) async {
       emit(const DashboardState.loading());
       try {
-        final magicLink = await _repository.getMagicLinkUrl();
+        final venueData = await _repository.getVenueForUser();
+        if (venueData == null) {
+          emit(const DashboardState.error(message: 'No venue found for this account.'));
+          return;
+        }
+
+        final venueName = venueData['name'] as String;
+        // Normalize name for the link (lowercase kebab-case)
+        final normalizedName = venueName.toLowerCase().replaceAll(' ', '-');
+        final performerLink = 'gigslick.link/$normalizedName';
+        
+        final venueId = venueData['id'] ?? normalizedName; // Fallback if ID is missing
+
         await emit.forEach<List<Slot>>(
-          _repository.getScheduledSlotsStream(),
+          _repository.getScheduledSlotsStream(venueId as String),
           onData: (slots) => DashboardState.loaded(
             slots: slots,
-            magicLink: magicLink,
+            magicLink: performerLink,
+            venueName: venueName,
           ),
           onError: (error, stackTrace) =>
               DashboardState.error(message: error.toString()),
