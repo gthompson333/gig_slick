@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -6,13 +7,20 @@ import '../../../injection.dart';
 import '../../../core/theme/app_colors.dart';
 import '../bloc/create_venue_bloc.dart';
 
+import '../../sign_in/bloc/auth_bloc.dart';
+import '../../sign_in/bloc/auth_event.dart';
+import '../../sign_in/bloc/auth_state.dart';
+
 class CreateVenuePage extends StatelessWidget {
   const CreateVenuePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<CreateVenueBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => getIt<CreateVenueBloc>()),
+        BlocProvider(create: (context) => getIt<AuthBloc>()),
+      ],
       child: const CreateVenueView(),
     );
   }
@@ -34,6 +42,13 @@ class _CreateVenueViewState extends State<CreateVenueView> {
     super.dispose();
   }
 
+  String _normalizePhoneNumber(String phone) {
+    final numericOnly = phone.replaceAll(RegExp(r'[^0-9]'), '');
+    if (numericOnly.length == 10) return '+1$numericOnly';
+    if (phone.startsWith('+')) return phone;
+    return '+$numericOnly';
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -48,97 +63,116 @@ class _CreateVenueViewState extends State<CreateVenueView> {
           onPressed: () => context.pop(),
         ),
       ),
-      body: BlocConsumer<CreateVenueBloc, CreateVenueState>(
-        listener: (context, state) {
-          if (state is CreateVenueSuccess) {
-            _showSecureVenueSheet(context, state.venueName);
-          } else if (state is CreateVenueFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.error),
-                backgroundColor: Colors.redAccent,
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<CreateVenueBloc, CreateVenueState>(
+            listener: (context, state) {
+              if (state is CreateVenueSuccess) {
+                final user = FirebaseAuth.instance.currentUser;
+                if (user != null && !user.isAnonymous) {
+                  context.go('/dashboard');
+                } else {
+                  _showSecureVenueSheet(context, state.venueName);
+                }
+              } else if (state is CreateVenueFailure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(state.error), backgroundColor: Colors.redAccent),
+                );
+              }
+            },
+          ),
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is AuthLinkOtpSent) {
+                _showOtpDialog(context, state.verificationId, state.phoneNumber);
+              } else if (state is AuthAuthenticated) {
+                context.go('/dashboard');
+              } else if (state is AuthError) {
+                _showErrorAlert(context, 'Security Error', state.message);
+              }
+            },
+          ),
+        ],
+        child: BlocBuilder<CreateVenueBloc, CreateVenueState>(
+          builder: (context, state) {
+            final isLoading = state is CreateVenueLoading;
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Set Up Your Venue',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.displayLarge?.copyWith(
+                      color: AppColors.electricAmber,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Nearly ready to get you going.',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 56),
+                  _buildTonalTextField(
+                    controller: _nameController,
+                    label: 'Venue Name',
+                    hintText: 'e.g. The Blue Note',
+                    icon: Icons.storefront_rounded,
+                  ),
+                  const SizedBox(height: 64),
+                  SizedBox(
+                    height: 64,
+                    child: ElevatedButton(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              if (_nameController.text.trim().isEmpty) {
+                                _showValidationAlert(context);
+                                return;
+                              }
+                              context.read<CreateVenueBloc>().add(
+                                    CreateVenueSubmitted(
+                                      name: _nameController.text.trim(),
+                                      genres: const [],
+                                    ),
+                                  );
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.electricAmber,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: isLoading
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                                color: Colors.black,
+                              ),
+                            )
+                          : Text(
+                              'Create Venue',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                    ),
+                  ),
+                ],
               ),
             );
-          }
-        },
-        builder: (context, state) {
-          final isLoading = state is CreateVenueLoading;
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Set Up Your Venue',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.displayLarge?.copyWith(
-                    color: AppColors.electricAmber,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Nearly ready to get you going.',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 56),
-                _buildTonalTextField(
-                  controller: _nameController,
-                  label: 'Venue Name',
-                  hintText: 'e.g. The Blue Note',
-                  icon: Icons.storefront_rounded,
-                ),
-                const SizedBox(height: 64),
-                SizedBox(
-                  height: 64,
-                  child: ElevatedButton(
-                    onPressed: isLoading
-                        ? null
-                        : () {
-                            if (_nameController.text.trim().isEmpty) {
-                              _showValidationAlert(context);
-                              return;
-                            }
-                            context.read<CreateVenueBloc>().add(
-                                  CreateVenueSubmitted(
-                                    name: _nameController.text.trim(),
-                                    genres: const [],
-                                  ),
-                                );
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.electricAmber,
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: isLoading
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 3,
-                              color: Colors.black,
-                            ),
-                          )
-                        : Text(
-                            'Create Venue',
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+          },
+        ),
       ),
     );
   }
@@ -171,80 +205,238 @@ class _CreateVenueViewState extends State<CreateVenueView> {
   }
 
   void _showSecureVenueSheet(BuildContext context, String venueName) {
+    final authBloc = context.read<AuthBloc>();
+
     showModalBottomSheet(
       context: context,
       isDismissible: false,
       enableDrag: false,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(32),
-        decoration: const BoxDecoration(
-          color: AppColors.surfaceMid,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      builder: (sheetContext) => BlocProvider.value(
+        value: authBloc,
+        child: Container(
+          padding: const EdgeInsets.all(32),
+          decoration: const BoxDecoration(
+            color: AppColors.surfaceMid,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Icon(
+                Icons.verified_user_rounded,
+                color: AppColors.electricAmber,
+                size: 48,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Secure $venueName',
+                textAlign: TextAlign.center,
+                style: Theme.of(sheetContext).textTheme.headlineMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Link your phone number to lock in your venue and manage gigs from anywhere.',
+                textAlign: TextAlign.center,
+                style: Theme.of(sheetContext).textTheme.bodyLarge?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+              ),
+              const SizedBox(height: 40),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(sheetContext); // Close sheet
+                  _showPhoneInputDialog(context); // Pass outer context which has the Bloc
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.electricAmber,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                child: const Text(
+                  'Secure Now',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(sheetContext); // Close sheet
+                  context.go('/dashboard');
+                },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text(
+                  'Skip for now',
+                  style: TextStyle(
+                    color: AppColors.textTertiary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Icon(
-              Icons.verified_user_rounded,
+      ),
+    );
+  }
+
+  void _showPhoneInputDialog(BuildContext context) {
+    final phoneController = TextEditingController();
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) => BlocProvider.value(
+        value: context.read<AuthBloc>(),
+        child: AlertDialog(
+          backgroundColor: AppColors.surfaceMid,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Text(
+            'Secure Account',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: AppColors.electricAmber,
-              size: 48,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 24),
-            Text(
-              'Secure $venueName',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.bold,
-                  ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Enter your phone number to link your account.',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 24),
+              _buildTonalTextField(
+                controller: phoneController,
+                label: 'Phone Number',
+                hintText: 'e.g. +1 555 000 0000',
+                icon: Icons.phone_iphone_rounded,
+                keyboardType: TextInputType.phone,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel', style: TextStyle(color: AppColors.textTertiary)),
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Link your phone number to lock in your venue and manage gigs from anywhere.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-            ),
-            const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context); // Close sheet
-                context.push('/secure-account');
+                final phone = phoneController.text.trim();
+                if (phone.isNotEmpty) {
+                  final normalized = _normalizePhoneNumber(phone);
+                  context.read<AuthBloc>().add(LinkPhoneRequested(normalized));
+                  Navigator.pop(dialogContext);
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.electricAmber,
                 foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text(
-                'Secure Now',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close sheet
-                context.go('/dashboard');
-              },
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: Text(
-                'Skip for now',
-                style: TextStyle(
-                  color: AppColors.textTertiary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: const Text('Send Code', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showOtpDialog(BuildContext context, String verificationId, String phoneNumber) {
+    final otpController = TextEditingController();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => BlocProvider.value(
+        value: context.read<AuthBloc>(),
+        child: AlertDialog(
+          backgroundColor: AppColors.surfaceMid,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Text(
+            'Verification Code',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: AppColors.electricAmber,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Enter the 6-digit code sent to $phoneNumber',
+                style: const TextStyle(color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: otpController,
+                keyboardType: TextInputType.number,
+                maxLength: 6,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 8,
+                  color: AppColors.textPrimary,
+                ),
+                decoration: InputDecoration(
+                  counterText: '',
+                  filled: true,
+                  fillColor: AppColors.surfaceLow,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel', style: TextStyle(color: AppColors.textTertiary)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final code = otpController.text.trim();
+                if (code.length == 6) {
+                  context.read<AuthBloc>().add(LinkOtpSubmitted(verificationId, code));
+                  Navigator.pop(dialogContext);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.electricAmber,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Verify', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showErrorAlert(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surfaceMid,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(title, style: const TextStyle(color: AppColors.electricAmber)),
+        content: Text(message, style: const TextStyle(color: AppColors.textSecondary)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK', style: TextStyle(color: AppColors.electricAmber)),
+          ),
+        ],
       ),
     );
   }
@@ -254,6 +446,7 @@ class _CreateVenueViewState extends State<CreateVenueView> {
     required String label,
     required String hintText,
     required IconData icon,
+    TextInputType? keyboardType,
   }) {
     final theme = Theme.of(context);
     
@@ -284,6 +477,7 @@ class _CreateVenueViewState extends State<CreateVenueView> {
           ),
           child: TextField(
             controller: controller,
+            keyboardType: keyboardType,
             style: theme.textTheme.bodyLarge,
             cursorColor: AppColors.electricAmber,
             decoration: InputDecoration(

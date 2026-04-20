@@ -3,71 +3,108 @@ import 'package:injectable/injectable.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 import '../repository/auth_repository.dart';
+import '../../dashboard/data/repositories/dashboard_repository.dart';
 
 @injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
+  final DashboardRepository _dashboardRepository;
 
-  AuthBloc(this._authRepository) : super(AuthInitial()) {
-    on<SubmitEmailOrPhoneRequested>(_onSubmitEmailOrPhone);
-    on<SignInWithPasskeyRequested>(_onSignInWithPasskey);
-    on<SignInWithGoogleRequested>(_onSignInWithGoogle);
-    on<SignInWithAppleRequested>(_onSignInWithApple);
+  AuthBloc(this._authRepository, this._dashboardRepository) : super(AuthInitial()) {
+    on<PhoneLoginRequested>(_onPhoneLoginRequested);
+    on<OtpSubmitted>(_onOtpSubmitted);
     on<SignInAsGuestRequested>(_onSignInAsGuest);
+    on<LinkPhoneRequested>(_onLinkPhoneRequested);
+    on<LinkOtpSubmitted>(_onLinkOtpSubmitted);
+    on<AuthErrorOccurred>(_onAuthErrorOccurred);
+    on<AuthVerificationCompleted>(_onAuthVerificationCompleted);
+    on<_AuthOtpSentInternal>(_onOtpSentInternal);
   }
 
-  Future<void> _onSubmitEmailOrPhone(
-      SubmitEmailOrPhoneRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onPhoneLoginRequested(
+    PhoneLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthLoading());
     try {
-      final input = event.input.trim();
-      final isEmail = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(input);
-      if (isEmail) {
-        await _authRepository.signInWithMagicLink(input);
-        emit(const AuthAuthenticated('magic_link'));
-      } else {
-        await _authRepository.signInWithPhone(input);
-        emit(const AuthAuthenticated('phone'));
-      }
+      await _authRepository.verifyPhoneNumber(
+        event.phoneNumber,
+        onCodeSent: (verificationId) {
+          add(_AuthOtpSentInternal(
+            verificationId: verificationId,
+            phoneNumber: event.phoneNumber,
+            isLinking: false,
+          ));
+        },
+        onError: (error) {
+          add(AuthErrorOccurred(error));
+        },
+      );
     } catch (e) {
       emit(AuthError(e.toString()));
-      emit(AuthUnauthenticated());
     }
   }
 
-  Future<void> _onSignInWithPasskey(
-      SignInWithPasskeyRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onLinkPhoneRequested(
+    LinkPhoneRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthLoading());
     try {
-      await _authRepository.signInWithPasskey();
-      emit(const AuthAuthenticated('passkey'));
+      await _authRepository.verifyPhoneNumber(
+        event.phoneNumber,
+        onCodeSent: (verificationId) {
+          add(_AuthOtpSentInternal(
+            verificationId: verificationId,
+            phoneNumber: event.phoneNumber,
+            isLinking: true,
+          ));
+        },
+        onError: (message) {
+          add(AuthErrorOccurred(message));
+        },
+      );
     } catch (e) {
       emit(AuthError(e.toString()));
-      emit(AuthUnauthenticated());
     }
   }
 
-  Future<void> _onSignInWithGoogle(
-      SignInWithGoogleRequested event, Emitter<AuthState> emit) async {
+  Future<void> _onLinkOtpSubmitted(
+    LinkOtpSubmitted event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthLoading());
     try {
-      await _authRepository.signInWithGoogle();
-      emit(const AuthAuthenticated('google'));
+      await _authRepository.linkWithOtp(event.verificationId, event.smsCode);
+      // After linking, we definitely have a venue because that's the only way to get to the secure page
+      emit(const AuthAuthenticated('phone_link', hasVenue: true));
     } catch (e) {
       emit(AuthError(e.toString()));
-      emit(AuthUnauthenticated());
     }
   }
 
-  Future<void> _onSignInWithApple(
-      SignInWithAppleRequested event, Emitter<AuthState> emit) async {
+  void _onOtpSentInternal(
+    _AuthOtpSentInternal event,
+    Emitter<AuthState> emit,
+  ) {
+    if (event.isLinking) {
+      emit(AuthLinkOtpSent(event.verificationId, event.phoneNumber));
+    } else {
+      emit(AuthOtpSent(event.verificationId, event.phoneNumber));
+    }
+  }
+
+  Future<void> _onOtpSubmitted(
+    OtpSubmitted event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthLoading());
     try {
-      await _authRepository.signInWithApple();
-      emit(const AuthAuthenticated('apple'));
+      await _authRepository.signInWithOtp(event.verificationId, event.smsCode);
+      final venue = await _dashboardRepository.getVenueForUser();
+      emit(AuthAuthenticated('phone', hasVenue: venue != null));
     } catch (e) {
       emit(AuthError(e.toString()));
-      emit(AuthUnauthenticated());
     }
   }
 
@@ -79,7 +116,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(const AuthAuthenticated('guest'));
     } catch (e) {
       emit(AuthError(e.toString()));
-      emit(AuthUnauthenticated());
     }
   }
+
+  void _onAuthErrorOccurred(AuthErrorOccurred event, Emitter<AuthState> emit) {
+    emit(AuthError(event.message));
+  }
+
+  Future<void> _onAuthVerificationCompleted(
+      AuthVerificationCompleted event, Emitter<AuthState> emit) async {
+    final venue = await _dashboardRepository.getVenueForUser();
+    emit(AuthAuthenticated('phone_auto', hasVenue: venue != null));
+  }
+}
+
+// Internal event for state transition
+class _AuthOtpSentInternal extends AuthEvent {
+  final String verificationId;
+  final String phoneNumber;
+  final bool isLinking;
+
+  const _AuthOtpSentInternal({
+    required this.verificationId,
+    required this.phoneNumber,
+    required this.isLinking,
+  });
+
+  @override
+  List<Object> get props => [verificationId, phoneNumber, isLinking];
 }

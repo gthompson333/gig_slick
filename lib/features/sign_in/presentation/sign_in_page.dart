@@ -109,7 +109,7 @@ class _SignInViewState extends State<SignInView> {
                           ? null
                           : () {
                               context.read<AuthBloc>().add(
-                                    SubmitEmailOrPhoneRequested(
+                                    PhoneLoginRequested(
                                       _inputController.text,
                                     ),
                                   );

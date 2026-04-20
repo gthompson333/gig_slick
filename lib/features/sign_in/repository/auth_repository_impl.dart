@@ -7,36 +7,62 @@ class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override
-  Future<void> signInWithMagicLink(String email) async {
-    // TODO: Implement real Magic Link logic
-    await Future.delayed(const Duration(seconds: 2));
-    if (email.isEmpty) {
-      throw Exception('Email cannot be empty.');
+  Future<void> verifyPhoneNumber(
+    String phoneNumber, {
+    required void Function(String verificationId) onCodeSent,
+    required void Function(String error) onError,
+  }) async {
+    try {
+      await _firebaseAuth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // This callback is triggered on some Android devices with automatic verification
+          await _firebaseAuth.signInWithCredential(credential);
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          onError(e.message ?? 'Verification failed');
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          onCodeSent(verificationId);
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          // Auto-retrieval timed out
+        },
+      );
+    } catch (e) {
+      onError(e.toString());
     }
   }
 
   @override
-  Future<void> signInWithPhone(String phone) async {
-    // TODO: Implement real Phone Auth logic
-    await Future.delayed(const Duration(seconds: 2));
-    if (phone.isEmpty) {
-      throw Exception('Phone cannot be empty.');
+  Future<UserCredential> signInWithOtp(String verificationId, String smsCode) async {
+    try {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
+      return await _firebaseAuth.signInWithCredential(credential);
+    } catch (e) {
+      throw Exception('Failed to sign in with OTP: ${e.toString()}');
     }
   }
 
   @override
-  Future<void> signInWithPasskey() async {
-    await Future.delayed(const Duration(seconds: 2));
-  }
+  Future<UserCredential> linkWithOtp(String verificationId, String smsCode) async {
+    final user = _firebaseAuth.currentUser;
+    if (user == null) {
+      throw Exception('No user currently signed in to link.');
+    }
 
-  @override
-  Future<void> signInWithGoogle() async {
-    await Future.delayed(const Duration(seconds: 2));
-  }
-
-  @override
-  Future<void> signInWithApple() async {
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
+      return await user.linkWithCredential(credential);
+    } catch (e) {
+      throw Exception('Failed to link phone number: ${e.toString()}');
+    }
   }
 
   @override
@@ -47,4 +73,13 @@ class AuthRepositoryImpl implements AuthRepository {
       throw Exception('Failed to sign in anonymously: ${e.toString()}');
     }
   }
+
+  @override
+  Future<void> signOut() async {
+    await _firebaseAuth.signOut();
+  }
+
+  // Placeholders for other interface methods if needed, or remove from interface if unused
+  @override
+  Future<void> signInWithMagicLink(String email) async {}
 }

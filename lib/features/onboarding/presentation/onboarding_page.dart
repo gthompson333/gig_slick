@@ -20,8 +20,21 @@ class OnboardingPage extends StatelessWidget {
   }
 }
 
-class OnboardingView extends StatelessWidget {
+class OnboardingView extends StatefulWidget {
   const OnboardingView({super.key});
+
+  @override
+  State<OnboardingView> createState() => _OnboardingViewState();
+}
+
+class _OnboardingViewState extends State<OnboardingView> {
+  final _phoneController = TextEditingController();
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +43,17 @@ class OnboardingView extends StatelessWidget {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          context.go('/create-venue');
+          if (state.method == 'guest' || !state.hasVenue) {
+            context.go('/create-venue');
+          } else {
+            context.go('/dashboard');
+          }
+        } else if (state is AuthOtpSent) {
+          _showOtpDialog(context, state.verificationId, state.phoneNumber);
         } else if (state is AuthError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.redAccent,
-            ),
-          );
+          // If a dialog is open (like the OTP dialog), this alert will show on top or after it.
+          // However, the OTP dialog is already popped on 'VERIFY' tap.
+          _showErrorAlert(context, state.message);
         }
       },
       builder: (context, state) {
@@ -46,100 +62,288 @@ class OnboardingView extends StatelessWidget {
         return Scaffold(
           backgroundColor: AppColors.surfaceLow,
           body: SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Spacer(flex: 1),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Hero(
-                        tag: 'app_logo',
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          height: 140,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).padding.top -
+                      MediaQuery.of(context).padding.bottom -
+                      80,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Logo Section
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 48),
+                        Hero(
+                          tag: 'app_logo',
+                          child: Image.asset(
+                            'assets/images/logo.png',
+                            height: 120,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 32),
-                      Text(
-                        'Gig Slick',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.displayLarge?.copyWith(
-                          fontSize: 56,
-                          color: AppColors.electricAmber,
-                          height: 1.0,
+                        const SizedBox(height: 24),
+                        Text(
+                          'Gig Slick',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.displayLarge?.copyWith(
+                            fontSize: 48,
+                            color: AppColors.electricAmber,
+                            height: 1.0,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'The Venue Manager’s Toolkit.',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textSecondary,
-                          letterSpacing: 0.2,
+                      ],
+                    ),
+
+                    // Input & Buttons Section
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Phone Input
+                        Text(
+                          'Phone Number',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(flex: 2),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(
-                        height: 64,
-                        child: ElevatedButton(
+                        const SizedBox(height: 8),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceMid,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: AppColors.surfaceHigh,
+                              width: 2,
+                            ),
+                          ),
+                          child: TextField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.phone,
+                            style: theme.textTheme.bodyLarge,
+                            cursorColor: AppColors.electricAmber,
+                            decoration: InputDecoration(
+                              hintText: '+1 555-555-5555',
+                              hintStyle: theme.textTheme.bodyLarge?.copyWith(
+                                color: AppColors.textTertiary,
+                              ),
+                              prefixIcon: const Icon(Icons.phone_rounded,
+                                  color: AppColors.electricAmber),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 24, vertical: 20),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Login Button
+                        SizedBox(
+                          height: 64,
+                          child: ElevatedButton(
+                            onPressed: isLoading
+                                ? null
+                                : () {
+                                    String phone = _phoneController.text.trim();
+                                    if (phone.isEmpty) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text('Please enter a phone number')),
+                                      );
+                                      return;
+                                    }
+                                    
+                                    // Basic normalization: remove spaces, dashes, parentheses
+                                    phone = phone.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+                                    
+                                    // If it's a 10-digit number without +, assume +1
+                                    if (phone.length == 10 && !phone.startsWith('+')) {
+                                      phone = '+1$phone';
+                                    } else if (!phone.startsWith('+')) {
+                                      // If it's not starting with +, show a hint
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text('Please include your country code (e.g. +1)')),
+                                      );
+                                      return;
+                                    }
+
+                                    context
+                                        .read<AuthBloc>()
+                                        .add(PhoneLoginRequested(phone));
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.electricAmber,
+                              foregroundColor: Colors.black,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: isLoading
+                                ? const CircularProgressIndicator(color: Colors.black)
+                                : Text(
+                                    'Log in with Phone Number',
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Guest Login Link
+                        TextButton(
                           onPressed: isLoading
                               ? null
                               : () {
                                   context.read<AuthBloc>().add(SignInAsGuestRequested());
                                 },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.electricAmber,
-                            foregroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                          child: Text(
+                            'Sign in as Guest',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
                             ),
-                            elevation: 0,
                           ),
-                          child: isLoading
-                              ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 3,
-                                    color: Colors.black,
-                                  ),
-                                )
-                              : Text(
-                                  'Get Started',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Takes 30 seconds to set up your venue.',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: AppColors.textTertiary,
+                        const SizedBox(height: 16),
+                        Text(
+                          'Takes 30 seconds to set up your venue.',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: AppColors.textTertiary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         );
       },
+    );
+  }
+
+  void _showOtpDialog(BuildContext context, String verificationId, String phone) {
+    final otpController = TextEditingController();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surfaceMid,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          'Verification Code',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: AppColors.electricAmber,
+                fontWeight: FontWeight.w900,
+              ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Enter the 6-digit code sent to\n$phone',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.textSecondary, height: 1.5),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.surfaceHigh,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: TextField(
+                controller: otpController,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                maxLength: 6,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 24,
+                  letterSpacing: 8,
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: const InputDecoration(
+                  counterText: '',
+                  hintText: '000000',
+                  hintStyle: TextStyle(color: AppColors.textTertiary),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(vertical: 20),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('CANCEL', style: TextStyle(color: AppColors.textTertiary)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final code = otpController.text.trim();
+              if (code.length == 6) {
+                Navigator.pop(dialogContext);
+                context.read<AuthBloc>().add(OtpSubmitted(verificationId, code));
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.electricAmber,
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('VERIFY', style: TextStyle(fontWeight: FontWeight.w900)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showErrorAlert(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surfaceMid,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Text(
+          'Authentication Unsuccessful',
+          style: TextStyle(
+            color: Colors.redAccent,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'OK',
+              style: TextStyle(
+                color: AppColors.electricAmber,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
