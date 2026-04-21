@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 
-import '../entities/slot.dart';
+import '../entities/gig.dart';
 import 'dashboard_repository.dart';
 import '../sources/dashboard_remote_data_source.dart';
 
@@ -16,8 +16,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @override
-  Stream<List<Slot>> getScheduledSlotsStream(String venueId) {
-    return _remoteDataSource.getScheduledSlotsStream(venueId);
+  Stream<List<Gig>> getScheduledGigsStream(String venueId) {
+    return _remoteDataSource.getScheduledGigsStream(venueId);
   }
 
   @override

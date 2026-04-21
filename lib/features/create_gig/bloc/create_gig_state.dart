@@ -1,10 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'create_slot_state.freezed.dart';
+part 'create_gig_state.freezed.dart';
 
 @freezed
-class CreateSlotState with _$CreateSlotState {
-  const factory CreateSlotState({
+class CreateGigState with _$CreateGigState {
+  const factory CreateGigState({
     required double baseGuarantee,
     required bool is7030Split,
     required List<String> selectedGenres,
@@ -15,9 +15,9 @@ class CreateSlotState with _$CreateSlotState {
     @Default('9:00 PM') String setTimes,
     @Default('') String venueNotes,
     String? errorMessage,
-  }) = _CreateSlotState;
+  }) = _CreateGigState;
 
-  factory CreateSlotState.initial() => const CreateSlotState(
+  factory CreateGigState.initial() => const CreateGigState(
         baseGuarantee: 350.0,
         is7030Split: true,
         selectedGenres: ['Folk', 'Metal'],

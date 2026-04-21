@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
-import '../bloc/create_slot_bloc.dart';
-import '../bloc/create_slot_event.dart';
-import '../bloc/create_slot_state.dart';
+import '../bloc/create_gig_bloc.dart';
+import '../bloc/create_gig_event.dart';
+import '../bloc/create_gig_state.dart';
 
 class ScheduleDetails extends StatelessWidget {
   const ScheduleDetails({super.key});
@@ -12,7 +12,7 @@ class ScheduleDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return BlocBuilder<CreateSlotBloc, CreateSlotState>(
+    return BlocBuilder<CreateGigBloc, CreateGigState>(
       builder: (context, state) {
         return Row(
           children: [
@@ -46,8 +46,8 @@ class ScheduleDetails extends StatelessWidget {
                       initialValue: state.loadInTime,
                       onChanged: (value) {
                         context
-                            .read<CreateSlotBloc>()
-                            .add(CreateSlotEvent.loadInTimeChanged(value));
+                            .read<CreateGigBloc>()
+                            .add(CreateGigEvent.loadInTimeChanged(value));
                       },
                       decoration: const InputDecoration(
                         border: InputBorder.none,
@@ -93,8 +93,8 @@ class ScheduleDetails extends StatelessWidget {
                       initialValue: state.setTimes,
                       onChanged: (value) {
                         context
-                            .read<CreateSlotBloc>()
-                            .add(CreateSlotEvent.setTimesChanged(value));
+                            .read<CreateGigBloc>()
+                            .add(CreateGigEvent.setTimesChanged(value));
                       },
                       decoration: const InputDecoration(
                         border: InputBorder.none,

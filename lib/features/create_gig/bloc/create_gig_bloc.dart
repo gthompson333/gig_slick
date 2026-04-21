@@ -2,16 +2,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../core/constants/constants.dart';
-import '../data/create_slot_request.dart';
-import '../data/repositories/create_slot_repository.dart';
-import 'create_slot_event.dart';
-import 'create_slot_state.dart';
+import '../data/create_gig_request.dart';
+import '../data/repositories/create_gig_repository.dart';
+import 'create_gig_event.dart';
+import 'create_gig_state.dart';
 
 @injectable
-class CreateSlotBloc extends Bloc<CreateSlotEvent, CreateSlotState> {
-  final CreateSlotRepository _repository;
+class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
+  final CreateGigRepository _repository;
 
-  CreateSlotBloc(this._repository) : super(CreateSlotState.initial()) {
+  CreateGigBloc(this._repository) : super(CreateGigState.initial()) {
     on<GuaranteeChanged>((event, emit) {
       emit(state.copyWith(baseGuarantee: event.amount));
     });
@@ -54,7 +54,7 @@ class CreateSlotBloc extends Bloc<CreateSlotEvent, CreateSlotState> {
 
       emit(state.copyWith(isSubmitting: true, errorMessage: null));
       try {
-        final request = CreateSlotRequest(
+        final request = CreateGigRequest(
           venueId: AppConstants.kDefaultVenueId,
           date: state.selectedDate!,
           baseGuarantee: state.baseGuarantee,
@@ -64,7 +64,7 @@ class CreateSlotBloc extends Bloc<CreateSlotEvent, CreateSlotState> {
           setTimes: state.setTimes,
           venueNotes: state.venueNotes,
         );
-        await _repository.createSlot(request);
+        await _repository.createGig(request);
         emit(state.copyWith(isSubmitting: false, isSuccess: true));
       } catch (e) {
         emit(state.copyWith(

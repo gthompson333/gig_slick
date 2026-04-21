@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
-import '../data/entities/slot.dart';
+import '../data/entities/gig.dart';
 
-class SlotCard extends StatelessWidget {
-  final Slot slot;
+class GigCard extends StatelessWidget {
+  final Gig gig;
 
-  const SlotCard({
+  const GigCard({
     super.key,
-    required this.slot,
+    required this.gig,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isPending = slot.status == SlotStatus.pending;
+    final isPending = gig.status == GigStatus.pending;
     final accentColor = isPending ? AppColors.electricAmber : AppColors.kineticCyan;
     final textTheme = Theme.of(context).textTheme;
 
@@ -39,7 +39,7 @@ class SlotCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  DateFormat('EEEE, MMM d').format(slot.date),
+                  DateFormat('EEEE, MMM d').format(gig.date),
                   style: textTheme.titleLarge?.copyWith(
                     letterSpacing: -0.5,
                   ),
@@ -54,7 +54,7 @@ class SlotCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '${DateFormat('h:mm a').format(slot.startTime)} - ${DateFormat('h:mm a').format(slot.endTime)}',
+                      '${DateFormat('h:mm a').format(gig.startTime)} - ${DateFormat('h:mm a').format(gig.endTime)}',
                       style: textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w500,
@@ -76,7 +76,7 @@ class SlotCard extends StatelessWidget {
                 ),
                 child: Text(
                   isPending
-                      ? '${slot.pendingCount} PENDING'
+                      ? '${gig.pendingCount} PENDING'
                       : 'CONFIRMED',
                   style: textTheme.labelSmall?.copyWith(
                     color: accentColor,
@@ -85,11 +85,11 @@ class SlotCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              if (!isPending && slot.confirmedPerformerName != null)
+              if (!isPending && gig.confirmedPerformerName != null)
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (slot.confirmedPerformerAvatarUrl != null)
+                    if (gig.confirmedPerformerAvatarUrl != null)
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
@@ -103,7 +103,7 @@ class SlotCard extends StatelessWidget {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image.network(
-                            slot.confirmedPerformerAvatarUrl!,
+                            gig.confirmedPerformerAvatarUrl!,
                             width: 24,
                             height: 24,
                             fit: BoxFit.cover,
@@ -114,7 +114,7 @@ class SlotCard extends StatelessWidget {
                       const Icon(Icons.person, size: 24, color: AppColors.textTertiary),
                     const SizedBox(width: 10),
                     Text(
-                      slot.confirmedPerformerName!,
+                      gig.confirmedPerformerName!,
                       style: textTheme.bodyMedium?.copyWith(
                         color: accentColor,
                         fontWeight: FontWeight.w700,

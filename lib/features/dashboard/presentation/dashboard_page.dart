@@ -9,7 +9,7 @@ import '../bloc/dashboard_bloc.dart';
 import '../bloc/dashboard_event.dart';
 import '../bloc/dashboard_state.dart';
 import 'performer_link_card.dart';
-import 'scheduled_slots_feed.dart';
+import 'scheduled_gigs_feed.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -51,16 +51,35 @@ class DashboardView extends StatelessWidget {
               noVenue: () => const Center(
                 child: CircularProgressIndicator(color: AppColors.electricAmber),
               ),
-              loaded: (slots, magicLink, venueName) => CustomScrollView(
+              loaded: (gigs, magicLink, venueName) => CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
                   // Glassmorphic App Bar
                   SliverAppBar(
-                    expandedHeight: 110,
-                    collapsedHeight: 80,
                     pinned: true,
-                    stretch: true,
                     backgroundColor: Colors.transparent,
+                    centerTitle: true,
+                    title: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/images/logo.png',
+                          height: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        Flexible(
+                          child: Text(
+                            venueName,
+                            overflow: TextOverflow.ellipsis,
+                            style: textTheme.titleLarge?.copyWith(
+                              color: AppColors.electricAmber,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     actions: [
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
@@ -78,33 +97,8 @@ class DashboardView extends StatelessWidget {
                     flexibleSpace: ClipRect(
                       child: BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                        child: FlexibleSpaceBar(
-                          centerTitle: true,
-                          titlePadding: const EdgeInsets.only(bottom: 12),
-                          title: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Image.asset(
-                                'assets/images/logo.png',
-                                height: 24,
-                              ),
-                              const SizedBox(width: 10),
-                              Flexible(
-                                child: Text(
-                                  venueName,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: textTheme.titleLarge?.copyWith(
-                                    color: AppColors.electricAmber,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: -0.5,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          background: Container(
-                            color: AppColors.background.withValues(alpha: 0.5),
-                          ),
+                        child: Container(
+                          color: AppColors.background.withValues(alpha: 0.5),
                         ),
                       ),
                     ),
@@ -117,16 +111,69 @@ class DashboardView extends StatelessWidget {
                       delegate: SliverChildListDelegate([
                         PerformerLinkCard(linkUrl: magicLink),
                         const SizedBox(height: 16),
-                        ScheduledSlotsFeed(slots: slots),
+                        ScheduledGigsFeed(gigs: gigs),
                       ]),
                     ),
                   ),
                 ],
               ),
               error: (message) => Center(
-                child: Text(
-                  'Error: $message',
-                  style: const TextStyle(color: Colors.red),
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.error_outline_rounded,
+                          color: Colors.redAccent,
+                          size: 48,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        'Unable to load gigs',
+                        style: textTheme.headlineSmall?.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        message.contains('failed-precondition')
+                            ? 'The database is preparing a new index for your gigs. This usually takes a few minutes.'
+                            : message,
+                        textAlign: TextAlign.center,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      ElevatedButton(
+                        onPressed: () => context.read<DashboardBloc>().add(
+                              const DashboardEvent.loadRequested(),
+                            ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.surfaceHigh,
+                          foregroundColor: AppColors.textPrimary,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(99),
+                          ),
+                        ),
+                        child: const Text('RETRY'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -134,19 +181,19 @@ class DashboardView extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/create-slot'),
+        onPressed: () => context.push('/create-gig'),
         backgroundColor: AppColors.electricAmber,
         foregroundColor: Colors.black,
         elevation: 8,
         label: const Text(
-          'CREATE SLOT',
+          'Create Gig',
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 12,
-            letterSpacing: 1,
+            fontSize: 14,
+            letterSpacing: 0.5,
           ),
         ),
-        icon: const Icon(Icons.add, size: 20),
+        icon: const Icon(Icons.add, size: 24),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(99),
         ),

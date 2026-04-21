@@ -38,7 +38,7 @@ class PerformerLinkCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Share this link with performers to allow them to browse and apply for open slots at your venue.',
+              'Share this link with performers to allow them to browse and apply for open gigs at your venue.',
               style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
                 height: 1.5,

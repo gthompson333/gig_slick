@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
-import '../bloc/create_slot_bloc.dart';
-import '../bloc/create_slot_event.dart';
-import '../bloc/create_slot_state.dart';
+import '../bloc/create_gig_bloc.dart';
+import '../bloc/create_gig_event.dart';
+import '../bloc/create_gig_state.dart';
 
 class GenreSelection extends StatelessWidget {
   const GenreSelection({super.key});
@@ -20,7 +20,7 @@ class GenreSelection extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return BlocBuilder<CreateSlotBloc, CreateSlotState>(
+    return BlocBuilder<CreateGigBloc, CreateGigState>(
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,8 +41,8 @@ class GenreSelection extends StatelessWidget {
                 return GestureDetector(
                   onTap: () {
                     context
-                        .read<CreateSlotBloc>()
-                        .add(CreateSlotEvent.genreToggled(genre));
+                        .read<CreateGigBloc>()
+                        .add(CreateGigEvent.genreToggled(genre));
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),

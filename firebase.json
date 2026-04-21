@@ -1,1 +1,44 @@
-{"auth":{"providers":{"anonymous":true,"emailPassword":true,"googleSignIn":{"oAuthBrandDisplayName":"Gig Slick","supportEmail":"gthompson333@gmail.com"}}},"flutter":{"platforms":{"android":{"default":{"projectId":"gig-slick-2026-auth","appId":"1:963494089765:android:8af32c7e9b8d48fc189bcc","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"gig-slick-2026-auth","appId":"1:963494089765:ios:ba81bd1e4ff1aa94189bcc","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"gig-slick-2026-auth","configurations":{"android":"1:963494089765:android:8af32c7e9b8d48fc189bcc","ios":"1:963494089765:ios:ba81bd1e4ff1aa94189bcc"}}}}}}
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "auth": {
+    "providers": {
+      "anonymous": true,
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "Gig Slick",
+        "supportEmail": "gthompson333@gmail.com"
+      }
+    }
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "gig-slick-2026-auth",
+          "appId": "1:963494089765:android:8af32c7e9b8d48fc189bcc",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "gig-slick-2026-auth",
+          "appId": "1:963494089765:ios:ba81bd1e4ff1aa94189bcc",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "gig-slick-2026-auth",
+          "configurations": {
+            "android": "1:963494089765:android:8af32c7e9b8d48fc189bcc",
+            "ios": "1:963494089765:ios:ba81bd1e4ff1aa94189bcc"
+          }
+        }
+      }
+    }
+  }
+}

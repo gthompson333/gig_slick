@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
 
-import '../entities/slot.dart';
+import '../entities/gig.dart';
 
 abstract class DashboardRemoteDataSource {
-  Stream<List<Slot>> getScheduledSlotsStream(String venueId);
+  Stream<List<Gig>> getScheduledGigsStream(String venueId);
   Future<Map<String, dynamic>?> getVenueForUser();
   Future<String> getMagicLinkUrl();
 }
@@ -33,16 +33,16 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
   }
 
   @override
-  Stream<List<Slot>> getScheduledSlotsStream(String venueId) {
+  Stream<List<Gig>> getScheduledGigsStream(String venueId) {
     return _firestore
-        .collection('slots')
+        .collection('gigs')
         .where('venueId', isEqualTo: venueId)
         .orderBy('date', descending: false)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
         final data = doc.data();
-        return Slot.fromJson({
+        return Gig.fromJson({
           ...data,
           'id': doc.id,
         });
@@ -54,6 +54,6 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
   Future<String> getMagicLinkUrl() async {
     // Delay to simulate network request
     await Future.delayed(const Duration(milliseconds: 500));
-    return 'stageslot.link/commonwealth';
+    return 'gigslick.link/commonwealth';
   }
 }

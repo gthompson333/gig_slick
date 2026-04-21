@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../data/entities/slot.dart';
+import '../data/entities/gig.dart';
 
 part 'dashboard_state.freezed.dart';
 
@@ -8,7 +8,7 @@ class DashboardState with _$DashboardState {
   const factory DashboardState.initial() = _Initial;
   const factory DashboardState.loading() = _Loading;
   const factory DashboardState.loaded({
-    required List<Slot> slots,
+    required List<Gig> gigs,
     required String magicLink,
     required String venueName,
   }) = _Loaded;

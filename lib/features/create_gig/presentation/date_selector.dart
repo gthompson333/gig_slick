@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
-import '../bloc/create_slot_bloc.dart';
-import '../bloc/create_slot_event.dart';
-import '../bloc/create_slot_state.dart';
+import '../bloc/create_gig_bloc.dart';
+import '../bloc/create_gig_event.dart';
+import '../bloc/create_gig_state.dart';
 
 class DateSelector extends StatelessWidget {
   const DateSelector({super.key});
@@ -13,12 +13,12 @@ class DateSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return BlocBuilder<CreateSlotBloc, CreateSlotState>(
+    return BlocBuilder<CreateGigBloc, CreateGigState>(
       builder: (context, state) {
         final isSelected = state.selectedDate != null;
         final dateText = isSelected
             ? DateFormat('EEEE, MMMM d, y').format(state.selectedDate!)
-            : 'SET SLOT DATE AND TIME';
+            : 'SET GIG DATE AND TIME';
 
         return ElevatedButton(
           onPressed: () async {
@@ -42,7 +42,7 @@ class DateSelector extends StatelessWidget {
               },
             );
             if (picked != null && context.mounted) {
-              context.read<CreateSlotBloc>().add(CreateSlotEvent.dateChanged(picked));
+              context.read<CreateGigBloc>().add(CreateGigEvent.dateChanged(picked));
             }
           },
           style: ElevatedButton.styleFrom(

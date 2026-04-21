@@ -4,7 +4,7 @@ import '../../features/onboarding/presentation/onboarding_page.dart';
 import '../../features/sign_in/presentation/sign_in_page.dart';
 import '../../features/create_venue/presentation/create_venue_page.dart';
 import '../../features/dashboard/presentation/dashboard_page.dart';
-import '../../features/create_slot/presentation/create_slot_page.dart';
+import '../../features/create_gig/presentation/create_gig_page.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/onboarding',
@@ -37,8 +37,8 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const DashboardPage(),
     ),
     GoRoute(
-      path: '/create-slot',
-      builder: (context, state) => const CreateSlotPage(),
+      path: '/create-gig',
+      builder: (context, state) => const CreateGigPage(),
     ),
   ],
 );

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
-import '../data/entities/slot.dart';
-import 'slot_card.dart';
+import '../data/entities/gig.dart';
+import 'gig_card.dart';
 
-class ScheduledSlotsFeed extends StatelessWidget {
-  final List<Slot> slots;
+class ScheduledGigsFeed extends StatelessWidget {
+  final List<Gig> gigs;
 
-  const ScheduledSlotsFeed({
+  const ScheduledGigsFeed({
     super.key,
-    required this.slots,
+    required this.gigs,
   });
 
   @override
@@ -25,7 +25,7 @@ class ScheduledSlotsFeed extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                'Scheduled Slots',
+                'Scheduled Gigs',
                 style: textTheme.headlineMedium?.copyWith(
                   color: AppColors.electricAmber,
                   letterSpacing: -0.5,
@@ -34,10 +34,10 @@ class ScheduledSlotsFeed extends StatelessWidget {
             ],
           ),
         ),
-        if (slots.isEmpty)
+        if (gigs.isEmpty)
           _buildEmptyState(context)
         else
-          ...slots.map((slot) => SlotCard(slot: slot)),
+          ...gigs.map((gig) => GigCard(gig: gig)),
       ],
     );
   }
@@ -74,14 +74,14 @@ class ScheduledSlotsFeed extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'No slots scheduled',
+            'No gigs scheduled',
             style: textTheme.titleLarge?.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 12),
           Text(
-            'Tap "Create Slot" to start filling\nyour calendar.',
+            'Tap "Create Gig" to start filling your calendar.',
             textAlign: TextAlign.center,
             style: textTheme.bodyMedium?.copyWith(
               color: AppColors.textTertiary,

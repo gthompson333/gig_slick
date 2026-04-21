@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-import '../data/entities/slot.dart';
+import '../data/entities/gig.dart';
 import '../data/repositories/dashboard_repository.dart';
 import 'dashboard_event.dart';
 import 'dashboard_state.dart';
@@ -27,10 +27,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         
         final venueId = venueData['id'] ?? normalizedName; // Fallback if ID is missing
 
-        await emit.forEach<List<Slot>>(
-          _repository.getScheduledSlotsStream(venueId as String),
-          onData: (slots) => DashboardState.loaded(
-            slots: slots,
+        await emit.forEach<List<Gig>>(
+          _repository.getScheduledGigsStream(venueId as String),
+          onData: (gigs) => DashboardState.loaded(
+            gigs: gigs,
             magicLink: performerLink,
             venueName: venueName,
           ),

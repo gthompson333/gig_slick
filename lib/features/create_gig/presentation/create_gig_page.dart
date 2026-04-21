@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../injection.dart';
 import '../../../core/theme/app_colors.dart';
 
-import '../bloc/create_slot_bloc.dart';
-import '../bloc/create_slot_event.dart';
-import '../bloc/create_slot_state.dart';
+import '../bloc/create_gig_bloc.dart';
+import '../bloc/create_gig_event.dart';
+import '../bloc/create_gig_state.dart';
 import 'date_selector.dart';
 import 'payout_section.dart';
 import 'genre_selection.dart';
@@ -14,26 +14,26 @@ import 'schedule_details.dart';
 import 'venue_notes.dart';
 import 'performer_preview_card.dart';
 
-class CreateSlotPage extends StatelessWidget {
-  const CreateSlotPage({super.key});
+class CreateGigPage extends StatelessWidget {
+  const CreateGigPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<CreateSlotBloc>(),
-      child: const CreateSlotView(),
+      create: (context) => getIt<CreateGigBloc>(),
+      child: const CreateGigView(),
     );
   }
 }
 
-class CreateSlotView extends StatelessWidget {
-  const CreateSlotView({super.key});
+class CreateGigView extends StatelessWidget {
+  const CreateGigView({super.key});
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return BlocListener<CreateSlotBloc, CreateSlotState>(
+    return BlocListener<CreateGigBloc, CreateGigState>(
       listenWhen: (previous, current) => !previous.isSuccess && current.isSuccess,
       listener: (context, state) {
         if (state.isSuccess) {
@@ -66,13 +66,14 @@ class CreateSlotView extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'CREATE SLOT',
+                              'CREATE GIG',
                               style: textTheme.labelSmall?.copyWith(
                                 color: AppColors.electricAmber,
                                 letterSpacing: 2,
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
+                            const SizedBox(width: 4),
                           ],
                         ),
                         const SizedBox(width: 48), // Spacer to center the logo row
@@ -124,7 +125,7 @@ class CreateSlotView extends StatelessWidget {
                     stops: const [0.0, 0.4, 1.0],
                   ),
                 ),
-                child: BlocBuilder<CreateSlotBloc, CreateSlotState>(
+                child: BlocBuilder<CreateGigBloc, CreateGigState>(
                   builder: (context, state) {
                     final canSubmit = state.selectedDate != null && !state.isSubmitting;
 
@@ -145,8 +146,8 @@ class CreateSlotView extends StatelessWidget {
                           ),
                         ElevatedButton(
                           onPressed: canSubmit
-                              ? () => context.read<CreateSlotBloc>().add(
-                                    const CreateSlotEvent.submitRequested(),
+                              ? () => context.read<CreateGigBloc>().add(
+                                    const CreateGigEvent.submitRequested(),
                                   )
                               : null,
                           style: ElevatedButton.styleFrom(

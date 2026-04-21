@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
-import '../bloc/create_slot_bloc.dart';
-import '../bloc/create_slot_event.dart';
-import '../bloc/create_slot_state.dart';
+import '../bloc/create_gig_bloc.dart';
+import '../bloc/create_gig_event.dart';
+import '../bloc/create_gig_state.dart';
 
 class PayoutSection extends StatelessWidget {
   const PayoutSection({super.key});
@@ -12,7 +12,7 @@ class PayoutSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return BlocBuilder<CreateSlotBloc, CreateSlotState>(
+    return BlocBuilder<CreateGigBloc, CreateGigState>(
       builder: (context, state) {
         return Container(
           padding: const EdgeInsets.all(32),
@@ -64,8 +64,8 @@ class PayoutSection extends StatelessWidget {
                   divisions: 40,
                   onChanged: (value) {
                     context
-                        .read<CreateSlotBloc>()
-                        .add(CreateSlotEvent.guaranteeChanged(value));
+                        .read<CreateGigBloc>()
+                        .add(CreateGigEvent.guaranteeChanged(value));
                   },
                 ),
               ),
@@ -120,8 +120,8 @@ class PayoutSection extends StatelessWidget {
                       value: state.is7030Split,
                       onChanged: (value) {
                         context
-                            .read<CreateSlotBloc>()
-                            .add(CreateSlotEvent.splitToggled(value));
+                            .read<CreateGigBloc>()
+                            .add(CreateGigEvent.splitToggled(value));
                       },
                       activeThumbColor: Colors.black,
                       activeTrackColor: AppColors.electricAmber,

@@ -1,4 +1,4 @@
-class CreateSlotRequest {
+class CreateGigRequest {
   final String venueId;
   final DateTime date;
   final double baseGuarantee;
@@ -8,7 +8,7 @@ class CreateSlotRequest {
   final String setTimes;
   final String venueNotes;
 
-  CreateSlotRequest({
+  CreateGigRequest({
     required this.venueId,
     required this.date,
     required this.baseGuarantee,
@@ -30,7 +30,7 @@ class CreateSlotRequest {
       'setTimes': setTimes,
       'venueNotes': venueNotes,
       'createdAt': DateTime.now(),
-      'status': 'pending', // Default status for new slots
+      'status': 'pending', // Default status for new gigs
     };
   }
 }
