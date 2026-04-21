@@ -15,16 +15,13 @@ class DateSelector extends StatelessWidget {
 
     return BlocBuilder<CreateGigBloc, CreateGigState>(
       builder: (context, state) {
-        final isSelected = state.selectedDate != null;
-        final dateText = isSelected
-            ? DateFormat('EEEE, MMMM d, y').format(state.selectedDate!)
-            : 'SET GIG DATE AND TIME';
+        final dateText = DateFormat('EEEE, MMMM d, y').format(state.selectedDate);
 
         return ElevatedButton(
           onPressed: () async {
             final DateTime? picked = await showDatePicker(
               context: context,
-              initialDate: state.selectedDate ?? DateTime.now(),
+              initialDate: state.selectedDate,
               firstDate: DateTime.now(),
               lastDate: DateTime(2101),
               builder: (context, child) {
@@ -46,8 +43,8 @@ class DateSelector extends StatelessWidget {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: isSelected ? AppColors.electricAmber : AppColors.surfaceMid,
-            foregroundColor: isSelected ? Colors.black : AppColors.textSecondary,
+            backgroundColor: AppColors.electricAmber,
+            foregroundColor: Colors.black,
             padding: const EdgeInsets.symmetric(vertical: 20),
             minimumSize: const Size(double.infinity, 60),
             shape: RoundedRectangleBorder(
@@ -58,15 +55,15 @@ class DateSelector extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                isSelected ? Icons.calendar_today : Icons.calendar_today_outlined,
+              const Icon(
+                Icons.calendar_today,
                 size: 18,
               ),
               const SizedBox(width: 12),
               Text(
                 dateText.toUpperCase(),
                 style: textTheme.labelSmall?.copyWith(
-                  color: isSelected ? Colors.black : AppColors.textSecondary,
+                  color: Colors.black,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1.5,
                 ),

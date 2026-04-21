@@ -9,18 +9,22 @@ import '../bloc/create_gig_event.dart';
 import '../bloc/create_gig_state.dart';
 import 'date_selector.dart';
 import 'payout_section.dart';
-import 'genre_selection.dart';
 import 'schedule_details.dart';
 import 'venue_notes.dart';
 import 'performer_preview_card.dart';
 
 class CreateGigPage extends StatelessWidget {
-  const CreateGigPage({super.key});
+  final String venueId;
+
+  const CreateGigPage({
+    super.key,
+    required this.venueId,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<CreateGigBloc>(),
+      create: (context) => getIt<CreateGigBloc>()..add(CreateGigEvent.started(venueId)),
       child: const CreateGigView(),
     );
   }
@@ -92,8 +96,6 @@ class CreateGigView extends StatelessWidget {
                           SizedBox(height: 32),
                           PayoutSection(),
                           SizedBox(height: 32),
-                          GenreSelection(),
-                          SizedBox(height: 32),
                           ScheduleDetails(),
                           SizedBox(height: 24),
                           VenueNotes(),
@@ -127,7 +129,7 @@ class CreateGigView extends StatelessWidget {
                 ),
                 child: BlocBuilder<CreateGigBloc, CreateGigState>(
                   builder: (context, state) {
-                    final canSubmit = state.selectedDate != null && !state.isSubmitting;
+                    final canSubmit = !state.isSubmitting;
 
                     return Column(
                       mainAxisSize: MainAxisSize.min,

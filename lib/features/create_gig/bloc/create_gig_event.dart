@@ -4,7 +4,7 @@ part 'create_gig_event.freezed.dart';
 
 @freezed
 class CreateGigEvent with _$CreateGigEvent {
-  const factory CreateGigEvent.started() = Started;
+  const factory CreateGigEvent.started(String venueId) = Started;
   const factory CreateGigEvent.guaranteeChanged(double amount) = GuaranteeChanged;
   const factory CreateGigEvent.splitToggled(bool is7030) = SplitToggled;
   const factory CreateGigEvent.genreToggled(String genre) = GenreToggled;

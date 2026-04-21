@@ -51,7 +51,7 @@ class DashboardView extends StatelessWidget {
               noVenue: () => const Center(
                 child: CircularProgressIndicator(color: AppColors.electricAmber),
               ),
-              loaded: (gigs, magicLink, venueName) => CustomScrollView(
+              loaded: (venueId, gigs, magicLink, venueName) => CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
                   // Glassmorphic App Bar
@@ -180,23 +180,30 @@ class DashboardView extends StatelessWidget {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/create-gig'),
-        backgroundColor: AppColors.electricAmber,
-        foregroundColor: Colors.black,
-        elevation: 8,
-        label: const Text(
-          'Create Gig',
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 14,
-            letterSpacing: 0.5,
-          ),
-        ),
-        icon: const Icon(Icons.add, size: 24),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(99),
-        ),
+      floatingActionButton: BlocBuilder<DashboardBloc, DashboardState>(
+        builder: (context, state) {
+          return state.maybeWhen(
+            loaded: (venueId, gigs, magicLink, venueName) => FloatingActionButton.extended(
+              onPressed: () => context.push('/create-gig', extra: venueId),
+              backgroundColor: AppColors.electricAmber,
+              foregroundColor: Colors.black,
+              elevation: 8,
+              label: const Text(
+                'Create Gig',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              icon: const Icon(Icons.add, size: 24),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(99),
+              ),
+            ),
+            orElse: () => const SizedBox.shrink(),
+          );
+        },
       ),
     );
   }

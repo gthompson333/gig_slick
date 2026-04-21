@@ -30,6 +30,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         await emit.forEach<List<Gig>>(
           _repository.getScheduledGigsStream(venueId as String),
           onData: (gigs) => DashboardState.loaded(
+            venueId: venueId as String,
             gigs: gigs,
             magicLink: performerLink,
             venueName: venueName,

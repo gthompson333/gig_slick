@@ -54,7 +54,7 @@ class GigCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '${DateFormat('h:mm a').format(gig.startTime)} - ${DateFormat('h:mm a').format(gig.endTime)}',
+                      gig.setTimes,
                       style: textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w500,

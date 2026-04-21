@@ -38,7 +38,10 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: '/create-gig',
-      builder: (context, state) => const CreateGigPage(),
+      builder: (context, state) {
+        final venueId = state.extra as String;
+        return CreateGigPage(venueId: venueId);
+      },
     ),
   ],
 );

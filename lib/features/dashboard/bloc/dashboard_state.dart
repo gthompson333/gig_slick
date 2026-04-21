@@ -8,6 +8,7 @@ class DashboardState with _$DashboardState {
   const factory DashboardState.initial() = _Initial;
   const factory DashboardState.loading() = _Loading;
   const factory DashboardState.loaded({
+    required String venueId,
     required List<Gig> gigs,
     required String magicLink,
     required String venueName,

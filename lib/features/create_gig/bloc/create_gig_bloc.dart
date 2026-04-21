@@ -12,6 +12,10 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
   final CreateGigRepository _repository;
 
   CreateGigBloc(this._repository) : super(CreateGigState.initial()) {
+    on<Started>((event, emit) {
+      emit(state.copyWith(venueId: event.venueId));
+    });
+
     on<GuaranteeChanged>((event, emit) {
       emit(state.copyWith(baseGuarantee: event.amount));
     });
@@ -47,16 +51,11 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
     });
 
     on<SubmitRequested>((event, emit) async {
-      if (state.selectedDate == null) {
-        emit(state.copyWith(errorMessage: 'Please select a date first'));
-        return;
-      }
-
       emit(state.copyWith(isSubmitting: true, errorMessage: null));
       try {
         final request = CreateGigRequest(
-          venueId: AppConstants.kDefaultVenueId,
-          date: state.selectedDate!,
+          venueId: state.venueId,
+          date: state.selectedDate,
           baseGuarantee: state.baseGuarantee,
           is7030Split: state.is7030Split,
           targetGenres: state.selectedGenres,
