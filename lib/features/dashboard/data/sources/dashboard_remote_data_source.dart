@@ -7,7 +7,8 @@ import '../entities/gig.dart';
 abstract class DashboardRemoteDataSource {
   Stream<List<Gig>> getScheduledGigsStream(String venueId);
   Future<Map<String, dynamic>?> getVenueForUser();
-  Future<String> getMagicLinkUrl();
+  Future<String> getGigLinkUrl();
+  Future<void> deleteGig(String gigId);
 }
 
 @LazySingleton(as: DashboardRemoteDataSource)
@@ -51,9 +52,14 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
   }
 
   @override
-  Future<String> getMagicLinkUrl() async {
+  Future<String> getGigLinkUrl() async {
     // Delay to simulate network request
     await Future.delayed(const Duration(milliseconds: 500));
     return 'gigslick.link/commonwealth';
+  }
+
+  @override
+  Future<void> deleteGig(String gigId) async {
+    await _firestore.collection('gigs').doc(gigId).delete();
   }
 }

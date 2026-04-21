@@ -51,7 +51,7 @@ class DashboardView extends StatelessWidget {
               noVenue: () => const Center(
                 child: CircularProgressIndicator(color: AppColors.electricAmber),
               ),
-              loaded: (venueId, gigs, magicLink, venueName) => CustomScrollView(
+              loaded: (venueId, gigs, gig_link, venueName) => CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
                   // Glassmorphic App Bar
@@ -109,9 +109,9 @@ class DashboardView extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
-                        PerformerLinkCard(linkUrl: magicLink),
+                        PerformerLinkCard(linkUrl: gig_link),
                         const SizedBox(height: 16),
-                        ScheduledGigsFeed(gigs: gigs),
+                        ScheduledGigsFeed(gigs: gigs, gigLink: gig_link),
                       ]),
                     ),
                   ),

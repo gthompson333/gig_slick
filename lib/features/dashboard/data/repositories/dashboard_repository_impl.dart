@@ -21,7 +21,12 @@ class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @override
-  Future<String> getMagicLinkUrl() {
-    return _remoteDataSource.getMagicLinkUrl();
+  Future<String> getGigLinkUrl() {
+    return _remoteDataSource.getGigLinkUrl();
+  }
+
+  @override
+  Future<void> deleteGig(String gigId) {
+    return _remoteDataSource.deleteGig(gigId);
   }
 }

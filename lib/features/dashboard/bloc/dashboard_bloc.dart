@@ -32,7 +32,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           onData: (gigs) => DashboardState.loaded(
             venueId: venueId as String,
             gigs: gigs,
-            magicLink: performerLink,
+            gig_link: performerLink,
             venueName: venueName,
           ),
           onError: (error, stackTrace) =>

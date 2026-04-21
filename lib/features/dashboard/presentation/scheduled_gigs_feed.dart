@@ -5,10 +5,12 @@ import 'gig_card.dart';
 
 class ScheduledGigsFeed extends StatelessWidget {
   final List<Gig> gigs;
+  final String gigLink;
 
   const ScheduledGigsFeed({
     super.key,
     required this.gigs,
+    required this.gigLink,
   });
 
   @override
@@ -37,7 +39,7 @@ class ScheduledGigsFeed extends StatelessWidget {
         if (gigs.isEmpty)
           _buildEmptyState(context)
         else
-          ...gigs.map((gig) => GigCard(gig: gig)),
+          ...gigs.map((gig) => GigCard(gig: gig, gigLink: gigLink)),
       ],
     );
   }
