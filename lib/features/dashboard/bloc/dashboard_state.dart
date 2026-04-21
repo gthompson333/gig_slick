@@ -10,7 +10,7 @@ class DashboardState with _$DashboardState {
   const factory DashboardState.loaded({
     required String venueId,
     required List<Gig> gigs,
-    required String gig_link,
+    required String gigLink,
     required String venueName,
   }) = _Loaded;
   const factory DashboardState.noVenue() = _NoVenue;

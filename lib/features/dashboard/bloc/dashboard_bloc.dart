@@ -28,11 +28,11 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         final venueId = venueData['id'] ?? normalizedName; // Fallback if ID is missing
 
         await emit.forEach<List<Gig>>(
-          _repository.getScheduledGigsStream(venueId as String),
+          _repository.getScheduledGigsStream(venueId),
           onData: (gigs) => DashboardState.loaded(
-            venueId: venueId as String,
+            venueId: venueId,
             gigs: gigs,
-            gig_link: performerLink,
+            gigLink: performerLink,
             venueName: venueName,
           ),
           onError: (error, stackTrace) =>

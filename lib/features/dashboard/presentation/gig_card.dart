@@ -23,7 +23,7 @@ class GigCard extends StatelessWidget {
     return InkWell(
       onTap: () => context.push('/gig-details', extra: {
         'gig': gig,
-        'gig_link': gigLink,
+        'gigLink': gigLink,
       }),
       borderRadius: BorderRadius.circular(24),
       child: Container(

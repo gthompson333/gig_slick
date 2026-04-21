@@ -194,7 +194,6 @@ class GigDetailsView extends StatelessWidget {
   }
 
   void _showActionsBottomSheet(BuildContext parentContext) {
-    final textTheme = Theme.of(parentContext).textTheme;
     final gigDetailsBloc = parentContext.read<GigDetailsBloc>();
 
     showModalBottomSheet(

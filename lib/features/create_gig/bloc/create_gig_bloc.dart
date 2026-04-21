@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../core/constants/constants.dart';
 import '../data/create_gig_request.dart';
 import '../data/repositories/create_gig_repository.dart';
 import 'create_gig_event.dart';
