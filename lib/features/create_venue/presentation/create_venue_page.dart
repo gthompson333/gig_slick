@@ -58,10 +58,7 @@ class _CreateVenueViewState extends State<CreateVenueView> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
-          onPressed: () => context.pop(),
-        ),
+        automaticallyImplyLeading: false,
       ),
       body: MultiBlocListener(
         listeners: [
@@ -76,7 +73,10 @@ class _CreateVenueViewState extends State<CreateVenueView> {
                 }
               } else if (state is CreateVenueFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.error), backgroundColor: Colors.redAccent),
+                  SnackBar(
+                    content: Text(state.error),
+                    backgroundColor: Colors.redAccent,
+                  ),
                 );
               }
             },
@@ -84,7 +84,11 @@ class _CreateVenueViewState extends State<CreateVenueView> {
           BlocListener<AuthBloc, AuthState>(
             listener: (context, state) {
               if (state is AuthLinkOtpSent) {
-                _showOtpDialog(context, state.verificationId, state.phoneNumber);
+                _showOtpDialog(
+                  context,
+                  state.verificationId,
+                  state.phoneNumber,
+                );
               } else if (state is AuthAuthenticated) {
                 context.go('/dashboard');
               } else if (state is AuthError) {
@@ -125,81 +129,62 @@ class _CreateVenueViewState extends State<CreateVenueView> {
                     icon: Icons.storefront_rounded,
                   ),
                   const SizedBox(height: 64),
-                  SizedBox(
-                    height: 64,
-                    child: ElevatedButton(
-                      onPressed: isLoading
-                          ? null
-                          : () {
-                              if (_nameController.text.trim().isEmpty) {
-                                _showValidationAlert(context);
-                                return;
-                              }
-                              context.read<CreateVenueBloc>().add(
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _nameController,
+                    builder: (context, value, child) {
+                      final name = value.text.trim();
+                      final isButtonEnabled = name.isNotEmpty && !isLoading;
+
+                      return SizedBox(
+                        height: 64,
+                        child: ElevatedButton(
+                          onPressed: isButtonEnabled
+                              ? () {
+                                  context.read<CreateVenueBloc>().add(
                                     CreateVenueSubmitted(
-                                      name: _nameController.text.trim(),
+                                      name: name,
                                       genres: const [],
                                     ),
                                   );
-                            },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.electricAmber,
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: isLoading
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 3,
-                                color: Colors.black,
-                              ),
-                            )
-                          : Text(
-                              'Create Venue',
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
+                                }
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.electricAmber,
+                            foregroundColor: Colors.black,
+                            disabledBackgroundColor: AppColors.electricAmber
+                                .withValues(alpha: 0.3),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                    ),
+                            elevation: 0,
+                          ),
+                          child: isLoading
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 3,
+                                    color: Colors.black,
+                                  ),
+                                )
+                              : Text(
+                                  'Create Venue',
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: isButtonEnabled
+                                        ? Colors.black
+                                        : Colors.black38,
+                                  ),
+                                ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
             );
           },
         ),
-      ),
-    );
-  }
-
-  void _showValidationAlert(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surfaceMid,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Text(
-          'Missing Name',
-          style: TextStyle(color: AppColors.electricAmber),
-        ),
-        content: const Text(
-          'Please enter a name for your venue to continue.',
-          style: TextStyle(color: AppColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'OK',
-              style: TextStyle(color: AppColors.electricAmber, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -233,7 +218,8 @@ class _CreateVenueViewState extends State<CreateVenueView> {
               Text(
                 'Secure $venueName',
                 textAlign: TextAlign.center,
-                style: Theme.of(sheetContext).textTheme.headlineMedium?.copyWith(
+                style: Theme.of(sheetContext).textTheme.headlineMedium
+                    ?.copyWith(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.bold,
                     ),
@@ -242,21 +228,25 @@ class _CreateVenueViewState extends State<CreateVenueView> {
               Text(
                 'Link your phone number to lock in your venue and manage gigs from anywhere.',
                 textAlign: TextAlign.center,
-                style: Theme.of(sheetContext).textTheme.bodyLarge?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                style: Theme.of(
+                  sheetContext,
+                ).textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
               ),
               const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(sheetContext); // Close sheet
-                  _showPhoneInputDialog(context); // Pass outer context which has the Bloc
+                  _showPhoneInputDialog(
+                    context,
+                  ); // Pass outer context which has the Bloc
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.electricAmber,
                   foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 20),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
                 child: const Text(
                   'Secure Now',
@@ -297,7 +287,9 @@ class _CreateVenueViewState extends State<CreateVenueView> {
         value: context.read<AuthBloc>(),
         child: AlertDialog(
           backgroundColor: AppColors.surfaceMid,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
           title: Text(
             'Secure Account',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -325,23 +317,46 @@ class _CreateVenueViewState extends State<CreateVenueView> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel', style: TextStyle(color: AppColors.textTertiary)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final phone = phoneController.text.trim();
-                if (phone.isNotEmpty) {
-                  final normalized = _normalizePhoneNumber(phone);
-                  context.read<AuthBloc>().add(LinkPhoneRequested(normalized));
-                  Navigator.pop(dialogContext);
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.electricAmber,
-                foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.textTertiary),
               ),
-              child: const Text('Send Code', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: phoneController,
+              builder: (context, value, child) {
+                final isButtonEnabled = value.text.trim().isNotEmpty;
+
+                return ElevatedButton(
+                  onPressed: isButtonEnabled
+                      ? () {
+                          final phone = value.text.trim();
+                          final normalized = _normalizePhoneNumber(phone);
+                          context.read<AuthBloc>().add(
+                            LinkPhoneRequested(normalized),
+                          );
+                          Navigator.pop(dialogContext);
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.electricAmber,
+                    foregroundColor: Colors.black,
+                    disabledBackgroundColor: AppColors.electricAmber.withValues(
+                      alpha: 0.3,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'Send Code',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: isButtonEnabled ? Colors.black : Colors.black38,
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -349,7 +364,11 @@ class _CreateVenueViewState extends State<CreateVenueView> {
     );
   }
 
-  void _showOtpDialog(BuildContext context, String verificationId, String phoneNumber) {
+  void _showOtpDialog(
+    BuildContext context,
+    String verificationId,
+    String phoneNumber,
+  ) {
     final otpController = TextEditingController();
     showDialog(
       context: context,
@@ -358,7 +377,9 @@ class _CreateVenueViewState extends State<CreateVenueView> {
         value: context.read<AuthBloc>(),
         child: AlertDialog(
           backgroundColor: AppColors.surfaceMid,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
           title: Text(
             'Verification Code',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -400,22 +421,45 @@ class _CreateVenueViewState extends State<CreateVenueView> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel', style: TextStyle(color: AppColors.textTertiary)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final code = otpController.text.trim();
-                if (code.length == 6) {
-                  context.read<AuthBloc>().add(LinkOtpSubmitted(verificationId, code));
-                  Navigator.pop(dialogContext);
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.electricAmber,
-                foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.textTertiary),
               ),
-              child: const Text('Verify', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: otpController,
+              builder: (context, value, child) {
+                final isButtonEnabled = value.text.trim().length == 6;
+
+                return ElevatedButton(
+                  onPressed: isButtonEnabled
+                      ? () {
+                          final code = value.text.trim();
+                          context.read<AuthBloc>().add(
+                            LinkOtpSubmitted(verificationId, code),
+                          );
+                          Navigator.pop(dialogContext);
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.electricAmber,
+                    foregroundColor: Colors.black,
+                    disabledBackgroundColor: AppColors.electricAmber.withValues(
+                      alpha: 0.3,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'Verify',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: isButtonEnabled ? Colors.black : Colors.black38,
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -429,12 +473,35 @@ class _CreateVenueViewState extends State<CreateVenueView> {
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surfaceMid,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(title, style: const TextStyle(color: AppColors.electricAmber)),
-        content: Text(message, style: const TextStyle(color: AppColors.textSecondary)),
+        title: Row(
+          children: [
+            const Icon(Icons.error_outline_rounded, color: Colors.redAccent),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(color: AppColors.textSecondary),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK', style: TextStyle(color: AppColors.electricAmber)),
+            child: const Text(
+              'OK',
+              style: TextStyle(
+                color: AppColors.electricAmber,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -449,7 +516,7 @@ class _CreateVenueViewState extends State<CreateVenueView> {
     TextInputType? keyboardType,
   }) {
     final theme = Theme.of(context);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -487,10 +554,16 @@ class _CreateVenueViewState extends State<CreateVenueView> {
               ),
               prefixIcon: Padding(
                 padding: const EdgeInsets.only(left: 16, right: 12),
-                child: Icon(icon, color: AppColors.electricAmber.withValues(alpha: 0.7)),
+                child: Icon(
+                  icon,
+                  color: AppColors.electricAmber.withValues(alpha: 0.7),
+                ),
               ),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 22,
+              ),
             ),
           ),
         ),

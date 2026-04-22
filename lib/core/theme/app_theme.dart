@@ -10,7 +10,7 @@ class AppTheme {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.surfaceLow,
       primaryColor: AppColors.electricAmber,
-      
+
       // Typography
       textTheme: TextTheme(
         displayLarge: GoogleFonts.plusJakartaSans(
@@ -49,9 +49,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: AppColors.surfaceMid,
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
 
       floatingActionButtonTheme: const FloatingActionButtonThemeData(

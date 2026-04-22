@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../dashboard/data/entities/gig.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../injection.dart';
 import '../../../core/theme/app_colors.dart';
@@ -11,20 +12,21 @@ import 'date_selector.dart';
 import 'payout_section.dart';
 import 'schedule_details.dart';
 import 'venue_notes.dart';
+import 'genre_selection.dart';
 import 'performer_preview_card.dart';
 
 class CreateGigPage extends StatelessWidget {
   final String venueId;
+  final Gig? initialGig;
 
-  const CreateGigPage({
-    super.key,
-    required this.venueId,
-  });
+  const CreateGigPage({super.key, required this.venueId, this.initialGig});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<CreateGigBloc>()..add(CreateGigEvent.started(venueId)),
+      create: (context) =>
+          getIt<CreateGigBloc>()
+            ..add(CreateGigEvent.started(venueId, initialGig: initialGig)),
       child: const CreateGigView(),
     );
   }
@@ -38,7 +40,8 @@ class CreateGigView extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return BlocListener<CreateGigBloc, CreateGigState>(
-      listenWhen: (previous, current) => !previous.isSuccess && current.isSuccess,
+      listenWhen: (previous, current) =>
+          !previous.isSuccess && current.isSuccess,
       listener: (context, state) {
         if (state.isSuccess) {
           context.pop(true);
@@ -53,34 +56,45 @@ class CreateGigView extends StatelessWidget {
                 children: [
                   // Branded Header
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.close, color: AppColors.textTertiary),
+                          icon: const Icon(
+                            Icons.close,
+                            color: AppColors.textTertiary,
+                          ),
                           onPressed: () => context.pop(),
                         ),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Image.asset(
-                              'assets/images/logo.png',
-                              height: 18,
-                            ),
+                            Image.asset('assets/images/logo.png', height: 18),
                             const SizedBox(width: 8),
-                            Text(
-                              'CREATE GIG',
-                              style: textTheme.labelSmall?.copyWith(
-                                color: AppColors.electricAmber,
-                                letterSpacing: 2,
-                                fontWeight: FontWeight.w900,
-                              ),
+                            BlocBuilder<CreateGigBloc, CreateGigState>(
+                              builder: (context, state) {
+                                return Text(
+                                  state.gigId != null
+                                      ? 'EDIT GIG'
+                                      : 'CREATE GIG',
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: AppColors.electricAmber,
+                                    letterSpacing: 2,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                );
+                              },
                             ),
                             const SizedBox(width: 4),
                           ],
                         ),
-                        const SizedBox(width: 48), // Spacer to center the logo row
+                        const SizedBox(
+                          width: 48,
+                        ), // Spacer to center the logo row
                       ],
                     ),
                   ),
@@ -99,7 +113,9 @@ class CreateGigView extends StatelessWidget {
                           ScheduleDetails(),
                           SizedBox(height: 24),
                           VenueNotes(),
-                          SizedBox(height: 40),
+                          SizedBox(height: 32),
+                          GenreSelection(),
+                          SizedBox(height: 48),
                           PerformerPreviewCard(),
                         ],
                       ),
@@ -149,8 +165,8 @@ class CreateGigView extends StatelessWidget {
                         ElevatedButton(
                           onPressed: canSubmit
                               ? () => context.read<CreateGigBloc>().add(
-                                    const CreateGigEvent.submitRequested(),
-                                  )
+                                  const CreateGigEvent.submitRequested(),
+                                )
                               : null,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.electricAmber,
@@ -172,13 +188,19 @@ class CreateGigView extends StatelessWidget {
                                     strokeWidth: 3,
                                   ),
                                 )
-                              : Text(
-                                  'ACTIVATE & SHARE',
-                                  style: textTheme.labelSmall?.copyWith(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 2.0,
-                                  ),
+                              : BlocBuilder<CreateGigBloc, CreateGigState>(
+                                  builder: (context, state) {
+                                    return Text(
+                                      state.gigId != null
+                                          ? 'SAVE CHANGES'
+                                          : 'ACTIVATE & SHARE',
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: 2.0,
+                                      ),
+                                    );
+                                  },
                                 ),
                         ),
                       ],

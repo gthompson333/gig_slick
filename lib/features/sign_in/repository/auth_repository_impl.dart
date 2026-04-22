@@ -35,20 +35,28 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserCredential> signInWithOtp(String verificationId, String smsCode) async {
+  Future<UserCredential> signInWithOtp(
+    String verificationId,
+    String smsCode,
+  ) async {
     try {
       final credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
         smsCode: smsCode,
       );
       return await _firebaseAuth.signInWithCredential(credential);
+    } on FirebaseAuthException {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to sign in with OTP: ${e.toString()}');
     }
   }
 
   @override
-  Future<UserCredential> linkWithOtp(String verificationId, String smsCode) async {
+  Future<UserCredential> linkWithOtp(
+    String verificationId,
+    String smsCode,
+  ) async {
     final user = _firebaseAuth.currentUser;
     if (user == null) {
       throw Exception('No user currently signed in to link.');
@@ -60,6 +68,8 @@ class AuthRepositoryImpl implements AuthRepository {
         smsCode: smsCode,
       );
       return await user.linkWithCredential(credential);
+    } on FirebaseAuthException {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to link phone number: ${e.toString()}');
     }
@@ -69,6 +79,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> signInAsGuest() async {
     try {
       await _firebaseAuth.signInAnonymously();
+    } on FirebaseAuthException {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to sign in anonymously: ${e.toString()}');
     }

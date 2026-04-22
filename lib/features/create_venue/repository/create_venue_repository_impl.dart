@@ -11,7 +11,10 @@ class CreateVenueRepositoryImpl implements CreateVenueRepository {
   CreateVenueRepositoryImpl(this._firestore, this._auth);
 
   @override
-  Future<void> createVenue({required String name, required List<String> genres}) async {
+  Future<void> createVenue({
+    required String name,
+    required List<String> genres,
+  }) async {
     final user = _auth.currentUser;
     if (user == null) {
       throw Exception('User must be signed in to create a venue.');

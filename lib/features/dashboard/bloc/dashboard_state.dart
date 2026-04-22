@@ -14,5 +14,6 @@ class DashboardState with _$DashboardState {
     required String venueName,
   }) = _Loaded;
   const factory DashboardState.noVenue() = _NoVenue;
+  const factory DashboardState.accountDeleted() = _AccountDeleted;
   const factory DashboardState.error({required String message}) = _Error;
 }

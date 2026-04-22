@@ -22,12 +22,13 @@ class ScheduleDetails extends StatelessWidget {
                   final time = await showTimePicker(
                     context: context,
                     initialTime: const TimeOfDay(hour: 19, minute: 0),
-                    builder: (context, child) => _TimePickerTheme(child: child!),
+                    builder: (context, child) =>
+                        _TimePickerTheme(child: child!),
                   );
                   if (time != null && context.mounted) {
-                    context
-                        .read<CreateGigBloc>()
-                        .add(CreateGigEvent.loadInTimeChanged(time.format(context)));
+                    context.read<CreateGigBloc>().add(
+                      CreateGigEvent.loadInTimeChanged(time.format(context)),
+                    );
                   }
                 },
               ),
@@ -41,12 +42,13 @@ class ScheduleDetails extends StatelessWidget {
                   final time = await showTimePicker(
                     context: context,
                     initialTime: const TimeOfDay(hour: 21, minute: 0),
-                    builder: (context, child) => _TimePickerTheme(child: child!),
+                    builder: (context, child) =>
+                        _TimePickerTheme(child: child!),
                   );
                   if (time != null && context.mounted) {
-                    context
-                        .read<CreateGigBloc>()
-                        .add(CreateGigEvent.setTimesChanged(time.format(context)));
+                    context.read<CreateGigBloc>().add(
+                      CreateGigEvent.setTimesChanged(time.format(context)),
+                    );
                   }
                 },
               ),
@@ -141,9 +143,7 @@ class _TimePickerTheme extends StatelessWidget {
           onSurface: AppColors.textPrimary,
         ),
         textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            foregroundColor: AppColors.electricAmber,
-          ),
+          style: TextButton.styleFrom(foregroundColor: AppColors.electricAmber),
         ),
       ),
       child: child,

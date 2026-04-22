@@ -63,10 +63,14 @@ class _OnboardingViewState extends State<OnboardingView> {
           backgroundColor: AppColors.surfaceLow,
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 40.0,
+              ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height -
+                  minHeight:
+                      MediaQuery.of(context).size.height -
                       MediaQuery.of(context).padding.top -
                       MediaQuery.of(context).padding.bottom -
                       80,
@@ -133,70 +137,92 @@ class _OnboardingViewState extends State<OnboardingView> {
                               hintStyle: theme.textTheme.bodyLarge?.copyWith(
                                 color: AppColors.textTertiary,
                               ),
-                              prefixIcon: const Icon(Icons.phone_rounded,
-                                  color: AppColors.electricAmber),
+                              prefixIcon: const Icon(
+                                Icons.phone_rounded,
+                                color: AppColors.electricAmber,
+                              ),
                               border: InputBorder.none,
                               contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 20),
+                                horizontal: 24,
+                                vertical: 20,
+                              ),
                             ),
                           ),
                         ),
                         const SizedBox(height: 32),
 
-                        // Login Button
-                        SizedBox(
-                          height: 64,
-                          child: ElevatedButton(
-                            onPressed: isLoading
-                                ? null
-                                : () {
-                                    String phone = _phoneController.text.trim();
-                                    if (phone.isEmpty) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            content: Text('Please enter a phone number')),
-                                      );
-                                      return;
-                                    }
-                                    
-                                    // Basic normalization: remove spaces, dashes, parentheses
-                                    phone = phone.replaceAll(RegExp(r'[\s\-\(\)]'), '');
-                                    
-                                    // If it's a 10-digit number without +, assume +1
-                                    if (phone.length == 10 && !phone.startsWith('+')) {
-                                      phone = '+1$phone';
-                                    } else if (!phone.startsWith('+')) {
-                                      // If it's not starting with +, show a hint
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            content: Text('Please include your country code (e.g. +1)')),
-                                      );
-                                      return;
-                                    }
+                        ValueListenableBuilder<TextEditingValue>(
+                          valueListenable: _phoneController,
+                          builder: (context, value, child) {
+                            final phoneText = value.text.trim();
+                            final isButtonEnabled =
+                                phoneText.isNotEmpty && !isLoading;
 
-                                    context
-                                        .read<AuthBloc>()
-                                        .add(PhoneLoginRequested(phone));
-                                  },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.electricAmber,
-                              foregroundColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: isLoading
-                                ? const CircularProgressIndicator(color: Colors.black)
-                                : Text(
-                                    'Log in with Phone Number',
-                                    style: theme.textTheme.titleLarge?.copyWith(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
+                            return SizedBox(
+                              height: 64,
+                              child: ElevatedButton(
+                                onPressed: isButtonEnabled
+                                    ? () {
+                                        String phone = phoneText;
+
+                                        // Basic normalization: remove spaces, dashes, parentheses
+                                        phone = phone.replaceAll(
+                                          RegExp(r'[\s\-\(\)]'),
+                                          '',
+                                        );
+
+                                        // If it's a 10-digit number without +, assume +1
+                                        if (phone.length == 10 &&
+                                            !phone.startsWith('+')) {
+                                          phone = '+1$phone';
+                                        } else if (!phone.startsWith('+')) {
+                                          // If it's not starting with +, show a hint
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Please include your country code (e.g. +1)',
+                                              ),
+                                            ),
+                                          );
+                                          return;
+                                        }
+
+                                        context.read<AuthBloc>().add(
+                                          PhoneLoginRequested(phone),
+                                        );
+                                      }
+                                    : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.electricAmber,
+                                  foregroundColor: Colors.black,
+                                  disabledBackgroundColor: AppColors
+                                      .electricAmber
+                                      .withValues(alpha: 0.3),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
-                          ),
+                                  elevation: 0,
+                                ),
+                                child: isLoading
+                                    ? const CircularProgressIndicator(
+                                        color: Colors.black,
+                                      )
+                                    : Text(
+                                        'Log in with Phone Number',
+                                        style: theme.textTheme.titleLarge
+                                            ?.copyWith(
+                                              color: isButtonEnabled
+                                                  ? Colors.black
+                                                  : Colors.black38,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                      ),
+                              ),
+                            );
+                          },
                         ),
                         const SizedBox(height: 24),
 
@@ -205,7 +231,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                           onPressed: isLoading
                               ? null
                               : () {
-                                  context.read<AuthBloc>().add(SignInAsGuestRequested());
+                                  context.read<AuthBloc>().add(
+                                    SignInAsGuestRequested(),
+                                  );
                                 },
                           child: Text(
                             'Sign in as Guest',
@@ -236,79 +264,116 @@ class _OnboardingViewState extends State<OnboardingView> {
     );
   }
 
-  void _showOtpDialog(BuildContext context, String verificationId, String phone) {
+  void _showOtpDialog(
+    BuildContext context,
+    String verificationId,
+    String phone,
+  ) {
     final otpController = TextEditingController();
+    final authBloc = context.read<AuthBloc>();
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surfaceMid,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(
-          'Verification Code',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AppColors.electricAmber,
-                fontWeight: FontWeight.w900,
-              ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Enter the 6-digit code sent to\n$phone',
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textSecondary, height: 1.5),
+      builder: (dialogContext) => BlocProvider.value(
+        value: authBloc,
+        child: AlertDialog(
+          backgroundColor: AppColors.surfaceMid,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          title: Text(
+            'Verification Code',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: AppColors.electricAmber,
+              fontWeight: FontWeight.w900,
             ),
-            const SizedBox(height: 24),
-            Container(
-              decoration: BoxDecoration(
-                color: AppColors.surfaceHigh,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: TextField(
-                controller: otpController,
-                keyboardType: TextInputType.number,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Enter the 6-digit code sent to\n$phone',
                 textAlign: TextAlign.center,
-                maxLength: 6,
                 style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 24,
-                  letterSpacing: 8,
-                  fontWeight: FontWeight.bold,
-                ),
-                decoration: const InputDecoration(
-                  counterText: '',
-                  hintText: '000000',
-                  hintStyle: TextStyle(color: AppColors.textTertiary),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 20),
+                  color: AppColors.textSecondary,
+                  height: 1.5,
                 ),
               ),
+              const SizedBox(height: 24),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceHigh,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: TextField(
+                  controller: otpController,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  maxLength: 6,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 24,
+                    letterSpacing: 8,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  decoration: const InputDecoration(
+                    counterText: '',
+                    hintText: '000000',
+                    hintStyle: TextStyle(color: AppColors.textTertiary),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 20),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text(
+                'CANCEL',
+                style: TextStyle(color: AppColors.textTertiary),
+              ),
+            ),
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: otpController,
+              builder: (builderContext, value, child) {
+                final isButtonEnabled = value.text.trim().length == 6;
+
+                return ElevatedButton(
+                  onPressed: isButtonEnabled
+                      ? () {
+                          final code = value.text.trim();
+                          Navigator.pop(dialogContext);
+                          builderContext.read<AuthBloc>().add(
+                            OtpSubmitted(verificationId, code),
+                          );
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.electricAmber,
+                    foregroundColor: Colors.black,
+                    disabledBackgroundColor: AppColors.electricAmber.withValues(
+                      alpha: 0.3,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'VERIFY',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      color: isButtonEnabled ? Colors.black : Colors.black38,
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('CANCEL', style: TextStyle(color: AppColors.textTertiary)),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final code = otpController.text.trim();
-              if (code.length == 6) {
-                Navigator.pop(dialogContext);
-                context.read<AuthBloc>().add(OtpSubmitted(verificationId, code));
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.electricAmber,
-              foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            child: const Text('VERIFY', style: TextStyle(fontWeight: FontWeight.w900)),
-          ),
-        ],
       ),
     );
   }
@@ -320,12 +385,20 @@ class _OnboardingViewState extends State<OnboardingView> {
         backgroundColor: AppColors.surfaceMid,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Text(
-          'Authentication Unsuccessful',
-          style: TextStyle(
-            color: Colors.redAccent,
-            fontWeight: FontWeight.bold,
-          ),
+        title: const Row(
+          children: [
+            Icon(Icons.error_outline_rounded, color: Colors.redAccent),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Authentication Unsuccessful',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         ),
         content: Text(
           message,

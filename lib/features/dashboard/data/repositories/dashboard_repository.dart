@@ -5,4 +5,5 @@ abstract class DashboardRepository {
   Future<Map<String, dynamic>?> getVenueForUser();
   Future<String> getGigLinkUrl();
   Future<void> deleteGig(String gigId);
+  Future<void> deleteAccount();
 }

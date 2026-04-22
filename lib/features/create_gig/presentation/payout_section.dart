@@ -55,7 +55,9 @@ class PayoutSection extends StatelessWidget {
                   thumbColor: AppColors.electricAmber,
                   overlayColor: AppColors.electricAmber.withValues(alpha: 0.1),
                   trackHeight: 4,
-                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
+                  thumbShape: const RoundSliderThumbShape(
+                    enabledThumbRadius: 10,
+                  ),
                 ),
                 child: Slider(
                   value: state.baseGuarantee,
@@ -63,9 +65,9 @@ class PayoutSection extends StatelessWidget {
                   max: 500,
                   divisions: 40,
                   onChanged: (value) {
-                    context
-                        .read<CreateGigBloc>()
-                        .add(CreateGigEvent.guaranteeChanged(value));
+                    context.read<CreateGigBloc>().add(
+                      CreateGigEvent.guaranteeChanged(value),
+                    );
                   },
                 ),
               ),
@@ -102,9 +104,7 @@ class PayoutSection extends StatelessWidget {
                         children: [
                           Text(
                             '70/30 Door Split',
-                            style: textTheme.titleLarge?.copyWith(
-                              fontSize: 16,
-                            ),
+                            style: textTheme.titleLarge?.copyWith(fontSize: 16),
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -119,9 +119,9 @@ class PayoutSection extends StatelessWidget {
                     Switch(
                       value: state.is7030Split,
                       onChanged: (value) {
-                        context
-                            .read<CreateGigBloc>()
-                            .add(CreateGigEvent.splitToggled(value));
+                        context.read<CreateGigBloc>().add(
+                          CreateGigEvent.splitToggled(value),
+                        );
                       },
                       activeThumbColor: Colors.black,
                       activeTrackColor: AppColors.electricAmber,

@@ -9,6 +9,7 @@ abstract class DashboardRemoteDataSource {
   Future<Map<String, dynamic>?> getVenueForUser();
   Future<String> getGigLinkUrl();
   Future<void> deleteGig(String gigId);
+  Future<void> deleteAccount();
 }
 
 @LazySingleton(as: DashboardRemoteDataSource)
@@ -30,7 +31,8 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
         .get();
 
     if (query.docs.isEmpty) return null;
-    return query.docs.first.data();
+    final doc = query.docs.first;
+    return {...doc.data(), 'id': doc.id};
   }
 
   @override
@@ -41,14 +43,11 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
         .orderBy('date', descending: false)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return Gig.fromJson({
-          ...data,
-          'id': doc.id,
+          return snapshot.docs.map((doc) {
+            final data = doc.data();
+            return Gig.fromJson({...data, 'id': doc.id});
+          }).toList();
         });
-      }).toList();
-    });
   }
 
   @override
@@ -61,5 +60,44 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
   @override
   Future<void> deleteGig(String gigId) async {
     await _firestore.collection('gigs').doc(gigId).delete();
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    final userId = user.uid;
+
+    // 1. Find the venue owned by the user
+    final venueQuery = await _firestore
+        .collection('venues')
+        .where('ownerId', isEqualTo: userId)
+        .get();
+
+    final batch = _firestore.batch();
+
+    for (final venueDoc in venueQuery.docs) {
+      final venueId = venueDoc.id;
+
+      // 2. Find and delete all gigs for this venue
+      final gigsQuery = await _firestore
+          .collection('gigs')
+          .where('venueId', isEqualTo: venueId)
+          .get();
+
+      for (final gigDoc in gigsQuery.docs) {
+        batch.delete(gigDoc.reference);
+      }
+
+      // 3. Delete the venue document
+      batch.delete(venueDoc.reference);
+    }
+
+    // Commit Firestore deletions
+    await batch.commit();
+
+    // 4. Delete the Firebase Auth user
+    await user.delete();
   }
 }

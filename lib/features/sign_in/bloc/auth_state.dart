@@ -7,7 +7,9 @@ abstract class AuthState extends Equatable {
 }
 
 class AuthInitial extends AuthState {}
+
 class AuthLoading extends AuthState {}
+
 class AuthAuthenticated extends AuthState {
   final String method;
   final bool hasVenue;
@@ -17,6 +19,7 @@ class AuthAuthenticated extends AuthState {
   @override
   List<Object> get props => [method, hasVenue];
 }
+
 class AuthOtpSent extends AuthState {
   final String verificationId;
   final String phoneNumber;
@@ -36,7 +39,9 @@ class AuthLinkOtpSent extends AuthState {
   @override
   List<Object> get props => [verificationId, phoneNumber];
 }
+
 class AuthUnauthenticated extends AuthState {}
+
 class AuthError extends AuthState {
   final String message;
   const AuthError(this.message);

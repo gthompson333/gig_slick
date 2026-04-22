@@ -5,10 +5,7 @@ import '../../../core/theme/app_colors.dart';
 class PerformerLinkCard extends StatelessWidget {
   final String linkUrl;
 
-  const PerformerLinkCard({
-    super.key,
-    required this.linkUrl,
-  });
+  const PerformerLinkCard({super.key, required this.linkUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +29,7 @@ class PerformerLinkCard extends StatelessWidget {
           children: [
             Text(
               'Performer Link',
-              style: textTheme.headlineMedium?.copyWith(
-                letterSpacing: -0.5,
-              ),
+              style: textTheme.headlineMedium?.copyWith(letterSpacing: -0.5),
             ),
             const SizedBox(height: 12),
             Text(
@@ -92,7 +87,11 @@ class PerformerLinkCard extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.copy_rounded, color: Colors.black, size: 20),
+                    const Icon(
+                      Icons.copy_rounded,
+                      color: Colors.black,
+                      size: 20,
+                    ),
                     const SizedBox(width: 12),
                     Text(
                       'COPY GIG LINK',

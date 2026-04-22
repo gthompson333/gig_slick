@@ -29,4 +29,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
   Future<void> deleteGig(String gigId) {
     return _remoteDataSource.deleteGig(gigId);
   }
+
+  @override
+  Future<void> deleteAccount() {
+    return _remoteDataSource.deleteAccount();
+  }
 }

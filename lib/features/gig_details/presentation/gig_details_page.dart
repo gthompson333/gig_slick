@@ -14,11 +14,7 @@ class GigDetailsPage extends StatelessWidget {
   final Gig gig;
   final String gigLink;
 
-  const GigDetailsPage({
-    super.key,
-    required this.gig,
-    required this.gigLink,
-  });
+  const GigDetailsPage({super.key, required this.gig, required this.gigLink});
 
   @override
   Widget build(BuildContext context) {
@@ -33,17 +29,15 @@ class GigDetailsView extends StatelessWidget {
   final Gig gig;
   final String gigLink;
 
-  const GigDetailsView({
-    super.key,
-    required this.gig,
-    required this.gigLink,
-  });
+  const GigDetailsView({super.key, required this.gig, required this.gigLink});
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final isPending = gig.status == GigStatus.pending;
-    final accentColor = isPending ? AppColors.electricAmber : AppColors.kineticCyan;
+    final accentColor = isPending
+        ? AppColors.electricAmber
+        : AppColors.kineticCyan;
 
     return BlocListener<GigDetailsBloc, GigDetailsState>(
       listener: (context, state) {
@@ -81,7 +75,10 @@ class GigDetailsView extends StatelessWidget {
               backgroundColor: AppColors.surfaceLow.withValues(alpha: 0.8),
               surfaceTintColor: Colors.transparent,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: AppColors.textPrimary,
+                ),
                 onPressed: () => context.pop(),
               ),
               centerTitle: true,
@@ -95,7 +92,10 @@ class GigDetailsView extends StatelessWidget {
               ),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.more_vert_rounded, color: AppColors.textPrimary),
+                  icon: const Icon(
+                    Icons.more_vert_rounded,
+                    color: AppColors.textPrimary,
+                  ),
                   onPressed: () => _showActionsBottomSheet(context),
                   tooltip: 'Actions',
                 ),
@@ -106,7 +106,10 @@ class GigDetailsView extends StatelessWidget {
             // Main content
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 24,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -151,12 +154,20 @@ class GigDetailsView extends StatelessWidget {
                     _buildCard(
                       child: Column(
                         children: [
-                          _buildInfoRow('Base Guarantee', '\$${gig.baseGuarantee.toStringAsFixed(0)}'),
+                          _buildInfoRow(
+                            'Base Guarantee',
+                            '\$${gig.baseGuarantee.toStringAsFixed(0)}',
+                          ),
                           const Padding(
                             padding: EdgeInsets.symmetric(vertical: 16),
                             child: Divider(color: Colors.white10),
                           ),
-                          _buildInfoRow('Split Terms', '70/30 Profit Share'),
+                          _buildInfoRow(
+                            'Split Terms',
+                            gig.is7030Split
+                                ? '70/30 Profit Share'
+                                : 'Guarantee Only',
+                          ),
                         ],
                       ),
                     ),
@@ -174,6 +185,39 @@ class GigDetailsView extends StatelessWidget {
                             height: 1.6,
                           ),
                         ),
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+
+                    // Target Genres Section
+                    if (gig.targetGenres.isNotEmpty) ...[
+                      _buildSectionHeader(textTheme, 'TARGET GENRES'),
+                      const SizedBox(height: 16),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: gig.targetGenres.map((genre) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceHigh,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.05),
+                              ),
+                            ),
+                            child: Text(
+                              genre,
+                              style: textTheme.labelSmall?.copyWith(
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       ),
                       const SizedBox(height: 40),
                     ],
@@ -224,9 +268,16 @@ class GigDetailsView extends StatelessWidget {
                   context,
                   icon: Icons.edit_rounded,
                   label: 'EDIT GIG',
-                  onTap: () {
-                    Navigator.pop(context);
-                    // TODO: Implement Edit
+                  onTap: () async {
+                    Navigator.pop(context); // Dismiss bottom sheet
+                    final result = await parentContext.pushNamed<bool>(
+                      '/edit-gig',
+                      extra: {'venueId': gig.venueId, 'gig': gig},
+                    );
+                    if (result == true && parentContext.mounted) {
+                      parentContext
+                          .pop(); // Return to dashboard to see updated data
+                    }
                   },
                 ),
                 const Padding(
@@ -287,7 +338,10 @@ class GigDetailsView extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         title: const Text(
           'Delete Gig?',
-          style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w900),
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w900,
+          ),
         ),
         content: const Text(
           'This will permanently remove this gig and all associated performer applications. This action cannot be undone.',
@@ -298,7 +352,11 @@ class GigDetailsView extends StatelessWidget {
             onPressed: () => Navigator.pop(dialogContext),
             child: const Text(
               'CANCEL',
-              style: TextStyle(color: AppColors.textTertiary, fontWeight: FontWeight.w800, letterSpacing: 1),
+              style: TextStyle(
+                color: AppColors.textTertiary,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1,
+              ),
             ),
           ),
           const SizedBox(width: 8),
@@ -312,7 +370,9 @@ class GigDetailsView extends StatelessWidget {
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(99),
+              ),
             ),
             child: const Text(
               'DELETE',
@@ -353,7 +413,12 @@ class GigDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailItem(BuildContext context, IconData icon, String label, String value) {
+  Widget _buildDetailItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     final textTheme = Theme.of(context).textTheme;
     return Expanded(
       child: Column(

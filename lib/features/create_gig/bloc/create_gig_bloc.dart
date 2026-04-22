@@ -12,7 +12,24 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
 
   CreateGigBloc(this._repository) : super(CreateGigState.initial()) {
     on<Started>((event, emit) {
-      emit(state.copyWith(venueId: event.venueId));
+      final initialGig = event.initialGig;
+      if (initialGig != null) {
+        emit(
+          state.copyWith(
+            venueId: event.venueId,
+            gigId: initialGig.id,
+            baseGuarantee: initialGig.baseGuarantee,
+            is7030Split: initialGig.is7030Split,
+            selectedGenres: initialGig.targetGenres,
+            selectedDate: initialGig.date,
+            loadInTime: initialGig.loadInTime,
+            setTimes: initialGig.setTimes,
+            venueNotes: initialGig.venueNotes,
+          ),
+        );
+      } else {
+        emit(state.copyWith(venueId: event.venueId));
+      }
     });
 
     on<GuaranteeChanged>((event, emit) {
@@ -62,13 +79,16 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
           setTimes: state.setTimes,
           venueNotes: state.venueNotes,
         );
-        await _repository.createGig(request);
+
+        if (state.gigId != null) {
+          await _repository.updateGig(state.gigId!, request);
+        } else {
+          await _repository.createGig(request);
+        }
+
         emit(state.copyWith(isSubmitting: false, isSuccess: true));
       } catch (e) {
-        emit(state.copyWith(
-          isSubmitting: false,
-          errorMessage: e.toString(),
-        ));
+        emit(state.copyWith(isSubmitting: false, errorMessage: e.toString()));
       }
     });
   }

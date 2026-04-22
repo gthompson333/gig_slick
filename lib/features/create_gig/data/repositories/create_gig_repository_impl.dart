@@ -13,4 +13,9 @@ class CreateGigRepositoryImpl implements CreateGigRepository {
   Future<void> createGig(CreateGigRequest request) async {
     return await remoteDataSource.createGig(request);
   }
+
+  @override
+  Future<void> updateGig(String gigId, CreateGigRequest request) async {
+    return await remoteDataSource.updateGig(gigId, request);
+  }
 }

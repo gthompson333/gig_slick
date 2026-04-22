@@ -40,11 +40,12 @@ class VenueNotes extends StatelessWidget {
                 ],
               ),
               child: TextFormField(
+                key: ValueKey(state.gigId),
                 initialValue: state.venueNotes,
                 onChanged: (value) {
-                  context
-                      .read<CreateGigBloc>()
-                      .add(CreateGigEvent.venueNotesChanged(value));
+                  context.read<CreateGigBloc>().add(
+                    CreateGigEvent.venueNotesChanged(value),
+                  );
                 },
                 maxLines: 2,
                 decoration: InputDecoration(

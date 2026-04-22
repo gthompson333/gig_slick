@@ -13,7 +13,7 @@ class GenreSelection extends StatelessWidget {
     'Folk',
     'Blues',
     'Metal',
-    'Electronic'
+    'Electronic',
   ];
 
   @override
@@ -40,9 +40,9 @@ class GenreSelection extends StatelessWidget {
                 final isSelected = state.selectedGenres.contains(genre);
                 return GestureDetector(
                   onTap: () {
-                    context
-                        .read<CreateGigBloc>()
-                        .add(CreateGigEvent.genreToggled(genre));
+                    context.read<CreateGigBloc>().add(
+                      CreateGigEvent.genreToggled(genre),
+                    );
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
@@ -58,7 +58,9 @@ class GenreSelection extends StatelessWidget {
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: AppColors.electricAmber.withValues(alpha: 0.1),
+                                color: AppColors.electricAmber.withValues(
+                                  alpha: 0.1,
+                                ),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),
@@ -68,7 +70,9 @@ class GenreSelection extends StatelessWidget {
                     child: Text(
                       genre,
                       style: textTheme.bodyMedium?.copyWith(
-                        fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
+                        fontWeight: isSelected
+                            ? FontWeight.w900
+                            : FontWeight.w600,
                         color: isSelected
                             ? Colors.black
                             : AppColors.textSecondary,

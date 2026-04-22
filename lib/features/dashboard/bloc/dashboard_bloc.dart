@@ -24,8 +24,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         // Normalize name for the link (lowercase kebab-case)
         final normalizedName = venueName.toLowerCase().replaceAll(' ', '-');
         final performerLink = 'gigslick.link/$normalizedName';
-        
-        final venueId = venueData['id'] ?? normalizedName; // Fallback if ID is missing
+
+        final venueId = venueData['id'] as String;
 
         await emit.forEach<List<Gig>>(
           _repository.getScheduledGigsStream(venueId),
@@ -38,6 +38,15 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           onError: (error, stackTrace) =>
               DashboardState.error(message: error.toString()),
         );
+      } catch (e) {
+        emit(DashboardState.error(message: e.toString()));
+      }
+    });
+
+    on<AccountDeletionRequested>((event, emit) async {
+      try {
+        await _repository.deleteAccount();
+        emit(const DashboardState.accountDeleted());
       } catch (e) {
         emit(DashboardState.error(message: e.toString()));
       }

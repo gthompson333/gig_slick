@@ -12,13 +12,15 @@ final GoRouter appRouter = GoRouter(
   initialLocation: '/onboarding',
   redirect: (context, state) {
     final user = FirebaseAuth.instance.currentUser;
-    final isLoggingIn = state.matchedLocation == '/onboarding' || state.matchedLocation == '/sign-in';
+    final isLoggingIn =
+        state.matchedLocation == '/onboarding' ||
+        state.matchedLocation == '/sign-in';
 
     if (user != null && isLoggingIn) {
       // TODO: In the future, check if user has a venue and send to /create-venue if not.
       return '/dashboard';
     }
-    
+
     return null;
   },
   routes: [
@@ -26,10 +28,7 @@ final GoRouter appRouter = GoRouter(
       path: '/onboarding',
       builder: (context, state) => const OnboardingPage(),
     ),
-    GoRoute(
-      path: '/sign-in',
-      builder: (context, state) => const SignInPage(),
-    ),
+    GoRoute(path: '/sign-in', builder: (context, state) => const SignInPage()),
     GoRoute(
       path: '/create-venue',
       builder: (context, state) => const CreateVenuePage(),
@@ -39,6 +38,7 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const DashboardPage(),
     ),
     GoRoute(
+      name: '/create-gig',
       path: '/create-gig',
       builder: (context, state) {
         final venueId = state.extra as String;
@@ -46,6 +46,17 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(
+      name: '/edit-gig',
+      path: '/edit-gig',
+      builder: (context, state) {
+        final extras = state.extra as Map<String, dynamic>;
+        final venueId = extras['venueId'] as String;
+        final gig = extras['gig'] as Gig;
+        return CreateGigPage(venueId: venueId, initialGig: gig);
+      },
+    ),
+    GoRoute(
+      name: '/gig-details',
       path: '/gig-details',
       builder: (context, state) {
         final extras = state.extra as Map<String, dynamic>;

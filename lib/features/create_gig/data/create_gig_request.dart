@@ -30,7 +30,19 @@ class CreateGigRequest {
       'setTimes': setTimes,
       'venueNotes': venueNotes,
       'createdAt': DateTime.now(),
-      'status': 'pending', // Default status for new gigs
+      'status': 'pending',
+    };
+  }
+
+  Map<String, dynamic> toUpdateJson() {
+    return {
+      'date': date,
+      'baseGuarantee': baseGuarantee,
+      'is7030Split': is7030Split,
+      'targetGenres': targetGenres,
+      'loadInTime': loadInTime,
+      'setTimes': setTimes,
+      'venueNotes': venueNotes,
     };
   }
 }

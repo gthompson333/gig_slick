@@ -15,7 +15,9 @@ class DateSelector extends StatelessWidget {
 
     return BlocBuilder<CreateGigBloc, CreateGigState>(
       builder: (context, state) {
-        final dateText = DateFormat('EEEE, MMMM d, y').format(state.selectedDate);
+        final dateText = DateFormat(
+          'EEEE, MMMM d, y',
+        ).format(state.selectedDate);
 
         return ElevatedButton(
           onPressed: () async {
@@ -39,7 +41,9 @@ class DateSelector extends StatelessWidget {
               },
             );
             if (picked != null && context.mounted) {
-              context.read<CreateGigBloc>().add(CreateGigEvent.dateChanged(picked));
+              context.read<CreateGigBloc>().add(
+                CreateGigEvent.dateChanged(picked),
+              );
             }
           },
           style: ElevatedButton.styleFrom(
@@ -55,10 +59,7 @@ class DateSelector extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.calendar_today,
-                size: 18,
-              ),
+              const Icon(Icons.calendar_today, size: 18),
               const SizedBox(width: 12),
               Text(
                 dateText.toUpperCase(),

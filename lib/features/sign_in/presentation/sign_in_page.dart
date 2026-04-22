@@ -44,10 +44,42 @@ class _SignInViewState extends State<SignInView> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.redAccent,
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                backgroundColor: AppColors.surfaceMid,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                title: const Row(
+                  children: [
+                    Icon(Icons.error_outline_rounded, color: Colors.redAccent),
+                    SizedBox(width: 12),
+                    Text(
+                      'Authentication Error',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                content: Text(
+                  state.message,
+                  style: const TextStyle(color: AppColors.textSecondary),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(
+                        color: AppColors.electricAmber,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           } else if (state is AuthAuthenticated) {
@@ -64,7 +96,10 @@ class _SignInViewState extends State<SignInView> {
 
           return SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 40.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -72,10 +107,7 @@ class _SignInViewState extends State<SignInView> {
                   Center(
                     child: Hero(
                       tag: 'app_logo',
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        height: 120,
-                      ),
+                      child: Image.asset('assets/images/logo.png', height: 120),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -109,10 +141,8 @@ class _SignInViewState extends State<SignInView> {
                           ? null
                           : () {
                               context.read<AuthBloc>().add(
-                                    PhoneLoginRequested(
-                                      _inputController.text,
-                                    ),
-                                  );
+                                PhoneLoginRequested(_inputController.text),
+                              );
                             },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.electricAmber,
@@ -145,7 +175,9 @@ class _SignInViewState extends State<SignInView> {
                     onTap: isLoading
                         ? null
                         : () {
-                            context.read<AuthBloc>().add(SignInAsGuestRequested());
+                            context.read<AuthBloc>().add(
+                              SignInAsGuestRequested(),
+                            );
                           },
                     child: Text(
                       'Continue as Guest',
@@ -164,7 +196,7 @@ class _SignInViewState extends State<SignInView> {
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: AppColors.textTertiary,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -180,7 +212,7 @@ class _SignInViewState extends State<SignInView> {
     required IconData icon,
   }) {
     final theme = Theme.of(context);
-    
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surfaceMid,
@@ -205,10 +237,16 @@ class _SignInViewState extends State<SignInView> {
           ),
           prefixIcon: Padding(
             padding: const EdgeInsets.only(left: 16, right: 12),
-            child: Icon(icon, color: AppColors.electricAmber.withValues(alpha: 0.7)),
+            child: Icon(
+              icon,
+              color: AppColors.electricAmber.withValues(alpha: 0.7),
+            ),
           ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 22,
+          ),
         ),
       ),
     );

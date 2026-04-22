@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
+import 'auth_error_mapper.dart';
 import '../repository/auth_repository.dart';
 import '../../dashboard/data/repositories/dashboard_repository.dart';
 
@@ -10,7 +11,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
   final DashboardRepository _dashboardRepository;
 
-  AuthBloc(this._authRepository, this._dashboardRepository) : super(AuthInitial()) {
+  AuthBloc(this._authRepository, this._dashboardRepository)
+    : super(AuthInitial()) {
     on<PhoneLoginRequested>(_onPhoneLoginRequested);
     on<OtpSubmitted>(_onOtpSubmitted);
     on<SignInAsGuestRequested>(_onSignInAsGuest);
@@ -30,18 +32,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await _authRepository.verifyPhoneNumber(
         event.phoneNumber,
         onCodeSent: (verificationId) {
-          add(_AuthOtpSentInternal(
-            verificationId: verificationId,
-            phoneNumber: event.phoneNumber,
-            isLinking: false,
-          ));
+          add(
+            _AuthOtpSentInternal(
+              verificationId: verificationId,
+              phoneNumber: event.phoneNumber,
+              isLinking: false,
+            ),
+          );
         },
         onError: (error) {
           add(AuthErrorOccurred(error));
         },
       );
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError(AuthErrorMapper.mapMessage(e)));
     }
   }
 
@@ -54,18 +58,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await _authRepository.verifyPhoneNumber(
         event.phoneNumber,
         onCodeSent: (verificationId) {
-          add(_AuthOtpSentInternal(
-            verificationId: verificationId,
-            phoneNumber: event.phoneNumber,
-            isLinking: true,
-          ));
+          add(
+            _AuthOtpSentInternal(
+              verificationId: verificationId,
+              phoneNumber: event.phoneNumber,
+              isLinking: true,
+            ),
+          );
         },
-        onError: (message) {
-          add(AuthErrorOccurred(message));
+        onError: (error) {
+          add(AuthErrorOccurred(error));
         },
       );
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError(AuthErrorMapper.mapMessage(e)));
     }
   }
 
@@ -79,14 +85,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // After linking, we definitely have a venue because that's the only way to get to the secure page
       emit(const AuthAuthenticated('phone_link', hasVenue: true));
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError(AuthErrorMapper.mapMessage(e)));
     }
   }
 
-  void _onOtpSentInternal(
-    _AuthOtpSentInternal event,
-    Emitter<AuthState> emit,
-  ) {
+  void _onOtpSentInternal(_AuthOtpSentInternal event, Emitter<AuthState> emit) {
     if (event.isLinking) {
       emit(AuthLinkOtpSent(event.verificationId, event.phoneNumber));
     } else {
@@ -104,27 +107,31 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final venue = await _dashboardRepository.getVenueForUser();
       emit(AuthAuthenticated('phone', hasVenue: venue != null));
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError(AuthErrorMapper.mapMessage(e)));
     }
   }
 
   Future<void> _onSignInAsGuest(
-      SignInAsGuestRequested event, Emitter<AuthState> emit) async {
+    SignInAsGuestRequested event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(AuthLoading());
     try {
       await _authRepository.signInAsGuest();
       emit(const AuthAuthenticated('guest'));
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError(AuthErrorMapper.mapMessage(e)));
     }
   }
 
   void _onAuthErrorOccurred(AuthErrorOccurred event, Emitter<AuthState> emit) {
-    emit(AuthError(event.message));
+    emit(AuthError(AuthErrorMapper.mapMessage(event.message)));
   }
 
   Future<void> _onAuthVerificationCompleted(
-      AuthVerificationCompleted event, Emitter<AuthState> emit) async {
+    AuthVerificationCompleted event,
+    Emitter<AuthState> emit,
+  ) async {
     final venue = await _dashboardRepository.getVenueForUser();
     emit(AuthAuthenticated('phone_auto', hasVenue: venue != null));
   }

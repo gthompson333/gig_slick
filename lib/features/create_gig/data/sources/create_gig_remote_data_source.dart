@@ -4,6 +4,7 @@ import '../create_gig_request.dart';
 
 abstract class CreateGigRemoteDataSource {
   Future<void> createGig(CreateGigRequest request);
+  Future<void> updateGig(String gigId, CreateGigRequest request);
 }
 
 @LazySingleton(as: CreateGigRemoteDataSource)
@@ -15,5 +16,13 @@ class CreateGigRemoteDataSourceImpl implements CreateGigRemoteDataSource {
   @override
   Future<void> createGig(CreateGigRequest request) async {
     await _firestore.collection('gigs').add(request.toJson());
+  }
+
+  @override
+  Future<void> updateGig(String gigId, CreateGigRequest request) async {
+    await _firestore
+        .collection('gigs')
+        .doc(gigId)
+        .update(request.toUpdateJson());
   }
 }
