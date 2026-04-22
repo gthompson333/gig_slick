@@ -96,3 +96,8 @@ lib/injection.config.dart
 # Fastlane
 .env
 
+# Certificates
+*.cer
+*.certSigningRequest
+*.p12
+
