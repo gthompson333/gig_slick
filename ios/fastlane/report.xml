@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000172">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="1: env -u GEM_HOME -u GEM_PATH -u RUBYOPT -u BUNDLE_BIN_PATH -u BUNDLE_GEMFILE flutter build ios --release --no-codesign" time="193.697012">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>

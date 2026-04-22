@@ -1,0 +1,2 @@
+json_key_file("[[PATH_TO_JSON_KEY]]") # Path to the json secret file - implement later
+package_name("com.tommysoftware.gigslick") # e.g. com.krausefx.app

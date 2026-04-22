@@ -92,3 +92,7 @@ lib/firebase_options.dart
 *.freezed.dart
 *.g.dart
 lib/injection.config.dart
+
+# Fastlane
+.env
+

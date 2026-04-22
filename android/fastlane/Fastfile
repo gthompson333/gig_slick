@@ -1,0 +1,12 @@
+default_platform(:android)
+
+platform :android do
+  desc "Submit a new Internal Build to Google Play"
+  lane :internal do
+    # 1. Build the app (Flutter way)
+    sh "flutter build appbundle --release"
+
+    # 2. Upload to Google Play
+    # upload_to_play_store(track: 'internal')
+  end
+end
