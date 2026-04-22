@@ -34,10 +34,21 @@ class GigDetailsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final isPending = gig.status == GigStatus.pending;
-    final accentColor = isPending
-        ? AppColors.electricAmber
-        : AppColors.kineticCyan;
+    Color accentColor;
+    switch (gig.status) {
+      case GigStatus.draft:
+        accentColor = AppColors.textTertiary;
+        break;
+      case GigStatus.published:
+        accentColor = AppColors.electricAmber;
+        break;
+      case GigStatus.pending:
+        accentColor = AppColors.electricAmber;
+        break;
+      case GigStatus.confirmed:
+        accentColor = AppColors.kineticCyan;
+        break;
+    }
 
     return BlocListener<GigDetailsBloc, GigDetailsState>(
       listener: (context, state) {
@@ -114,7 +125,7 @@ class GigDetailsView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Status Badge
-                    _buildStatusBadge(accentColor, isPending, textTheme),
+                    _buildStatusBadge(accentColor, gig.status, textTheme),
                     const SizedBox(height: 16),
 
                     // Date header
@@ -141,8 +152,8 @@ class GigDetailsView extends StatelessWidget {
                         _buildDetailItem(
                           context,
                           Icons.timer_rounded,
-                          'SET TIMES',
-                          gig.setTimes,
+                          'SET TIME',
+                          gig.setTime,
                         ),
                       ],
                     ),
@@ -190,13 +201,13 @@ class GigDetailsView extends StatelessWidget {
                     ],
 
                     // Target Genres Section
-                    if (gig.targetGenres.isNotEmpty) ...[
-                      _buildSectionHeader(textTheme, 'TARGET GENRES'),
+                    if (gig.genres.isNotEmpty) ...[
+                      _buildSectionHeader(textTheme, 'GENRES'),
                       const SizedBox(height: 16),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: gig.targetGenres.map((genre) {
+                        children: gig.genres.map((genre) {
                           return Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16,
@@ -384,7 +395,23 @@ class GigDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge(Color color, bool isPending, TextTheme textTheme) {
+  Widget _buildStatusBadge(Color color, GigStatus status, TextTheme textTheme) {
+    String statusText;
+    switch (status) {
+      case GigStatus.draft:
+        statusText = 'DRAFT GIG';
+        break;
+      case GigStatus.published:
+        statusText = 'PUBLISHED GIG';
+        break;
+      case GigStatus.pending:
+        statusText = 'PENDING APPLICATIONS';
+        break;
+      case GigStatus.confirmed:
+        statusText = 'CONFIRMED GIG';
+        break;
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
@@ -392,7 +419,7 @@ class GigDetailsView extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        isPending ? 'PENDING APPLICATIONS' : 'CONFIRMED GIG',
+        statusText,
         style: textTheme.labelSmall?.copyWith(
           color: color,
           fontWeight: FontWeight.w900,

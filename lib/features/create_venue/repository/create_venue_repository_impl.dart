@@ -13,7 +13,6 @@ class CreateVenueRepositoryImpl implements CreateVenueRepository {
   @override
   Future<void> createVenue({
     required String name,
-    required List<String> genres,
   }) async {
     final user = _auth.currentUser;
     if (user == null) {
@@ -24,9 +23,7 @@ class CreateVenueRepositoryImpl implements CreateVenueRepository {
       await _firestore.collection('venues').add({
         'name': name,
         'ownerId': user.uid,
-        'genres': genres,
         'createdAt': FieldValue.serverTimestamp(),
-        'status': 'active',
       });
     } catch (e) {
       throw Exception('Failed to create venue: $e');

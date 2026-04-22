@@ -36,8 +36,8 @@ class ScheduleDetails extends StatelessWidget {
             const SizedBox(width: 16),
             Expanded(
               child: _TimeField(
-                label: 'SET TIMES',
-                value: state.setTimes,
+                label: 'SET TIME',
+                value: state.setTime,
                 onTap: () async {
                   final time = await showTimePicker(
                     context: context,
@@ -47,7 +47,7 @@ class ScheduleDetails extends StatelessWidget {
                   );
                   if (time != null && context.mounted) {
                     context.read<CreateGigBloc>().add(
-                      CreateGigEvent.setTimesChanged(time.format(context)),
+                      CreateGigEvent.setTimeChanged(time.format(context)),
                     );
                   }
                 },

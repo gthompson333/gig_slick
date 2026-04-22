@@ -12,10 +12,29 @@ class GigCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPending = gig.status == GigStatus.pending;
-    final accentColor = isPending
-        ? AppColors.electricAmber
-        : AppColors.kineticCyan;
+    Color accentColor;
+    String statusText;
+
+    switch (gig.status) {
+      case GigStatus.draft:
+        accentColor = AppColors.slateGray;
+        statusText = 'DRAFT';
+        break;
+      case GigStatus.published:
+        accentColor = AppColors.electricAmber;
+        statusText = 'PUBLISHED';
+        break;
+      case GigStatus.pending:
+        accentColor = AppColors.electricAmber;
+        statusText = '${gig.pendingCount} PENDING';
+        break;
+      case GigStatus.confirmed:
+        accentColor = AppColors.kineticCyan;
+        statusText = 'CONFIRMED';
+        break;
+    }
+
+    final isConfirmed = gig.status == GigStatus.confirmed;
     final textTheme = Theme.of(context).textTheme;
 
     return InkWell(
@@ -42,10 +61,15 @@ class GigCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    DateFormat('EEEE, MMM d').format(gig.date),
-                    style: textTheme.titleLarge?.copyWith(letterSpacing: -0.5),
-                  ),
+                    Text(
+                      DateFormat('EEEE, MMM d').format(gig.date),
+                      style: textTheme.titleLarge?.copyWith(
+                        letterSpacing: -0.5,
+                        color: gig.status == GigStatus.draft
+                            ? AppColors.textSecondary
+                            : null,
+                      ),
+                    ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
@@ -56,7 +80,7 @@ class GigCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        gig.setTimes,
+                        gig.setTime,
                         style: textTheme.bodyMedium?.copyWith(
                           color: AppColors.textSecondary,
                           fontWeight: FontWeight.w500,
@@ -80,7 +104,7 @@ class GigCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    isPending ? '${gig.pendingCount} PENDING' : 'CONFIRMED',
+                    statusText,
                     style: textTheme.labelSmall?.copyWith(
                       color: accentColor,
                       fontWeight: FontWeight.w900,
@@ -88,7 +112,7 @@ class GigCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                if (!isPending && gig.confirmedPerformerName != null)
+                if (isConfirmed && gig.confirmedPerformerName != null)
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

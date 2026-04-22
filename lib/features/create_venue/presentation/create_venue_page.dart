@@ -143,7 +143,6 @@ class _CreateVenueViewState extends State<CreateVenueView> {
                                   context.read<CreateVenueBloc>().add(
                                     CreateVenueSubmitted(
                                       name: name,
-                                      genres: const [],
                                     ),
                                   );
                                 }

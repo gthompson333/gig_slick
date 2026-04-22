@@ -21,6 +21,7 @@ class AppColors {
   static const Color textPrimary = Color(0xFFFFFFFF);
   static const Color textSecondary = Color(0xB3FFFFFF); // 70% opacity
   static const Color textTertiary = Color(0x66FFFFFF); // 40% opacity
+  static const Color slateGray = Color(0xFF64748B); // Desaturated slate gray for drafts
 
   // Utility
   static const Color cardOuterGlow = Color(

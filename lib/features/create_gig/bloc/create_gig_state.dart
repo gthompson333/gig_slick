@@ -13,8 +13,9 @@ class CreateGigState with _$CreateGigState {
     required bool isSuccess,
     required DateTime selectedDate,
     @Default('7:00 PM') String loadInTime,
-    @Default('9:00 PM') String setTimes,
+    @Default('9:00 PM') String setTime,
     @Default('') String venueNotes,
+    @Default('draft') String status,
     String? gigId,
     String? errorMessage,
   }) = _CreateGigState;
@@ -28,7 +29,7 @@ class CreateGigState with _$CreateGigState {
     isSuccess: false,
     selectedDate: DateTime.now(),
     loadInTime: '7:00 PM',
-    setTimes: '9:00 PM',
+    setTime: '9:00 PM',
     venueNotes: '',
   );
 }

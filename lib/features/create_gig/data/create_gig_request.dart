@@ -3,20 +3,23 @@ class CreateGigRequest {
   final DateTime date;
   final double baseGuarantee;
   final bool is7030Split;
-  final List<String> targetGenres;
+  final List<String> genres;
   final String loadInTime;
-  final String setTimes;
+  final String setTime;
   final String venueNotes;
+
+  final String status;
 
   CreateGigRequest({
     required this.venueId,
     required this.date,
     required this.baseGuarantee,
     required this.is7030Split,
-    required this.targetGenres,
+    required this.genres,
     required this.loadInTime,
-    required this.setTimes,
+    required this.setTime,
     required this.venueNotes,
+    this.status = 'draft',
   });
 
   Map<String, dynamic> toJson() {
@@ -25,12 +28,12 @@ class CreateGigRequest {
       'date': date,
       'baseGuarantee': baseGuarantee,
       'is7030Split': is7030Split,
-      'targetGenres': targetGenres,
+      'genres': genres,
       'loadInTime': loadInTime,
-      'setTimes': setTimes,
+      'setTime': setTime,
       'venueNotes': venueNotes,
       'createdAt': DateTime.now(),
-      'status': 'pending',
+      'status': status,
     };
   }
 
@@ -39,10 +42,11 @@ class CreateGigRequest {
       'date': date,
       'baseGuarantee': baseGuarantee,
       'is7030Split': is7030Split,
-      'targetGenres': targetGenres,
+      'genres': genres,
       'loadInTime': loadInTime,
-      'setTimes': setTimes,
+      'setTime': setTime,
       'venueNotes': venueNotes,
+      'status': status,
     };
   }
 }

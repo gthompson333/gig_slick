@@ -94,7 +94,7 @@ class PerformerLinkCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'COPY GIG LINK',
+                      'COPY GIGS LINK',
                       style: textTheme.labelSmall?.copyWith(
                         color: Colors.black,
                         fontWeight: FontWeight.w900,

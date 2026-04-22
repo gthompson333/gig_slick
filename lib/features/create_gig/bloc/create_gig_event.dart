@@ -14,7 +14,7 @@ class CreateGigEvent with _$CreateGigEvent {
   const factory CreateGigEvent.dateChanged(DateTime date) = DateChanged;
   const factory CreateGigEvent.loadInTimeChanged(String time) =
       LoadInTimeChanged;
-  const factory CreateGigEvent.setTimesChanged(String times) = SetTimesChanged;
+  const factory CreateGigEvent.setTimeChanged(String time) = SetTimeChanged;
   const factory CreateGigEvent.venueNotesChanged(String notes) =
       VenueNotesChanged;
   const factory CreateGigEvent.submitRequested() = SubmitRequested;

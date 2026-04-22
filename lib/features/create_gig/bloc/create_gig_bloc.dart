@@ -20,11 +20,12 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
             gigId: initialGig.id,
             baseGuarantee: initialGig.baseGuarantee,
             is7030Split: initialGig.is7030Split,
-            selectedGenres: initialGig.targetGenres,
+            selectedGenres: initialGig.genres,
             selectedDate: initialGig.date,
             loadInTime: initialGig.loadInTime,
-            setTimes: initialGig.setTimes,
+            setTime: initialGig.setTime,
             venueNotes: initialGig.venueNotes,
+            status: initialGig.status.name,
           ),
         );
       } else {
@@ -58,8 +59,8 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
       emit(state.copyWith(loadInTime: event.time));
     });
 
-    on<SetTimesChanged>((event, emit) {
-      emit(state.copyWith(setTimes: event.times));
+    on<SetTimeChanged>((event, emit) {
+      emit(state.copyWith(setTime: event.time));
     });
 
     on<VenueNotesChanged>((event, emit) {
@@ -74,10 +75,11 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
           date: state.selectedDate,
           baseGuarantee: state.baseGuarantee,
           is7030Split: state.is7030Split,
-          targetGenres: state.selectedGenres,
+          genres: state.selectedGenres,
           loadInTime: state.loadInTime,
-          setTimes: state.setTimes,
+          setTime: state.setTime,
           venueNotes: state.venueNotes,
+          status: state.status,
         );
 
         if (state.gigId != null) {

@@ -156,7 +156,7 @@ class PerformerPreviewCard extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  '${state.setTimes} Performance',
+                                  '${state.setTime} Performance',
                                   style: textTheme.bodyMedium?.copyWith(
                                     color: AppColors.textTertiary,
                                   ),
