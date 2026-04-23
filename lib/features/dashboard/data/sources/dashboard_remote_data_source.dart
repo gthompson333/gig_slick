@@ -10,6 +10,8 @@ abstract class DashboardRemoteDataSource {
   Future<String> getGigLinkUrl();
   Future<void> deleteGig(String gigId);
   Future<void> deleteAccount();
+  Future<void> publishGig(String gigId);
+  Future<void> updateVenueNotes(String gigId, String notes);
 }
 
 @LazySingleton(as: DashboardRemoteDataSource)
@@ -99,5 +101,19 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
 
     // 4. Delete the Firebase Auth user
     await user.delete();
+  }
+
+  @override
+  Future<void> publishGig(String gigId) async {
+    await _firestore.collection('gigs').doc(gigId).update({
+      'status': 'live',
+    });
+  }
+
+  @override
+  Future<void> updateVenueNotes(String gigId, String notes) async {
+    await _firestore.collection('gigs').doc(gigId).update({
+      'venueNotes': notes,
+    });
   }
 }

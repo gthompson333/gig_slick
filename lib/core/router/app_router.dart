@@ -62,7 +62,12 @@ final GoRouter appRouter = GoRouter(
         final extras = state.extra as Map<String, dynamic>;
         final gig = extras['gig'] as Gig;
         final gigLink = extras['gigLink'] as String;
-        return GigDetailsPage(gig: gig, gigLink: gigLink);
+        final venueName = extras['venueName'] as String;
+        return GigDetailsPage(
+          gig: gig,
+          gigLink: gigLink,
+          venueName: venueName,
+        );
       },
     ),
   ],

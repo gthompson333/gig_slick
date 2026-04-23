@@ -13,33 +13,64 @@ import '../bloc/gig_details_state.dart';
 class GigDetailsPage extends StatelessWidget {
   final Gig gig;
   final String gigLink;
+  final String venueName;
 
-  const GigDetailsPage({super.key, required this.gig, required this.gigLink});
+  const GigDetailsPage({
+    super.key,
+    required this.gig,
+    required this.gigLink,
+    required this.venueName,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<GigDetailsBloc>(),
-      child: GigDetailsView(gig: gig, gigLink: gigLink),
+      child: GigDetailsView(gig: gig, gigLink: gigLink, venueName: venueName),
     );
   }
 }
 
-class GigDetailsView extends StatelessWidget {
+class GigDetailsView extends StatefulWidget {
   final Gig gig;
   final String gigLink;
+  final String venueName;
 
-  const GigDetailsView({super.key, required this.gig, required this.gigLink});
+  const GigDetailsView({
+    super.key,
+    required this.gig,
+    required this.gigLink,
+    required this.venueName,
+  });
+
+  @override
+  State<GigDetailsView> createState() => _GigDetailsViewState();
+}
+
+class _GigDetailsViewState extends State<GigDetailsView> {
+  late TextEditingController _notesController;
+
+  @override
+  void initState() {
+    super.initState();
+    _notesController = TextEditingController(text: widget.gig.venueNotes);
+  }
+
+  @override
+  void dispose() {
+    _notesController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     Color accentColor;
-    switch (gig.status) {
+    switch (widget.gig.status) {
       case GigStatus.draft:
-        accentColor = AppColors.textTertiary;
+        accentColor = AppColors.slateGray;
         break;
-      case GigStatus.published:
+      case GigStatus.live:
         accentColor = AppColors.electricAmber;
         break;
       case GigStatus.pending:
@@ -62,6 +93,25 @@ class GigDetailsView extends StatelessWidget {
               ),
             );
             context.pop();
+          },
+          live: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Gig is now LIVE!'),
+                backgroundColor: AppColors.electricAmber,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+            context.pop();
+          },
+          notesUpdated: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Venue notes updated'),
+                backgroundColor: AppColors.surfaceHigh,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
           },
           error: (message) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -94,7 +144,7 @@ class GigDetailsView extends StatelessWidget {
               ),
               centerTitle: true,
               title: Text(
-                'Gig Details',
+                widget.venueName,
                 style: textTheme.titleMedium?.copyWith(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w900,
@@ -125,12 +175,16 @@ class GigDetailsView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Status Badge
-                    _buildStatusBadge(accentColor, gig.status, textTheme),
+                    _buildStatusBadge(
+                      accentColor,
+                      widget.gig.status,
+                      textTheme,
+                    ),
                     const SizedBox(height: 16),
 
                     // Date header
                     Text(
-                      DateFormat('EEEE, MMMM d, yyyy').format(gig.date),
+                      DateFormat('EEEE, MMMM d, yyyy').format(widget.gig.date),
                       style: textTheme.headlineMedium?.copyWith(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w900,
@@ -146,14 +200,14 @@ class GigDetailsView extends StatelessWidget {
                           context,
                           Icons.schedule_rounded,
                           'LOAD-IN',
-                          gig.loadInTime,
+                          widget.gig.loadInTime,
                         ),
                         const SizedBox(width: 24),
                         _buildDetailItem(
                           context,
                           Icons.timer_rounded,
                           'SET TIME',
-                          gig.setTime,
+                          widget.gig.setTime,
                         ),
                       ],
                     ),
@@ -163,51 +217,68 @@ class GigDetailsView extends StatelessWidget {
                     _buildSectionHeader(textTheme, 'FINANCIALS'),
                     const SizedBox(height: 16),
                     _buildCard(
-                      child: Column(
-                        children: [
-                          _buildInfoRow(
-                            'Base Guarantee',
-                            '\$${gig.baseGuarantee.toStringAsFixed(0)}',
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            child: Divider(color: Colors.white10),
-                          ),
-                          _buildInfoRow(
-                            'Split Terms',
-                            gig.is7030Split
-                                ? '70/30 Profit Share'
-                                : 'Guarantee Only',
-                          ),
-                        ],
+                      child: _buildInfoRow(
+                        'Base Guarantee',
+                        '\$${widget.gig.baseGuarantee.toStringAsFixed(0)}',
                       ),
                     ),
                     const SizedBox(height: 40),
 
                     // Venue Notes Section
-                    if (gig.venueNotes.isNotEmpty) ...[
-                      _buildSectionHeader(textTheme, 'VENUE NOTES'),
-                      const SizedBox(height: 16),
-                      _buildCard(
-                        child: Text(
-                          gig.venueNotes,
-                          style: textTheme.bodyLarge?.copyWith(
-                            color: AppColors.textSecondary,
-                            height: 1.6,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildSectionHeader(textTheme, 'VENUE NOTES'),
+                        if (_notesController.text != widget.gig.venueNotes)
+                          TextButton(
+                            onPressed: () {
+                              context.read<GigDetailsBloc>().add(
+                                    GigDetailsEvent.venueNotesUpdated(
+                                      widget.gig.id,
+                                      _notesController.text,
+                                    ),
+                                  );
+                            },
+                            child: const Text(
+                              'SAVE NOTES',
+                              style: TextStyle(
+                                color: AppColors.electricAmber,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 12,
+                              ),
+                            ),
                           ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _buildCard(
+                      child: TextField(
+                        controller: _notesController,
+                        maxLines: null,
+                        style: textTheme.bodyLarge?.copyWith(
+                          color: AppColors.textPrimary,
+                          height: 1.6,
                         ),
+                        decoration: const InputDecoration(
+                          hintText: 'Add venue notes...',
+                          hintStyle: TextStyle(color: AppColors.textTertiary),
+                          border: InputBorder.none,
+                        ),
+                        onChanged: (value) {
+                          setState(() {});
+                        },
                       ),
-                      const SizedBox(height: 40),
-                    ],
+                    ),
+                    const SizedBox(height: 40),
 
                     // Target Genres Section
-                    if (gig.genres.isNotEmpty) ...[
+                    if (widget.gig.genres.isNotEmpty) ...[
                       _buildSectionHeader(textTheme, 'GENRES'),
                       const SizedBox(height: 16),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: gig.genres.map((genre) {
+                        children: widget.gig.genres.map((genre) {
                           return Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16,
@@ -233,10 +304,41 @@ class GigDetailsView extends StatelessWidget {
                       const SizedBox(height: 40),
                     ],
 
-                    // Invitation Section
-                    _buildSectionHeader(textTheme, 'INVITATION'),
-                    const SizedBox(height: 16),
-                    PerformerLinkCard(linkUrl: gigLink),
+                    if (widget.gig.status != GigStatus.draft) ...[
+                      _buildSectionHeader(textTheme, 'INVITATION'),
+                      const SizedBox(height: 16),
+                      PerformerLinkCard(linkUrl: widget.gigLink),
+                    ] else ...[
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            context.read<GigDetailsBloc>().add(
+                                  GigDetailsEvent.publishRequested(
+                                    widget.gig.id,
+                                  ),
+                                );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.electricAmber,
+                            foregroundColor: Colors.black,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: const Text(
+                            'Go Live!',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 120),
                   ],
                 ),
@@ -283,7 +385,10 @@ class GigDetailsView extends StatelessWidget {
                     Navigator.pop(context); // Dismiss bottom sheet
                     final result = await parentContext.pushNamed<bool>(
                       '/edit-gig',
-                      extra: {'venueId': gig.venueId, 'gig': gig},
+                      extra: {
+                        'venueId': widget.gig.venueId,
+                        'gig': widget.gig,
+                      },
                     );
                     if (result == true && parentContext.mounted) {
                       parentContext
@@ -374,7 +479,7 @@ class GigDetailsView extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(dialogContext);
-              bloc.add(GigDetailsEvent.deleteRequested(gig.id));
+              bloc.add(GigDetailsEvent.deleteRequested(widget.gig.id));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent,
@@ -401,8 +506,8 @@ class GigDetailsView extends StatelessWidget {
       case GigStatus.draft:
         statusText = 'DRAFT GIG';
         break;
-      case GigStatus.published:
-        statusText = 'PUBLISHED GIG';
+      case GigStatus.live:
+        statusText = 'LIVE GIG';
         break;
       case GigStatus.pending:
         statusText = 'PENDING APPLICATIONS';

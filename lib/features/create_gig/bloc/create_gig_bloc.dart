@@ -19,7 +19,7 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
             venueId: event.venueId,
             gigId: initialGig.id,
             baseGuarantee: initialGig.baseGuarantee,
-            is7030Split: initialGig.is7030Split,
+
             selectedGenres: initialGig.genres,
             selectedDate: initialGig.date,
             loadInTime: initialGig.loadInTime,
@@ -37,9 +37,7 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
       emit(state.copyWith(baseGuarantee: event.amount));
     });
 
-    on<SplitToggled>((event, emit) {
-      emit(state.copyWith(is7030Split: event.is7030));
-    });
+
 
     on<GenreToggled>((event, emit) {
       final currentGenres = List<String>.from(state.selectedGenres);
@@ -74,7 +72,7 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
           venueId: state.venueId,
           date: state.selectedDate,
           baseGuarantee: state.baseGuarantee,
-          is7030Split: state.is7030Split,
+
           genres: state.selectedGenres,
           loadInTime: state.loadInTime,
           setTime: state.setTime,

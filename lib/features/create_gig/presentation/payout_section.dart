@@ -88,49 +88,7 @@ class PayoutSection extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 32),
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceHigh.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '70/30 Door Split',
-                            style: textTheme.titleLarge?.copyWith(fontSize: 16),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Standard Performer Bonus',
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: AppColors.textTertiary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Switch(
-                      value: state.is7030Split,
-                      onChanged: (value) {
-                        context.read<CreateGigBloc>().add(
-                          CreateGigEvent.splitToggled(value),
-                        );
-                      },
-                      activeThumbColor: Colors.black,
-                      activeTrackColor: AppColors.electricAmber,
-                      inactiveThumbColor: AppColors.textTertiary,
-                      inactiveTrackColor: AppColors.surfaceHigh,
-                    ),
-                  ],
-                ),
-              ),
+
             ],
           ),
         );

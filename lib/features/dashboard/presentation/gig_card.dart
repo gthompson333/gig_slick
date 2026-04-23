@@ -7,8 +7,14 @@ import '../data/entities/gig.dart';
 class GigCard extends StatelessWidget {
   final Gig gig;
   final String gigLink;
+  final String venueName;
 
-  const GigCard({super.key, required this.gig, required this.gigLink});
+  const GigCard({
+    super.key,
+    required this.gig,
+    required this.gigLink,
+    required this.venueName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +26,9 @@ class GigCard extends StatelessWidget {
         accentColor = AppColors.slateGray;
         statusText = 'DRAFT';
         break;
-      case GigStatus.published:
+      case GigStatus.live:
         accentColor = AppColors.electricAmber;
-        statusText = 'PUBLISHED';
+        statusText = 'LIVE';
         break;
       case GigStatus.pending:
         accentColor = AppColors.electricAmber;
@@ -38,8 +44,10 @@ class GigCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return InkWell(
-      onTap: () =>
-          context.push('/gig-details', extra: {'gig': gig, 'gigLink': gigLink}),
+      onTap: () => context.push(
+        '/gig-details',
+        extra: {'gig': gig, 'gigLink': gigLink, 'venueName': venueName},
+      ),
       borderRadius: BorderRadius.circular(24),
       child: Container(
         padding: const EdgeInsets.all(24),
@@ -61,13 +69,28 @@ class GigCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                    Text(
-                      DateFormat('EEEE, MMM d').format(gig.date),
-                      style: textTheme.titleLarge?.copyWith(
-                        letterSpacing: -0.5,
-                        color: gig.status == GigStatus.draft
-                            ? AppColors.textSecondary
-                            : null,
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '${DateFormat('EEE').format(gig.date).toUpperCase()} ',
+                            style: textTheme.titleLarge?.copyWith(
+                              color: AppColors.textTertiary,
+                              letterSpacing: -0.5,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          TextSpan(
+                            text: DateFormat('MMM d').format(gig.date),
+                            style: textTheme.titleLarge?.copyWith(
+                              letterSpacing: -0.5,
+                              fontWeight: FontWeight.w900,
+                              color: gig.status == GigStatus.draft
+                                  ? AppColors.textSecondary
+                                  : AppColors.textPrimary,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   const SizedBox(height: 6),

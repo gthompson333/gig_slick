@@ -6,4 +6,6 @@ abstract class DashboardRepository {
   Future<String> getGigLinkUrl();
   Future<void> deleteGig(String gigId);
   Future<void> deleteAccount();
+  Future<void> publishGig(String gigId);
+  Future<void> updateVenueNotes(String gigId, String notes);
 }

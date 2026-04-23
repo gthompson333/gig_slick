@@ -4,7 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'gig.freezed.dart';
 part 'gig.g.dart';
 
-enum GigStatus { draft, published, pending, confirmed }
+enum GigStatus { draft, live, pending, confirmed }
 
 @freezed
 class Gig with _$Gig {
@@ -15,7 +15,6 @@ class Gig with _$Gig {
     required String loadInTime,
     required String setTime,
     required double baseGuarantee,
-    required bool is7030Split,
     required List<String> genres,
     required String venueNotes,
     required GigStatus status,

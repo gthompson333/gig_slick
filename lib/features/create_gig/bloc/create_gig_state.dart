@@ -7,7 +7,6 @@ class CreateGigState with _$CreateGigState {
   const factory CreateGigState({
     required String venueId,
     required double baseGuarantee,
-    required bool is7030Split,
     required List<String> selectedGenres,
     required bool isSubmitting,
     required bool isSuccess,
@@ -23,7 +22,6 @@ class CreateGigState with _$CreateGigState {
   factory CreateGigState.initial() => CreateGigState(
     venueId: '',
     baseGuarantee: 350.0,
-    is7030Split: true,
     selectedGenres: ['Folk', 'Metal'],
     isSubmitting: false,
     isSuccess: false,

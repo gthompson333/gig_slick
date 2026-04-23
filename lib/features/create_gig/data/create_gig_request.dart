@@ -2,7 +2,6 @@ class CreateGigRequest {
   final String venueId;
   final DateTime date;
   final double baseGuarantee;
-  final bool is7030Split;
   final List<String> genres;
   final String loadInTime;
   final String setTime;
@@ -14,7 +13,6 @@ class CreateGigRequest {
     required this.venueId,
     required this.date,
     required this.baseGuarantee,
-    required this.is7030Split,
     required this.genres,
     required this.loadInTime,
     required this.setTime,
@@ -27,7 +25,7 @@ class CreateGigRequest {
       'venueId': venueId,
       'date': date,
       'baseGuarantee': baseGuarantee,
-      'is7030Split': is7030Split,
+
       'genres': genres,
       'loadInTime': loadInTime,
       'setTime': setTime,
@@ -41,7 +39,7 @@ class CreateGigRequest {
     return {
       'date': date,
       'baseGuarantee': baseGuarantee,
-      'is7030Split': is7030Split,
+
       'genres': genres,
       'loadInTime': loadInTime,
       'setTime': setTime,
