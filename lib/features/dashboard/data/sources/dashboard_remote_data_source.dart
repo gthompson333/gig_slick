@@ -12,6 +12,14 @@ abstract class DashboardRemoteDataSource {
   Future<void> deleteAccount();
   Future<void> publishGig(String gigId);
   Future<void> updateVenueNotes(String gigId, String notes);
+  Future<void> updateGigDetails({
+    required String gigId,
+    required String loadInTime,
+    required String setTime,
+    required double baseGuarantee,
+    required List<String> genres,
+    required String venueNotes,
+  });
 }
 
 @LazySingleton(as: DashboardRemoteDataSource)
@@ -114,6 +122,24 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
   Future<void> updateVenueNotes(String gigId, String notes) async {
     await _firestore.collection('gigs').doc(gigId).update({
       'venueNotes': notes,
+    });
+  }
+
+  @override
+  Future<void> updateGigDetails({
+    required String gigId,
+    required String loadInTime,
+    required String setTime,
+    required double baseGuarantee,
+    required List<String> genres,
+    required String venueNotes,
+  }) async {
+    await _firestore.collection('gigs').doc(gigId).update({
+      'loadInTime': loadInTime,
+      'setTime': setTime,
+      'baseGuarantee': baseGuarantee,
+      'genres': genres,
+      'venueNotes': venueNotes,
     });
   }
 }

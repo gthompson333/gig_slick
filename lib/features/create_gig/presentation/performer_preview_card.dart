@@ -14,7 +14,7 @@ class PerformerPreviewCard extends StatelessWidget {
 
     return BlocBuilder<CreateGigBloc, CreateGigState>(
       builder: (context, state) {
-        final dateText = DateFormat('EEEE, MMM d').format(state.selectedDate);
+        final dateText = DateFormat('E, MMM d, yyyy').format(state.selectedDate);
         final payoutText = '\$${state.baseGuarantee.toInt()}+';
 
         return Column(

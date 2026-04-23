@@ -11,5 +11,7 @@ class GigDetailsState with _$GigDetailsState {
   const factory GigDetailsState.live() = Live;
   const factory GigDetailsState.updatingNotes() = UpdatingNotes;
   const factory GigDetailsState.notesUpdated() = NotesUpdated;
+  const factory GigDetailsState.updating() = Updating;
+  const factory GigDetailsState.updated() = Updated;
   const factory GigDetailsState.error(String message) = Error;
 }

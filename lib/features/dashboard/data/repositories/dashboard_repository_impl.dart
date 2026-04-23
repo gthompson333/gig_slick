@@ -44,4 +44,23 @@ class DashboardRepositoryImpl implements DashboardRepository {
   Future<void> updateVenueNotes(String gigId, String notes) {
     return _remoteDataSource.updateVenueNotes(gigId, notes);
   }
+
+  @override
+  Future<void> updateGigDetails({
+    required String gigId,
+    required String loadInTime,
+    required String setTime,
+    required double baseGuarantee,
+    required List<String> genres,
+    required String venueNotes,
+  }) {
+    return _remoteDataSource.updateGigDetails(
+      gigId: gigId,
+      loadInTime: loadInTime,
+      setTime: setTime,
+      baseGuarantee: baseGuarantee,
+      genres: genres,
+      venueNotes: venueNotes,
+    );
+  }
 }

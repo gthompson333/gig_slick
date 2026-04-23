@@ -204,7 +204,7 @@ class DashboardView extends StatelessWidget {
                   foregroundColor: Colors.black,
                   elevation: 8,
                   label: const Text(
-                    'Create Gig',
+                    'New Gig',
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
                       fontSize: 14,

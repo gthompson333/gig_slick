@@ -69,28 +69,14 @@ class GigCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: '${DateFormat('EEE').format(gig.date).toUpperCase()} ',
-                            style: textTheme.titleLarge?.copyWith(
-                              color: AppColors.textTertiary,
-                              letterSpacing: -0.5,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                          TextSpan(
-                            text: DateFormat('MMM d').format(gig.date),
-                            style: textTheme.titleLarge?.copyWith(
-                              letterSpacing: -0.5,
-                              fontWeight: FontWeight.w900,
-                              color: gig.status == GigStatus.draft
-                                  ? AppColors.textSecondary
-                                  : AppColors.textPrimary,
-                            ),
-                          ),
-                        ],
+                    Text(
+                      DateFormat('E, MMM d, yyyy').format(gig.date),
+                      style: textTheme.titleLarge?.copyWith(
+                        letterSpacing: -0.5,
+                        fontWeight: FontWeight.w900,
+                        color: gig.status == GigStatus.draft
+                            ? AppColors.textSecondary
+                            : AppColors.textPrimary,
                       ),
                     ),
                   const SizedBox(height: 6),

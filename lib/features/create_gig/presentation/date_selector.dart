@@ -16,7 +16,7 @@ class DateSelector extends StatelessWidget {
     return BlocBuilder<CreateGigBloc, CreateGigState>(
       builder: (context, state) {
         final dateText = DateFormat(
-          'EEEE, MMMM d, y',
+          'E, MMM d, yyyy',
         ).format(state.selectedDate);
 
         return ElevatedButton(

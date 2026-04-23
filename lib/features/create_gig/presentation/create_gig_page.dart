@@ -80,7 +80,7 @@ class CreateGigView extends StatelessWidget {
                                 return Text(
                                   state.gigId != null
                                       ? 'EDIT GIG'
-                                      : 'CREATE GIG',
+                                      : 'NEW GIG',
                                   style: textTheme.labelSmall?.copyWith(
                                     color: AppColors.electricAmber,
                                     letterSpacing: 2,

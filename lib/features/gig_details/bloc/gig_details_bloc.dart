@@ -38,5 +38,22 @@ class GigDetailsBloc extends Bloc<GigDetailsEvent, GigDetailsState> {
         emit(GigDetailsState.error(e.toString()));
       }
     });
+
+    on<GigDetailsUpdated>((event, emit) async {
+      emit(const GigDetailsState.updating());
+      try {
+        await _repository.updateGigDetails(
+          gigId: event.gigId,
+          loadInTime: event.loadInTime,
+          setTime: event.setTime,
+          baseGuarantee: event.baseGuarantee,
+          genres: event.genres,
+          venueNotes: event.venueNotes,
+        );
+        emit(const GigDetailsState.updated());
+      } catch (e) {
+        emit(GigDetailsState.error(e.toString()));
+      }
+    });
   }
 }

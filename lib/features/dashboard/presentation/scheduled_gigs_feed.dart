@@ -41,10 +41,13 @@ class ScheduledGigsFeed extends StatelessWidget {
         if (gigs.isEmpty)
           _buildEmptyState(context)
         else
-          ...gigs.map((gig) => GigCard(
-                gig: gig,
-                gigLink: gigLink,
-                venueName: venueName,
+          ...gigs.map((gig) => Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: GigCard(
+                  gig: gig,
+                  gigLink: gigLink,
+                  venueName: venueName,
+                ),
               )),
       ],
     );
@@ -89,7 +92,7 @@ class ScheduledGigsFeed extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Tap "Create Gig" to start filling your calendar.',
+            'Tap "New Gig" to start filling your calendar.',
             textAlign: TextAlign.center,
             style: textTheme.bodyMedium?.copyWith(
               color: AppColors.textTertiary,
