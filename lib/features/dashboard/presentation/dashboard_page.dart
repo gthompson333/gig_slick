@@ -200,7 +200,7 @@ class DashboardView extends StatelessWidget {
           return state.maybeWhen(
             loaded: (venueId, gigs, magicLink, venueName) =>
                 FloatingActionButton.extended(
-                  onPressed: () => context.push('/create-gig', extra: venueId),
+                  onPressed: () => context.push('/create-gig', extra: {'venueId': venueId, 'venueName': venueName}),
                   backgroundColor: AppColors.electricAmber,
                   foregroundColor: Colors.black,
                   elevation: 8,

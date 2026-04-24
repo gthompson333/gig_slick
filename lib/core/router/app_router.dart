@@ -41,8 +41,10 @@ final GoRouter appRouter = GoRouter(
       name: '/create-gig',
       path: '/create-gig',
       builder: (context, state) {
-        final venueId = state.extra as String;
-        return CreateGigPage(venueId: venueId);
+        final extras = state.extra as Map<String, dynamic>;
+        final venueId = extras['venueId'] as String;
+        final venueName = extras['venueName'] as String;
+        return CreateGigPage(venueId: venueId, venueName: venueName);
       },
     ),
     GoRoute(
@@ -51,8 +53,13 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final extras = state.extra as Map<String, dynamic>;
         final venueId = extras['venueId'] as String;
+        final venueName = extras['venueName'] as String;
         final gig = extras['gig'] as Gig;
-        return CreateGigPage(venueId: venueId, initialGig: gig);
+        return CreateGigPage(
+          venueId: venueId,
+          venueName: venueName,
+          initialGig: gig,
+        );
       },
     ),
     GoRoute(

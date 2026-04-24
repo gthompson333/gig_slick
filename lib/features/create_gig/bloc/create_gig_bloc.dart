@@ -18,9 +18,9 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
         emit(
           state.copyWith(
             venueId: event.venueId,
+            venueName: event.venueName,
             gigId: initialGig.id,
             baseGuarantee: initialGig.baseGuarantee,
-
             selectedGenres: initialGig.genres,
             selectedDate: initialGig.date,
             loadInTime: initialGig.loadInTime,
@@ -30,7 +30,7 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
           ),
         );
       } else {
-        emit(state.copyWith(venueId: event.venueId));
+        emit(state.copyWith(venueId: event.venueId, venueName: event.venueName));
       }
     });
 
@@ -70,6 +70,7 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
       emit(state.copyWith(isSubmitting: true, errorMessage: null));
       try {
         final gigId = state.gigId ?? FirebaseFirestore.instance.collection('gigs').doc().id;
+        final status = event.status ?? state.status;
         final request = CreateGigRequest(
           venueId: state.venueId,
           gigId: gigId,
@@ -80,7 +81,7 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
           loadInTime: state.loadInTime,
           setTime: state.setTime,
           venueNotes: state.venueNotes,
-          status: state.status,
+          status: status,
         );
 
         if (state.gigId != null) {

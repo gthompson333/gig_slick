@@ -6,6 +6,7 @@ part 'create_gig_state.freezed.dart';
 class CreateGigState with _$CreateGigState {
   const factory CreateGigState({
     required String venueId,
+    required String venueName,
     required double baseGuarantee,
     required List<String> selectedGenres,
     required bool isSubmitting,
@@ -21,6 +22,7 @@ class CreateGigState with _$CreateGigState {
 
   factory CreateGigState.initial() => CreateGigState(
     venueId: '',
+    venueName: '',
     baseGuarantee: 350.0,
     selectedGenres: ['Folk', 'Metal'],
     isSubmitting: false,

@@ -17,16 +17,22 @@ import 'performer_preview_card.dart';
 
 class CreateGigPage extends StatelessWidget {
   final String venueId;
+  final String venueName;
   final Gig? initialGig;
 
-  const CreateGigPage({super.key, required this.venueId, this.initialGig});
+  const CreateGigPage({
+    super.key,
+    required this.venueId,
+    required this.venueName,
+    this.initialGig,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
           getIt<CreateGigBloc>()
-            ..add(CreateGigEvent.started(venueId, initialGig: initialGig)),
+            ..add(CreateGigEvent.started(venueId, venueName, initialGig: initialGig)),
       child: const CreateGigView(),
     );
   }
@@ -88,9 +94,7 @@ class CreateGigView extends StatelessWidget {
                             BlocBuilder<CreateGigBloc, CreateGigState>(
                               builder: (context, state) {
                                 return Text(
-                                  state.gigId != null
-                                      ? 'EDIT GIG'
-                                      : 'NEW GIG',
+                                  state.venueName,
                                   style: textTheme.labelSmall?.copyWith(
                                     color: AppColors.electricAmber,
                                     letterSpacing: 2,
@@ -108,7 +112,7 @@ class CreateGigView extends StatelessWidget {
                             child: TextButton(
                               onPressed: () {
                                 context.read<CreateGigBloc>().add(
-                                      const CreateGigEvent.submitRequested(),
+                                      const CreateGigEvent.submitRequested(status: 'draft'),
                                     );
                               },
                               child: BlocBuilder<CreateGigBloc, CreateGigState>(
@@ -178,8 +182,8 @@ class CreateGigView extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      AppColors.surfaceLow.withOpacity(0.0),
-                      AppColors.surfaceLow.withOpacity(0.95),
+                      AppColors.surfaceLow.withValues(alpha: 0.0),
+                      AppColors.surfaceLow.withValues(alpha: 0.95),
                       AppColors.surfaceLow,
                     ],
                     stops: const [0.0, 0.4, 1.0],
@@ -207,7 +211,7 @@ class CreateGigView extends StatelessWidget {
                         ElevatedButton(
                           onPressed: canSubmit
                               ? () => context.read<CreateGigBloc>().add(
-                                  const CreateGigEvent.submitRequested(),
+                                  const CreateGigEvent.submitRequested(status: 'live'),
                                 )
                               : null,
                           style: ElevatedButton.styleFrom(
@@ -230,19 +234,15 @@ class CreateGigView extends StatelessWidget {
                                     strokeWidth: 3,
                                   ),
                                 )
-                              : BlocBuilder<CreateGigBloc, CreateGigState>(
-                                  builder: (context, state) {
-                                    return Text(
-                                      state.gigId != null
-                                          ? 'SAVE CHANGES'
-                                          : 'ACTIVATE & SHARE',
-                                      style: textTheme.labelSmall?.copyWith(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w900,
-                                        letterSpacing: 2.0,
-                                      ),
-                                    );
-                                  },
+                              : Text(
+                                  state.gigId != null
+                                      ? 'SAVE CHANGES'
+                                      : 'Create and Go Live!',
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 2.0,
+                                  ),
                                 ),
                         ),
                       ],

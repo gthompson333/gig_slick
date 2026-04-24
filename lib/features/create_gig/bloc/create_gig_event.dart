@@ -5,7 +5,7 @@ part 'create_gig_event.freezed.dart';
 
 @freezed
 class CreateGigEvent with _$CreateGigEvent {
-  const factory CreateGigEvent.started(String venueId, {Gig? initialGig}) =
+  const factory CreateGigEvent.started(String venueId, String venueName, {Gig? initialGig}) =
       Started;
   const factory CreateGigEvent.guaranteeChanged(double amount) =
       GuaranteeChanged;
@@ -17,5 +17,5 @@ class CreateGigEvent with _$CreateGigEvent {
   const factory CreateGigEvent.setTimeChanged(String time) = SetTimeChanged;
   const factory CreateGigEvent.venueNotesChanged(String notes) =
       VenueNotesChanged;
-  const factory CreateGigEvent.submitRequested() = SubmitRequested;
+  const factory CreateGigEvent.submitRequested({String? status}) = SubmitRequested;
 }
