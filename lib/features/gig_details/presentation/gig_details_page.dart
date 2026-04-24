@@ -475,7 +475,7 @@ class _GigDetailsViewState extends State<GigDetailsView> {
                     if (widget.gig.status != GigStatus.draft) ...[
                       _buildSectionHeader(textTheme, 'INVITATION'),
                       const SizedBox(height: 16),
-                      PerformerLinkCard(linkUrl: widget.gigLink),
+                      PerformerLinkCard(linkUrl: '${widget.gigLink}/${widget.gig.gigId}'),
                     ] else if (!_isEditing) ...[
                       const SizedBox(height: 16),
                       SizedBox(
