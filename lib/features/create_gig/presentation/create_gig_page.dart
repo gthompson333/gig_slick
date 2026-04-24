@@ -63,12 +63,22 @@ class CreateGigView extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            color: AppColors.textTertiary,
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: TextButton(
+                              onPressed: () => context.pop(),
+                              child: const Text(
+                                'CANCEL',
+                                style: TextStyle(
+                                  color: AppColors.textTertiary,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 12,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                            ),
                           ),
-                          onPressed: () => context.pop(),
                         ),
                         Row(
                           mainAxisSize: MainAxisSize.min,
@@ -92,9 +102,41 @@ class CreateGigView extends StatelessWidget {
                             const SizedBox(width: 4),
                           ],
                         ),
-                        const SizedBox(
-                          width: 48,
-                        ), // Spacer to center the logo row
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                context.read<CreateGigBloc>().add(
+                                      const CreateGigEvent.submitRequested(),
+                                    );
+                              },
+                              child: BlocBuilder<CreateGigBloc, CreateGigState>(
+                                builder: (context, state) {
+                                  if (state.isSubmitting) {
+                                    return const SizedBox(
+                                      width: 14,
+                                      height: 14,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: AppColors.electricAmber,
+                                      ),
+                                    );
+                                  }
+                                  return const Text(
+                                    'SAVE',
+                                    style: TextStyle(
+                                      color: AppColors.electricAmber,
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 12,
+                                      letterSpacing: 1,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -211,7 +253,4 @@ class CreateGigView extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
 }
