@@ -1,5 +1,6 @@
 class CreateGigRequest {
   final String venueId;
+  final String gigId;
   final DateTime date;
   final double baseGuarantee;
   final List<String> genres;
@@ -11,6 +12,7 @@ class CreateGigRequest {
 
   CreateGigRequest({
     required this.venueId,
+    required this.gigId,
     required this.date,
     required this.baseGuarantee,
     required this.genres,
@@ -23,6 +25,7 @@ class CreateGigRequest {
   Map<String, dynamic> toJson() {
     return {
       'venueId': venueId,
+      'gigId': gigId,
       'date': date,
       'baseGuarantee': baseGuarantee,
 

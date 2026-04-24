@@ -10,6 +10,7 @@ enum GigStatus { draft, live, pending, confirmed }
 class Gig with _$Gig {
   const factory Gig({
     required String id,
+    required String gigId,
     required String venueId,
     @TimestampConverter() required DateTime date,
     required String loadInTime,

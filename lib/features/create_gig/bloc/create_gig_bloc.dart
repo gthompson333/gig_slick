@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
@@ -68,8 +69,10 @@ class CreateGigBloc extends Bloc<CreateGigEvent, CreateGigState> {
     on<SubmitRequested>((event, emit) async {
       emit(state.copyWith(isSubmitting: true, errorMessage: null));
       try {
+        final gigId = state.gigId ?? FirebaseFirestore.instance.collection('gigs').doc().id;
         final request = CreateGigRequest(
           venueId: state.venueId,
+          gigId: gigId,
           date: state.selectedDate,
           baseGuarantee: state.baseGuarantee,
 
