@@ -101,6 +101,15 @@ class _OnboardingViewState extends State<OnboardingView> {
                             height: 1.0,
                           ),
                         ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'A slicker way for venues to manage their gigs.',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ],
                     ),
 
