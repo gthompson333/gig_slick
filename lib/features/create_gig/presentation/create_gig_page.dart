@@ -145,9 +145,9 @@ class CreateGigView extends StatelessWidget {
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(24, 8, 24, 140),
-                      child: const Column(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
+                        children: const [
                           DateSelector(),
                           SizedBox(height: 32),
                           PayoutSection(),
@@ -178,8 +178,8 @@ class CreateGigView extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      AppColors.surfaceLow.withValues(alpha: 0.0),
-                      AppColors.surfaceLow.withValues(alpha: 0.95),
+                      AppColors.surfaceLow.withOpacity(0.0),
+                      AppColors.surfaceLow.withOpacity(0.95),
                       AppColors.surfaceLow,
                     ],
                     stops: const [0.0, 0.4, 1.0],
@@ -253,4 +253,7 @@ class CreateGigView extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
 }
