@@ -119,6 +119,24 @@ class DashboardView extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
+                        const SizedBox(height: 16),
+                        Text(
+                          'Gig Slick',
+                          style: textTheme.displayMedium?.copyWith(
+                            color: AppColors.electricAmber,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'A slicker way for venues to manage their gigs.',
+                          style: textTheme.bodyLarge?.copyWith(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 48),
                         PerformerLinkCard(linkUrl: gigLink),
                         const SizedBox(height: 16),
                         ScheduledGigsFeed(
