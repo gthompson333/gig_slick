@@ -10,6 +10,8 @@
 .svn/
 .project
 .settings/
+.gitconfig
+.dart-tool/
 
 # IntelliJ related
 *.iml
@@ -37,6 +39,7 @@
 **/ios/Pods/
 **/ios/ServiceDefinitions.json
 **/.dart_tool/
+**/.dart-tool/
 **/.flutter-plugins
 **/.flutter-plugins-dependencies
 **/.packages
