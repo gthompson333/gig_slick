@@ -28,12 +28,39 @@ class OnboardingView extends StatefulWidget {
 }
 
 class _OnboardingViewState extends State<OnboardingView> {
-  final _phoneController = TextEditingController();
+  final _identifierController = TextEditingController();
 
   @override
   void dispose() {
-    _phoneController.dispose();
+    _identifierController.dispose();
     super.dispose();
+  }
+
+  String _getIdentifierType(String input) {
+    if (input.contains('@')) return 'email';
+    
+    // Strip non-numeric for phone detection
+    final numeric = input.replaceAll(RegExp(r'[^0-9+]'), '');
+    if (numeric.startsWith('+') || numeric.length >= 10) return 'phone';
+    
+    return 'invalid';
+  }
+
+  String _normalizePhone(String input) {
+    String phone = input.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+    if (phone.length == 10 && !phone.startsWith('+')) {
+      phone = '+1$phone';
+    }
+    return phone;
+  }
+
+  bool _isValidEmail(String input) {
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(input);
+  }
+
+  bool _isValidPhone(String input) {
+    final normalized = _normalizePhone(input);
+    return normalized.startsWith('+') && normalized.length >= 10;
   }
 
   @override
@@ -50,6 +77,8 @@ class _OnboardingViewState extends State<OnboardingView> {
           }
         } else if (state is AuthOtpSent) {
           _showOtpDialog(context, state.verificationId, state.phoneNumber);
+        } else if (state is AuthEmailLinkSent) {
+          _showEmailSentDialog(context, state.email);
         } else if (state is AuthError) {
           // If a dialog is open (like the OTP dialog), this alert will show on top or after it.
           // However, the OTP dialog is already popped on 'VERIFY' tap.
@@ -118,9 +147,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Phone Input
+                        // Smart Identifier Input
                         Text(
-                          'Phone Number',
+                          'Email or Phone Number',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w600,
@@ -136,71 +165,75 @@ class _OnboardingViewState extends State<OnboardingView> {
                               width: 2,
                             ),
                           ),
-                          child: TextField(
-                            controller: _phoneController,
-                            keyboardType: TextInputType.phone,
-                            style: theme.textTheme.bodyLarge,
-                            cursorColor: AppColors.electricAmber,
-                            decoration: InputDecoration(
-                              hintText: '+1 555-555-5555',
-                              hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                                color: AppColors.textTertiary,
-                              ),
-                              prefixIcon: const Icon(
-                                Icons.phone_rounded,
-                                color: AppColors.electricAmber,
-                              ),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 20,
-                              ),
-                            ),
+                          child: ValueListenableBuilder<TextEditingValue>(
+                            valueListenable: _identifierController,
+                            builder: (context, value, child) {
+                              final type = _getIdentifierType(value.text);
+                              IconData icon = Icons.login_rounded;
+                              if (type == 'email') icon = Icons.email_rounded;
+                              if (type == 'phone') icon = Icons.phone_rounded;
+
+                              return TextField(
+                                controller: _identifierController,
+                                keyboardType: TextInputType.emailAddress,
+                                style: theme.textTheme.bodyLarge,
+                                cursorColor: AppColors.electricAmber,
+                                decoration: InputDecoration(
+                                  hintText: 'Email or Phone Number',
+                                  hintStyle:
+                                      theme.textTheme.bodyLarge?.copyWith(
+                                        color: AppColors.textTertiary,
+                                      ),
+                                  prefixIcon: Icon(
+                                    icon,
+                                    color: AppColors.electricAmber,
+                                  ),
+                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 20,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                         const SizedBox(height: 32),
 
                         ValueListenableBuilder<TextEditingValue>(
-                          valueListenable: _phoneController,
+                          valueListenable: _identifierController,
                           builder: (context, value, child) {
-                            final phoneText = value.text.trim();
-                            final isButtonEnabled =
-                                phoneText.isNotEmpty && !isLoading;
+                            final input = value.text.trim();
+                            final type = _getIdentifierType(input);
+                            
+                            bool isButtonEnabled = false;
+                            String buttonText = 'Log in';
+
+                            if (type == 'email') {
+                              isButtonEnabled = _isValidEmail(input);
+                              buttonText = 'Log in with Email';
+                            } else if (type == 'phone') {
+                              isButtonEnabled = _isValidPhone(input);
+                              buttonText = 'Log in with Phone Number';
+                            }
+
+                            isButtonEnabled = isButtonEnabled && !isLoading;
 
                             return SizedBox(
                               height: 64,
                               child: ElevatedButton(
                                 onPressed: isButtonEnabled
                                     ? () {
-                                        String phone = phoneText;
-
-                                        // Basic normalization: remove spaces, dashes, parentheses
-                                        phone = phone.replaceAll(
-                                          RegExp(r'[\s\-\(\)]'),
-                                          '',
-                                        );
-
-                                        // If it's a 10-digit number without +, assume +1
-                                        if (phone.length == 10 &&
-                                            !phone.startsWith('+')) {
-                                          phone = '+1$phone';
-                                        } else if (!phone.startsWith('+')) {
-                                          // If it's not starting with +, show a hint
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                'Please include your country code (e.g. +1)',
-                                              ),
-                                            ),
+                                        if (type == 'email') {
+                                          context.read<AuthBloc>().add(
+                                            EmailLoginRequested(input),
                                           );
-                                          return;
+                                        } else {
+                                          final phone = _normalizePhone(input);
+                                          context.read<AuthBloc>().add(
+                                            PhoneLoginRequested(phone),
+                                          );
                                         }
-
-                                        context.read<AuthBloc>().add(
-                                          PhoneLoginRequested(phone),
-                                        );
                                       }
                                     : null,
                                 style: ElevatedButton.styleFrom(
@@ -219,7 +252,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                                         color: Colors.black,
                                       )
                                     : Text(
-                                        'Log in with Phone Number',
+                                        buttonText,
                                         style: theme.textTheme.titleLarge
                                             ?.copyWith(
                                               color: isButtonEnabled
@@ -418,6 +451,60 @@ class _OnboardingViewState extends State<OnboardingView> {
             onPressed: () => Navigator.pop(context),
             child: const Text(
               'OK',
+              style: TextStyle(
+                color: AppColors.electricAmber,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEmailSentDialog(BuildContext context, String email) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surfaceMid,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          'Check Your Email',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            color: AppColors.electricAmber,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.mark_email_read_rounded,
+              size: 64,
+              color: AppColors.electricAmber,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'A sign-in link has been sent to\n$email',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Click the link in your email to complete the login process.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.textTertiary,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'GOT IT',
               style: TextStyle(
                 color: AppColors.electricAmber,
                 fontWeight: FontWeight.bold,

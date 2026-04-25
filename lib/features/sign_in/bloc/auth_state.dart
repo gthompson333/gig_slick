@@ -30,6 +30,15 @@ class AuthOtpSent extends AuthState {
   List<Object> get props => [verificationId, phoneNumber];
 }
 
+class AuthEmailLinkSent extends AuthState {
+  final String email;
+
+  const AuthEmailLinkSent(this.email);
+
+  @override
+  List<Object> get props => [email];
+}
+
 class AuthLinkOtpSent extends AuthState {
   final String verificationId;
   final String phoneNumber;

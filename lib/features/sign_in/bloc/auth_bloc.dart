@@ -14,6 +14,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this._authRepository, this._dashboardRepository)
     : super(AuthInitial()) {
     on<PhoneLoginRequested>(_onPhoneLoginRequested);
+    on<EmailLoginRequested>(_onEmailLoginRequested);
     on<OtpSubmitted>(_onOtpSubmitted);
     on<SignInAsGuestRequested>(_onSignInAsGuest);
     on<LinkPhoneRequested>(_onLinkPhoneRequested);
@@ -44,6 +45,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           add(AuthErrorOccurred(error));
         },
       );
+    } catch (e) {
+      emit(AuthError(AuthErrorMapper.mapMessage(e)));
+    }
+  }
+
+  Future<void> _onEmailLoginRequested(
+    EmailLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    try {
+      await _authRepository.signInWithMagicLink(event.email);
+      emit(AuthEmailLinkSent(event.email));
     } catch (e) {
       emit(AuthError(AuthErrorMapper.mapMessage(e)));
     }

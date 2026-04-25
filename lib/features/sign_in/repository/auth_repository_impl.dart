@@ -93,5 +93,23 @@ class AuthRepositoryImpl implements AuthRepository {
 
   // Placeholders for other interface methods if needed, or remove from interface if unused
   @override
-  Future<void> signInWithMagicLink(String email) async {}
+  Future<void> signInWithMagicLink(String email) async {
+    try {
+      await _firebaseAuth.sendSignInLinkToEmail(
+        email: email,
+        actionCodeSettings: ActionCodeSettings(
+          url: 'https://gig-slick-2026-auth.firebaseapp.com',
+          handleCodeInApp: true,
+          androidPackageName: 'com.example.gig_slick',
+          androidInstallApp: true,
+          androidMinimumVersion: '1',
+          iOSBundleId: 'com.example.gigSlick',
+        ),
+      );
+    } on FirebaseAuthException {
+      rethrow;
+    } catch (e) {
+      throw Exception('Failed to send magic link: ${e.toString()}');
+    }
+  }
 }

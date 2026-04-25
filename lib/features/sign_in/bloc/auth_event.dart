@@ -13,6 +13,13 @@ class PhoneLoginRequested extends AuthEvent {
   List<Object> get props => [phoneNumber];
 }
 
+class EmailLoginRequested extends AuthEvent {
+  final String email;
+  const EmailLoginRequested(this.email);
+  @override
+  List<Object> get props => [email];
+}
+
 class OtpSubmitted extends AuthEvent {
   final String verificationId;
   final String smsCode;
