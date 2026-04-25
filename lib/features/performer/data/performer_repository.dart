@@ -1,0 +1,74 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:injectable/injectable.dart';
+
+import '../../dashboard/data/entities/gig.dart';
+
+abstract class PerformerRepository {
+  Future<Gig?> getGig(String gigId);
+  Future<void> applyForGig({
+    required String gigId,
+    required String venueName,
+    required String performerName,
+    required String performerLink,
+  });
+}
+
+@LazySingleton(as: PerformerRepository)
+class PerformerRepositoryImpl implements PerformerRepository {
+  final FirebaseFirestore _firestore;
+
+  PerformerRepositoryImpl(this._firestore);
+
+  @override
+  Future<Gig?> getGig(String gigId) async {
+    // Try fetching by document ID first (for newly created gigs)
+    final doc = await _firestore.collection('gigs').doc(gigId).get();
+    if (doc.exists) {
+      return Gig.fromJson({...doc.data()!, 'id': doc.id});
+    }
+
+    // Fallback for older gigs where the document ID did not match the gigId field
+    final query = await _firestore
+        .collection('gigs')
+        .where('gigId', isEqualTo: gigId)
+        .limit(1)
+        .get();
+
+    if (query.docs.isNotEmpty) {
+      final queryDoc = query.docs.first;
+      return Gig.fromJson({...queryDoc.data(), 'id': queryDoc.id});
+    }
+
+    return null;
+  }
+
+  @override
+  Future<void> applyForGig({
+    required String gigId,
+    required String venueName,
+    required String performerName,
+    required String performerLink,
+  }) async {
+    final batch = _firestore.batch();
+
+    // 1. Create a new document in the applications collection
+    final applicationRef = _firestore.collection('applications').doc();
+    batch.set(applicationRef, {
+      'gigId': gigId,
+      'venueName': venueName,
+      'performerName': performerName,
+      'performerLink': performerLink,
+      'appliedAt': FieldValue.serverTimestamp(),
+    });
+
+    // 2. Update the existing Gig document
+    final gigRef = _firestore.collection('gigs').doc(gigId);
+    batch.update(gigRef, {
+      'status': 'pending',
+      'appliedPerformerName': performerName,
+      'appliedPerformerLink': performerLink,
+    });
+
+    await batch.commit();
+  }
+}

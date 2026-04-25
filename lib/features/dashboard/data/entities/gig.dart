@@ -22,6 +22,8 @@ class Gig with _$Gig {
     @Default(0) int pendingCount,
     String? confirmedPerformerName,
     String? confirmedPerformerAvatarUrl,
+    String? appliedPerformerName,
+    String? appliedPerformerLink,
   }) = _Gig;
 
   factory Gig.fromJson(Map<String, dynamic> json) => _$GigFromJson(json);
