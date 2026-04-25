@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../../core/services/link_service.dart';
 import '../data/entities/gig.dart';
 import '../data/repositories/dashboard_repository.dart';
 import 'dashboard_event.dart';
@@ -9,8 +10,9 @@ import 'dashboard_state.dart';
 @injectable
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final DashboardRepository _repository;
+  final LinkService _linkService;
 
-  DashboardBloc(this._repository) : super(const DashboardState.initial()) {
+  DashboardBloc(this._repository, this._linkService) : super(const DashboardState.initial()) {
     on<LoadDashboardRequested>((event, emit) async {
       emit(const DashboardState.loading());
       try {
@@ -21,11 +23,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         }
 
         final venueName = venueData['name'] as String;
-        // Normalize name for the link (lowercase kebab-case)
-        final normalizedName = venueName.toLowerCase().replaceAll(' ', '-');
-        final performerLink = 'gigslick.link/$normalizedName';
-
         final venueId = venueData['id'] as String;
+        final performerLink = _linkService.generateVenueLink(venueId);
 
         await emit.forEach<List<Gig>>(
           _repository.getScheduledGigsStream(venueId),

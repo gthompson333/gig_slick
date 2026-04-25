@@ -9,6 +9,7 @@ import '../../dashboard/presentation/performer_link_card.dart';
 import '../bloc/gig_details_bloc.dart';
 import '../bloc/gig_details_event.dart';
 import '../bloc/gig_details_state.dart';
+import '../../../core/services/link_service.dart';
 
 class GigDetailsPage extends StatelessWidget {
   final Gig gig;
@@ -475,7 +476,11 @@ class _GigDetailsViewState extends State<GigDetailsView> {
                     if (widget.gig.status != GigStatus.draft) ...[
                       _buildSectionHeader(textTheme, 'INVITATION'),
                       const SizedBox(height: 16),
-                      PerformerLinkCard(linkUrl: '${widget.gigLink}/${widget.gig.gigId}'),
+                      PerformerLinkCard(
+                        linkUrl: getIt<LinkService>().generateGigLink(widget.gig.venueId, widget.gig.id),
+                        showLink: false,
+                        buttonLabel: 'COPY GIG LINK',
+                      ),
                     ] else if (!_isEditing) ...[
                       const SizedBox(height: 16),
                       SizedBox(

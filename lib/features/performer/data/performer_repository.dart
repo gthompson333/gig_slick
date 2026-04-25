@@ -5,6 +5,7 @@ import '../../dashboard/data/entities/gig.dart';
 
 abstract class PerformerRepository {
   Future<Gig?> getGig(String gigId);
+  Future<String?> getVenueName(String venueId);
   Future<void> applyForGig({
     required String gigId,
     required String venueName,
@@ -40,6 +41,12 @@ class PerformerRepositoryImpl implements PerformerRepository {
     }
 
     return null;
+  }
+
+  @override
+  Future<String?> getVenueName(String venueId) async {
+    final doc = await _firestore.collection('venues').doc(venueId).get();
+    return doc.data()?['name'] as String?;
   }
 
   @override

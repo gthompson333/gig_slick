@@ -4,8 +4,15 @@ import '../../../core/theme/app_colors.dart';
 
 class PerformerLinkCard extends StatelessWidget {
   final String linkUrl;
+  final bool showLink;
+  final String buttonLabel;
 
-  const PerformerLinkCard({super.key, required this.linkUrl});
+  const PerformerLinkCard({
+    super.key,
+    required this.linkUrl,
+    this.showLink = true,
+    this.buttonLabel = 'COPY LINK',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,32 +46,34 @@ class PerformerLinkCard extends StatelessWidget {
                 height: 1.5,
               ),
             ),
-            const SizedBox(height: 32),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceLow,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: SelectableText(
-                linkUrl,
-                textAlign: TextAlign.center,
-                style: textTheme.bodyLarge?.copyWith(
-                  color: AppColors.kineticCyan,
-                  fontFamily: 'Courier',
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.2,
+            if (showLink) ...[
+              const SizedBox(height: 32),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceLow,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: SelectableText(
+                  linkUrl,
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: AppColors.kineticCyan,
+                    fontFamily: 'Courier',
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.2,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
+            ],
+            const SizedBox(height: 32),
             GestureDetector(
               onTap: () {
                 Clipboard.setData(ClipboardData(text: linkUrl));
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Link copied to clipboard'),
+                    content: Text('Performer link copied to clipboard!'),
                     backgroundColor: AppColors.surfaceHigh,
                     behavior: SnackBarBehavior.floating,
                   ),
@@ -94,7 +103,7 @@ class PerformerLinkCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'COPY GIGS LINK',
+                      buttonLabel,
                       style: textTheme.labelSmall?.copyWith(
                         color: Colors.black,
                         fontWeight: FontWeight.w900,

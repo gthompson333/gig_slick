@@ -8,12 +8,13 @@ abstract class PerformerEvent extends Equatable {
 }
 
 class LoadGigRequested extends PerformerEvent {
+  final String venueId;
   final String gigId;
 
-  const LoadGigRequested(this.gigId);
+  const LoadGigRequested(this.venueId, this.gigId);
 
   @override
-  List<Object?> get props => [gigId];
+  List<Object?> get props => [venueId, gigId];
 }
 
 class SubmitApplicationRequested extends PerformerEvent {

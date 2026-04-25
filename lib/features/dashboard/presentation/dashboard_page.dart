@@ -120,7 +120,10 @@ class DashboardView extends StatelessWidget {
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
                         const SizedBox(height: 16),
-                        PerformerLinkCard(linkUrl: gigLink),
+                        PerformerLinkCard(
+                          linkUrl: gigLink,
+                          buttonLabel: 'COPY VENUE LINK',
+                        ),
                         const SizedBox(height: 16),
                         ScheduledGigsFeed(
                           gigs: gigs,

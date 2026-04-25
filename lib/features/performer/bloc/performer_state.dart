@@ -18,18 +18,20 @@ class PerformerLoading extends PerformerState {
 
 class PerformerLoaded extends PerformerState {
   final Gig gig;
-  const PerformerLoaded(this.gig);
+  final String venueName;
+  const PerformerLoaded(this.gig, this.venueName);
 
   @override
-  List<Object?> get props => [gig];
+  List<Object?> get props => [gig, venueName];
 }
 
 class PerformerSubmitting extends PerformerState {
   final Gig gig;
-  const PerformerSubmitting(this.gig);
+  final String venueName;
+  const PerformerSubmitting(this.gig, this.venueName);
 
   @override
-  List<Object?> get props => [gig];
+  List<Object?> get props => [gig, venueName];
 }
 
 class PerformerSubmittedSuccess extends PerformerState {

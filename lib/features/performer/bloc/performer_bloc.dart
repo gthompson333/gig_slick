@@ -13,11 +13,19 @@ class PerformerBloc extends Bloc<PerformerEvent, PerformerState> {
     on<LoadGigRequested>((event, emit) async {
       emit(const PerformerLoading());
       try {
+        final venueName = await _repository.getVenueName(event.venueId) ?? 'Unknown Venue';
+
+        if (event.gigId.isEmpty) {
+          // Venue-only link, handle gracefully or error since no gig
+          emit(const PerformerError('Gig not found.'));
+          return;
+        }
+
         final gig = await _repository.getGig(event.gigId);
         if (gig == null) {
           emit(const PerformerError('Gig not found.'));
         } else {
-          emit(PerformerLoaded(gig));
+          emit(PerformerLoaded(gig, venueName));
         }
       } catch (e) {
         emit(PerformerError(e.toString()));
@@ -27,7 +35,8 @@ class PerformerBloc extends Bloc<PerformerEvent, PerformerState> {
     on<SubmitApplicationRequested>((event, emit) async {
       if (state is PerformerLoaded) {
         final currentGig = (state as PerformerLoaded).gig;
-        emit(PerformerSubmitting(currentGig));
+        final currentVenueName = (state as PerformerLoaded).venueName;
+        emit(PerformerSubmitting(currentGig, currentVenueName));
         try {
           await _repository.applyForGig(
             gigId: event.gigId,

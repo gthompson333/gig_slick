@@ -5,18 +5,26 @@ final GoRouter performerRouter = GoRouter(
   initialLocation: '/', // fallback if needed
   routes: [
     GoRoute(
-      path: '/:venueName/:gigId',
+      path: '/v/:venueId/g/:gigId',
       builder: (context, state) {
-        final venueName = state.pathParameters['venueName'] ?? 'Unknown Venue';
+        final venueId = state.pathParameters['venueId'] ?? 'Unknown Venue';
         final gigId = state.pathParameters['gigId'] ?? '';
-        return PerformerPage(venueName: venueName, gigId: gigId);
+        return PerformerPage(venueId: venueId, gigId: gigId);
+      },
+    ),
+    // Route for venue only
+    GoRoute(
+      path: '/v/:venueId',
+      builder: (context, state) {
+        final venueId = state.pathParameters['venueId'] ?? 'Unknown Venue';
+        return PerformerPage(venueId: venueId, gigId: '');
       },
     ),
     // Fallback route in case the URL doesn't match the format
     GoRoute(
       path: '/',
       builder: (context, state) {
-        return const PerformerPage(venueName: 'Unknown Venue', gigId: '');
+        return const PerformerPage(venueId: 'Unknown Venue', gigId: '');
       },
     ),
   ],

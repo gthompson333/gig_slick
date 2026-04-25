@@ -9,31 +9,31 @@ import '../bloc/performer_event.dart';
 import '../bloc/performer_state.dart';
 
 class PerformerPage extends StatelessWidget {
-  final String venueName;
+  final String venueId;
   final String gigId;
 
   const PerformerPage({
     super.key,
-    required this.venueName,
+    required this.venueId,
     required this.gigId,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<PerformerBloc>()..add(LoadGigRequested(gigId)),
-      child: PerformerView(venueName: venueName, gigId: gigId),
+      create: (context) => getIt<PerformerBloc>()..add(LoadGigRequested(venueId, gigId)),
+      child: PerformerView(venueId: venueId, gigId: gigId),
     );
   }
 }
 
 class PerformerView extends StatefulWidget {
-  final String venueName;
+  final String venueId;
   final String gigId;
 
   const PerformerView({
     super.key,
-    required this.venueName,
+    required this.venueId,
     required this.gigId,
   });
 
@@ -56,11 +56,9 @@ class _PerformerViewState extends State<PerformerView> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    // Replace hyphens with spaces and capitalize for display
-    final displayVenueName = widget.venueName.replaceAll('-', ' ').toUpperCase();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF121212), // Dark background requested
+      backgroundColor: const Color(0xFF121212),
       body: Center(
         child: SingleChildScrollView(
           child: ConstrainedBox(
@@ -90,9 +88,12 @@ class _PerformerViewState extends State<PerformerView> {
                     final gig = state is PerformerLoaded
                         ? state.gig
                         : (state as PerformerSubmitting).gig;
+                    final venueName = state is PerformerLoaded
+                        ? state.venueName
+                        : (state as PerformerSubmitting).venueName;
                     final isSubmitting = state is PerformerSubmitting;
 
-                    return _buildForm(context, textTheme, displayVenueName, gig, isSubmitting);
+                    return _buildForm(context, textTheme, venueName, gig, isSubmitting);
                   }
 
                   if (state is PerformerError) {
