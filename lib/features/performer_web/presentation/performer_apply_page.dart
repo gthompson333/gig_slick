@@ -8,11 +8,11 @@ import '../bloc/performer_bloc.dart';
 import '../bloc/performer_event.dart';
 import '../bloc/performer_state.dart';
 
-class PerformerPage extends StatelessWidget {
+class PerformerApplyPage extends StatelessWidget {
   final String venueId;
   final String gigId;
 
-  const PerformerPage({
+  const PerformerApplyPage({
     super.key,
     required this.venueId,
     required this.gigId,
@@ -22,26 +22,25 @@ class PerformerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<PerformerBloc>()..add(LoadGigRequested(venueId, gigId)),
-      child: PerformerView(venueId: venueId, gigId: gigId),
+      child: PerformerApplyView(venueId: venueId, gigId: gigId),
     );
   }
 }
 
-class PerformerView extends StatefulWidget {
+class PerformerApplyView extends StatefulWidget {
   final String venueId;
   final String gigId;
 
-  const PerformerView({
+  const PerformerApplyView({
     super.key,
     required this.venueId,
     required this.gigId,
   });
 
-  @override
-  State<PerformerView> createState() => _PerformerViewState();
+  State<PerformerApplyView> createState() => _PerformerApplyViewState();
 }
 
-class _PerformerViewState extends State<PerformerView> {
+class _PerformerApplyViewState extends State<PerformerApplyView> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _socialController = TextEditingController();
@@ -172,19 +171,18 @@ class _PerformerViewState extends State<PerformerView> {
         children: [
           Text(
             displayVenueName,
-            style: textTheme.headlineMedium?.copyWith(
+            style: textTheme.displayLarge?.copyWith(
               color: AppColors.electricAmber,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.5,
+              height: 1.1,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
-            '$displayVenueName is looking for a performer. Are you available?',
+            '$displayVenueName is looking for a performer for this slot.',
             style: textTheme.titleLarge?.copyWith(
               color: AppColors.textPrimary,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w400,
             ),
             textAlign: TextAlign.center,
           ),
@@ -253,7 +251,7 @@ class _PerformerViewState extends State<PerformerView> {
             enabled: !isSubmitting,
             style: const TextStyle(color: AppColors.textPrimary),
             decoration: InputDecoration(
-              labelText: 'Social Media URL (Spotify, Instagram, etc.)',
+              labelText: 'Social Media Handle',
               labelStyle: const TextStyle(color: AppColors.textSecondary),
               filled: true,
               fillColor: AppColors.surfaceLow,
@@ -263,7 +261,7 @@ class _PerformerViewState extends State<PerformerView> {
               ),
             ),
             validator: (value) =>
-                value == null || value.isEmpty ? 'Please provide a link' : null,
+                value == null || value.isEmpty ? 'Please enter your social media handle' : null,
           ),
           const SizedBox(height: 48),
           Container(
