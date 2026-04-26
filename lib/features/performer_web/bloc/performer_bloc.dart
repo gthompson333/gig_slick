@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
 import '../data/performer_repository.dart';
+import '../../dashboard/data/entities/gig.dart';
 import 'performer_event.dart';
 import 'performer_state.dart';
 
@@ -33,9 +34,18 @@ class PerformerBloc extends Bloc<PerformerEvent, PerformerState> {
     });
 
     on<SubmitApplicationRequested>((event, emit) async {
+      Gig? currentGig;
+      String? currentVenueName;
+
       if (state is PerformerLoaded) {
-        final currentGig = (state as PerformerLoaded).gig;
-        final currentVenueName = (state as PerformerLoaded).venueName;
+        currentGig = (state as PerformerLoaded).gig;
+        currentVenueName = (state as PerformerLoaded).venueName;
+      } else if (state is PerformerSubmissionError) {
+        currentGig = (state as PerformerSubmissionError).gig;
+        currentVenueName = (state as PerformerSubmissionError).venueName;
+      }
+
+      if (currentGig != null && currentVenueName != null) {
         emit(PerformerSubmitting(currentGig, currentVenueName));
         try {
           await _repository.applyForGig(
@@ -47,7 +57,7 @@ class PerformerBloc extends Bloc<PerformerEvent, PerformerState> {
           );
           emit(const PerformerSubmittedSuccess());
         } catch (e) {
-          emit(PerformerError(e.toString()));
+          emit(PerformerSubmissionError(currentGig, currentVenueName, e.toString()));
         }
       }
     });

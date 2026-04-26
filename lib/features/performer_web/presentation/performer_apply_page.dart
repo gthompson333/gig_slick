@@ -37,6 +37,7 @@ class PerformerApplyView extends StatefulWidget {
     required this.gigId,
   });
 
+  @override
   State<PerformerApplyView> createState() => _PerformerApplyViewState();
 }
 
@@ -69,6 +70,14 @@ class _PerformerApplyViewState extends State<PerformerApplyView> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(state.message)),
                 );
+              } else if (state is PerformerSubmissionError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: Colors.redAccent,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
               }
             },
             builder: (context, state) {
@@ -85,11 +94,17 @@ class _PerformerApplyViewState extends State<PerformerApplyView> {
                 );
               }
 
-              if (state is PerformerLoaded || state is PerformerSubmitting) {
-                final gig = state is PerformerLoaded ? state.gig : (state as PerformerSubmitting).gig;
+              if (state is PerformerLoaded || state is PerformerSubmitting || state is PerformerSubmissionError) {
+                final gig = state is PerformerLoaded
+                    ? state.gig
+                    : (state is PerformerSubmitting
+                        ? state.gig
+                        : (state as PerformerSubmissionError).gig);
                 final venueName = state is PerformerLoaded
                     ? state.venueName
-                    : (state as PerformerSubmitting).venueName;
+                    : (state is PerformerSubmitting
+                        ? state.venueName
+                        : (state as PerformerSubmissionError).venueName);
                 final isSubmitting = state is PerformerSubmitting;
 
                 return Column(

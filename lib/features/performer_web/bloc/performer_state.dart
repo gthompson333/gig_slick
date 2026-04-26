@@ -45,3 +45,13 @@ class PerformerError extends PerformerState {
   @override
   List<Object?> get props => [message];
 }
+
+class PerformerSubmissionError extends PerformerState {
+  final Gig gig;
+  final String venueName;
+  final String message;
+  const PerformerSubmissionError(this.gig, this.venueName, this.message);
+
+  @override
+  List<Object?> get props => [gig, venueName, message];
+}
