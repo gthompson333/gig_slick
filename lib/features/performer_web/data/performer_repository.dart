@@ -10,6 +10,7 @@ abstract class PerformerRepository {
     required String gigId,
     required String venueName,
     required String performerName,
+    required String performerEmail,
     required String performerLink,
   });
 }
@@ -54,6 +55,7 @@ class PerformerRepositoryImpl implements PerformerRepository {
     required String gigId,
     required String venueName,
     required String performerName,
+    required String performerEmail,
     required String performerLink,
   }) async {
     final batch = _firestore.batch();
@@ -64,6 +66,7 @@ class PerformerRepositoryImpl implements PerformerRepository {
       'gigId': gigId,
       'venueName': venueName,
       'performerName': performerName,
+      'performerEmail': performerEmail,
       'performerLink': performerLink,
       'appliedAt': FieldValue.serverTimestamp(),
     });
@@ -73,6 +76,7 @@ class PerformerRepositoryImpl implements PerformerRepository {
     batch.update(gigRef, {
       'status': 'pending',
       'appliedPerformerName': performerName,
+      'appliedPerformerEmail': performerEmail,
       'appliedPerformerLink': performerLink,
     });
 

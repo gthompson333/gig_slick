@@ -21,15 +21,17 @@ class SubmitApplicationRequested extends PerformerEvent {
   final String gigId;
   final String venueName;
   final String performerName;
+  final String performerEmail;
   final String performerLink;
 
   const SubmitApplicationRequested({
     required this.gigId,
     required this.venueName,
     required this.performerName,
+    required this.performerEmail,
     required this.performerLink,
   });
 
   @override
-  List<Object?> get props => [gigId, venueName, performerName, performerLink];
+  List<Object?> get props => [gigId, venueName, performerName, performerEmail, performerLink];
 }

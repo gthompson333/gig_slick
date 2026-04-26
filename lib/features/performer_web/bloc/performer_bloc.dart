@@ -42,6 +42,7 @@ class PerformerBloc extends Bloc<PerformerEvent, PerformerState> {
             gigId: event.gigId,
             venueName: event.venueName,
             performerName: event.performerName,
+            performerEmail: event.performerEmail,
             performerLink: event.performerLink,
           );
           emit(const PerformerSubmittedSuccess());
