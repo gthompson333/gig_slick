@@ -32,7 +32,7 @@ class GigCard extends StatelessWidget {
         break;
       case GigStatus.pending:
         accentColor = AppColors.electricAmber;
-        statusText = '${gig.pendingCount} PENDING';
+        statusText = '${gig.applicantCount} PENDING';
         break;
       case GigStatus.confirmed:
         accentColor = AppColors.kineticCyan;

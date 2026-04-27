@@ -19,7 +19,7 @@ class Gig with _$Gig {
     required List<String> genres,
     required String venueNotes,
     required GigStatus status,
-    @Default(0) int pendingCount,
+    @Default(0) int applicantCount,
     String? confirmedPerformerName,
     String? confirmedPerformerAvatarUrl,
     String? appliedPerformerName,

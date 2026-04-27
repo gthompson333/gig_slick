@@ -291,7 +291,72 @@ class _GigDetailsViewState extends State<GigDetailsView> {
                         letterSpacing: -1,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    if (widget.gig.status == GigStatus.pending) ...[
+                      const SizedBox(height: 16),
+                      InkWell(
+                        onTap: () => context.push(
+                          '/gig-applications',
+                          extra: {'gig': widget.gig},
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: AppColors.electricAmber.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: AppColors.electricAmber.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.people_alt_rounded,
+                                    color: AppColors.electricAmber,
+                                    size: 24,
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Review Applications',
+                                        style: textTheme.titleMedium?.copyWith(
+                                          color: AppColors.electricAmber,
+                                          fontWeight: FontWeight.w900,
+                                          letterSpacing: -0.5,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${widget.gig.applicantCount} Pending',
+                                        style: textTheme.bodyMedium?.copyWith(
+                                          color: AppColors.electricAmber.withValues(alpha: 0.8),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: AppColors.electricAmber,
+                                size: 16,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                    ] else ...[
+                      const SizedBox(height: 32),
+                    ],
+
 
                     // Detail Grid
                     Row(

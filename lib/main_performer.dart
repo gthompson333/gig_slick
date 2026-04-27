@@ -25,6 +25,8 @@ class PerformerApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Gig Slick - Apply',
       theme: AppTheme.darkTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.dark,
       routerConfig: performerRouter,
       debugShowCheckedModeBanner: false,
     );

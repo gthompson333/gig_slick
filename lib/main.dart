@@ -22,6 +22,8 @@ class GigSlickApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Gig Slick',
       theme: AppTheme.darkTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.dark,
       routerConfig: appRouter,
       debugShowCheckedModeBanner: false,
     );

@@ -7,6 +7,7 @@ import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/create_gig/presentation/create_gig_page.dart';
 import '../../features/dashboard/data/entities/gig.dart';
 import '../../features/gig_details/presentation/gig_details_page.dart';
+import '../../features/gig_applications/presentation/gig_applications_page.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/onboarding',
@@ -75,6 +76,15 @@ final GoRouter appRouter = GoRouter(
           gigLink: gigLink,
           venueName: venueName,
         );
+      },
+    ),
+    GoRoute(
+      name: '/gig-applications',
+      path: '/gig-applications',
+      builder: (context, state) {
+        final extras = state.extra as Map<String, dynamic>;
+        final gig = extras['gig'] as Gig;
+        return GigApplicationsPage(gig: gig);
       },
     ),
   ],
