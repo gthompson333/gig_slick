@@ -6,10 +6,10 @@ import '../../../core/theme/app_colors.dart';
 import '../../dashboard/data/entities/gig.dart';
 import '../data/entities/gig_application.dart';
 
-class GigApplicationsPage extends StatelessWidget {
+class ApplicationsPage extends StatelessWidget {
   final Gig gig;
 
-  const GigApplicationsPage({
+  const ApplicationsPage({
     super.key,
     required this.gig,
   });
@@ -164,7 +164,13 @@ class GigApplicationsPage extends StatelessWidget {
                           color: AppColors.textTertiary,
                         ),
                         onTap: () {
-                          // TODO: Navigate to application details
+                          context.pushNamed(
+                            '/application-details',
+                            extra: {
+                              'application': app,
+                              'gig': gig,
+                            },
+                          );
                         },
                       ),
                     );

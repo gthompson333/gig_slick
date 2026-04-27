@@ -7,7 +7,9 @@ import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/create_gig/presentation/create_gig_page.dart';
 import '../../features/dashboard/data/entities/gig.dart';
 import '../../features/gig_details/presentation/gig_details_page.dart';
-import '../../features/gig_applications/presentation/gig_applications_page.dart';
+import '../../features/gig_applications/presentation/applications_page.dart';
+import '../../features/gig_applications/presentation/application_details_page.dart';
+import '../../features/gig_applications/data/entities/gig_application.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/onboarding',
@@ -84,7 +86,17 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final extras = state.extra as Map<String, dynamic>;
         final gig = extras['gig'] as Gig;
-        return GigApplicationsPage(gig: gig);
+        return ApplicationsPage(gig: gig);
+      },
+    ),
+    GoRoute(
+      name: '/application-details',
+      path: '/application-details',
+      builder: (context, state) {
+        final extras = state.extra as Map<String, dynamic>;
+        final application = extras['application'] as GigApplication;
+        final gig = extras['gig'] as Gig;
+        return ApplicationDetailsPage(application: application, gig: gig);
       },
     ),
   ],
