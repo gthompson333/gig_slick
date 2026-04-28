@@ -79,36 +79,60 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
 
     final userId = user.uid;
 
-    // 1. Find the venue owned by the user
-    final venueQuery = await _firestore
-        .collection('venues')
-        .where('ownerId', isEqualTo: userId)
-        .get();
-
-    final batch = _firestore.batch();
-
-    for (final venueDoc in venueQuery.docs) {
-      final venueId = venueDoc.id;
-
-      // 2. Find and delete all gigs for this venue
-      final gigsQuery = await _firestore
-          .collection('gigs')
-          .where('venueId', isEqualTo: venueId)
+    try {
+      // 1. Find the venues owned by the user
+      final venueQuery = await _firestore
+          .collection('venues')
+          .where('ownerId', isEqualTo: userId)
           .get();
 
-      for (final gigDoc in gigsQuery.docs) {
-        batch.delete(gigDoc.reference);
+      final batch = _firestore.batch();
+
+      for (final venueDoc in venueQuery.docs) {
+        final venueId = venueDoc.id;
+
+        // 2. Find all gigs for this venue
+        final gigsQuery = await _firestore
+            .collection('gigs')
+            .where('venueId', isEqualTo: venueId)
+            .get();
+
+        for (final gigDoc in gigsQuery.docs) {
+          final gigId = gigDoc.id;
+
+          // 3. Find and delete all applications for this gig
+          final appsQuery = await _firestore
+              .collection('gigs')
+              .doc(gigId)
+              .collection('applications')
+              .get();
+
+          for (final appDoc in appsQuery.docs) {
+            batch.delete(appDoc.reference);
+          }
+
+          // 4. Delete the gig document
+          batch.delete(gigDoc.reference);
+        }
+
+        // 5. Delete the venue document
+        batch.delete(venueDoc.reference);
       }
 
-      // 3. Delete the venue document
-      batch.delete(venueDoc.reference);
+      // Commit Firestore deletions
+      await batch.commit();
+
+      // 6. Delete the Firebase Auth user
+      await user.delete();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        throw Exception(
+            'Account deletion requires recent login. Please sign out and sign in again before deleting your account.');
+      }
+      throw Exception('Failed to delete account: ${e.message}');
+    } catch (e) {
+      throw Exception('Failed to delete account data: $e');
     }
-
-    // Commit Firestore deletions
-    await batch.commit();
-
-    // 4. Delete the Firebase Auth user
-    await user.delete();
   }
 
   @override
