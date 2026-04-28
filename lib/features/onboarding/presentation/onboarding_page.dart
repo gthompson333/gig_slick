@@ -13,10 +13,7 @@ class OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<AuthBloc>(),
-      child: const OnboardingView(),
-    );
+    return const OnboardingView();
   }
 }
 
@@ -317,9 +314,7 @@ class _OnboardingViewState extends State<OnboardingView> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => BlocProvider.value(
-        value: authBloc,
-        child: AlertDialog(
+      builder: (dialogContext) => AlertDialog(
           backgroundColor: AppColors.surfaceMid,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
@@ -389,7 +384,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                       ? () {
                           final code = value.text.trim();
                           Navigator.pop(dialogContext);
-                          builderContext.read<AuthBloc>().add(
+                          authBloc.add(
                             OtpSubmitted(verificationId, code),
                           );
                         }
@@ -416,7 +411,6 @@ class _OnboardingViewState extends State<OnboardingView> {
             ),
           ],
         ),
-      ),
     );
   }
 

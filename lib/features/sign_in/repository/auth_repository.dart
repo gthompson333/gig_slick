@@ -6,6 +6,7 @@ abstract class AuthRepository {
     String phoneNumber, {
     required void Function(String verificationId) onCodeSent,
     required void Function(String error) onError,
+    required void Function() onVerificationCompleted,
   });
   Future<UserCredential> signInWithOtp(String verificationId, String smsCode);
   Future<UserCredential> linkWithOtp(String verificationId, String smsCode);

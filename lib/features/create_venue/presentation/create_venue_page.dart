@@ -16,11 +16,8 @@ class CreateVenuePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => getIt<CreateVenueBloc>()),
-        BlocProvider(create: (context) => getIt<AuthBloc>()),
-      ],
+    return BlocProvider(
+      create: (context) => getIt<CreateVenueBloc>(),
       child: const CreateVenueView(),
     );
   }
@@ -196,10 +193,8 @@ class _CreateVenueViewState extends State<CreateVenueView> {
       isDismissible: false,
       enableDrag: false,
       backgroundColor: Colors.transparent,
-      builder: (sheetContext) => BlocProvider.value(
-        value: authBloc,
-        child: Container(
-          padding: const EdgeInsets.all(32),
+      builder: (sheetContext) => Container(
+        padding: const EdgeInsets.all(32),
           decoration: const BoxDecoration(
             color: AppColors.surfaceMid,
             borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
@@ -273,7 +268,6 @@ class _CreateVenueViewState extends State<CreateVenueView> {
             ],
           ),
         ),
-      ),
     );
   }
 
@@ -282,10 +276,8 @@ class _CreateVenueViewState extends State<CreateVenueView> {
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (dialogContext) => BlocProvider.value(
-        value: context.read<AuthBloc>(),
-        child: AlertDialog(
-          backgroundColor: AppColors.surfaceMid,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surfaceMid,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
@@ -359,7 +351,6 @@ class _CreateVenueViewState extends State<CreateVenueView> {
             ),
           ],
         ),
-      ),
     );
   }
 
@@ -372,10 +363,8 @@ class _CreateVenueViewState extends State<CreateVenueView> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => BlocProvider.value(
-        value: context.read<AuthBloc>(),
-        child: AlertDialog(
-          backgroundColor: AppColors.surfaceMid,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surfaceMid,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
@@ -462,7 +451,6 @@ class _CreateVenueViewState extends State<CreateVenueView> {
             ),
           ],
         ),
-      ),
     );
   }
 

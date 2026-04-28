@@ -6,7 +6,7 @@ import 'auth_error_mapper.dart';
 import '../repository/auth_repository.dart';
 import '../../dashboard/data/repositories/dashboard_repository.dart';
 
-@injectable
+@lazySingleton
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
   final DashboardRepository _dashboardRepository;
@@ -22,6 +22,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthErrorOccurred>(_onAuthErrorOccurred);
     on<AuthVerificationCompleted>(_onAuthVerificationCompleted);
     on<_AuthOtpSentInternal>(_onOtpSentInternal);
+  }
+
+  @override
+  Future<void> close() {
+    print('AuthBloc: close() called. StackTrace: ${StackTrace.current}');
+    return super.close();
+  }
+
+  @override
+  void add(AuthEvent event) {
+    if (isClosed) {
+      print('AuthBloc: Attempted to add event $event but bloc is closed!');
+    }
+    super.add(event);
   }
 
   Future<void> _onPhoneLoginRequested(
@@ -43,6 +57,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         },
         onError: (error) {
           add(AuthErrorOccurred(error));
+        },
+        onVerificationCompleted: () {
+          add(AuthVerificationCompleted());
         },
       );
     } catch (e) {
@@ -82,6 +99,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         },
         onError: (error) {
           add(AuthErrorOccurred(error));
+        },
+        onVerificationCompleted: () {
+          add(AuthVerificationCompleted());
         },
       );
     } catch (e) {

@@ -14,6 +14,12 @@ import '../../features/gig_applications/data/entities/gig_application.dart';
 final GoRouter appRouter = GoRouter(
   initialLocation: '/onboarding',
   redirect: (context, state) {
+    // Prevent GoRouter from throwing errors on Firebase Auth redirect links
+    // This allows the AuthBloc to persist state and the user to continue the OTP flow.
+    if (state.uri.host == 'firebaseauth' || state.uri.path.contains('__/')) {
+      return '/sign-in';
+    }
+
     final user = FirebaseAuth.instance.currentUser;
     final isLoggingIn =
         state.matchedLocation == '/onboarding' ||

@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
+import 'features/sign_in/bloc/auth_bloc.dart';
 import 'firebase_options.dart';
 import 'injection.dart';
 
@@ -19,13 +21,16 @@ class GigSlickApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Gig Slick',
-      theme: AppTheme.darkTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.dark,
-      routerConfig: appRouter,
-      debugShowCheckedModeBanner: false,
+    return BlocProvider.value(
+      value: getIt<AuthBloc>(),
+      child: MaterialApp.router(
+        title: 'Gig Slick',
+        theme: AppTheme.darkTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.dark,
+        routerConfig: appRouter,
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }

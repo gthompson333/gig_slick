@@ -11,25 +11,36 @@ class AuthRepositoryImpl implements AuthRepository {
     String phoneNumber, {
     required void Function(String verificationId) onCodeSent,
     required void Function(String error) onError,
+    required void Function() onVerificationCompleted,
   }) async {
+    print('AuthRepository: Starting phone verification for $phoneNumber');
     try {
       await _firebaseAuth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          // This callback is triggered on some Android devices with automatic verification
-          await _firebaseAuth.signInWithCredential(credential);
+          print('AuthRepository: Verification completed automatically');
+          try {
+            await _firebaseAuth.signInWithCredential(credential);
+            onVerificationCompleted();
+          } catch (e) {
+            print('AuthRepository: Error during auto-sign-in: $e');
+            onError(e.toString());
+          }
         },
         verificationFailed: (FirebaseAuthException e) {
+          print('AuthRepository: Verification failed: [${e.code}] ${e.message}');
           onError(e.message ?? 'Verification failed');
         },
         codeSent: (String verificationId, int? resendToken) {
+          print('AuthRepository: Code sent. VerificationId: $verificationId');
           onCodeSent(verificationId);
         },
         codeAutoRetrievalTimeout: (String verificationId) {
-          // Auto-retrieval timed out
+          print('AuthRepository: Code auto-retrieval timed out');
         },
       );
     } catch (e) {
+      print('AuthRepository: Unexpected error during verifyPhoneNumber: $e');
       onError(e.toString());
     }
   }

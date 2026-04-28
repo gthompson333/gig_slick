@@ -12,10 +12,7 @@ class SignInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<AuthBloc>(),
-      child: const SignInView(),
-    );
+    return const SignInView();
   }
 }
 
@@ -27,11 +24,13 @@ class SignInView extends StatefulWidget {
 }
 
 class _SignInViewState extends State<SignInView> {
-  final TextEditingController _inputController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _otpController = TextEditingController();
 
   @override
   void dispose() {
-    _inputController.dispose();
+    _phoneController.dispose();
+    _otpController.dispose();
     super.dispose();
   }
 
@@ -93,6 +92,9 @@ class _SignInViewState extends State<SignInView> {
         },
         builder: (context, state) {
           final isLoading = state is AuthLoading;
+          final isOtpSent = state is AuthOtpSent;
+          final verificationId = state is AuthOtpSent ? state.verificationId : '';
+          final phoneNumber = state is AuthOtpSent ? state.phoneNumber : '';
 
           return SafeArea(
             child: SingleChildScrollView(
@@ -128,67 +130,35 @@ class _SignInViewState extends State<SignInView> {
                     ),
                   ),
                   const SizedBox(height: 64),
-                  _buildTonalTextField(
-                    controller: _inputController,
-                    hint: 'Phone Number',
-                    icon: Icons.phone_android_rounded,
-                  ),
-                  const SizedBox(height: 32),
-                  SizedBox(
-                    height: 64,
-                    child: ElevatedButton(
-                      onPressed: isLoading
+                  if (!isOtpSent)
+                    _buildPhoneInputView(theme, isLoading)
+                  else
+                    _buildOtpInputView(
+                      theme,
+                      isLoading,
+                      verificationId,
+                      phoneNumber,
+                    ),
+                  const SizedBox(height: 40),
+                  if (!isOtpSent)
+                    GestureDetector(
+                      onTap: isLoading
                           ? null
                           : () {
                               context.read<AuthBloc>().add(
-                                PhoneLoginRequested(_inputController.text),
+                                SignInAsGuestRequested(),
                               );
                             },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.electricAmber,
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                      child: Text(
+                        'Continue as Guest',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.textTertiary,
                         ),
-                        elevation: 0,
-                      ),
-                      child: isLoading
-                          ? const SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.black,
-                                strokeWidth: 3,
-                              ),
-                            )
-                          : Text(
-                              'Get Started',
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  GestureDetector(
-                    onTap: isLoading
-                        ? null
-                        : () {
-                            context.read<AuthBloc>().add(
-                              SignInAsGuestRequested(),
-                            );
-                          },
-                    child: Text(
-                      'Continue as Guest',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.textTertiary,
                       ),
                     ),
-                  ),
                   const SizedBox(height: 64),
                   Text(
                     'By continuing, you agree to the Gig Slick\nTerms of Service and Privacy Policy.',
@@ -206,10 +176,148 @@ class _SignInViewState extends State<SignInView> {
     );
   }
 
+  Widget _buildPhoneInputView(ThemeData theme, bool isLoading) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildTonalTextField(
+          controller: _phoneController,
+          hint: 'Phone Number',
+          icon: Icons.phone_android_rounded,
+          keyboardType: TextInputType.phone,
+        ),
+        const SizedBox(height: 32),
+        SizedBox(
+          height: 64,
+          child: ElevatedButton(
+            onPressed: isLoading
+                ? null
+                : () {
+                    context.read<AuthBloc>().add(
+                          PhoneLoginRequested(_phoneController.text),
+                        );
+                  },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.electricAmber,
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 0,
+            ),
+            child: isLoading
+                ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                      color: Colors.black,
+                      strokeWidth: 3,
+                    ),
+                  )
+                : Text(
+                    'Get Started',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOtpInputView(
+    ThemeData theme,
+    bool isLoading,
+    String verificationId,
+    String phoneNumber,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'Verification Code',
+          style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Sent to $phoneNumber',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: AppColors.textSecondary,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 32),
+        _buildTonalTextField(
+          controller: _otpController,
+          hint: '6-digit code',
+          icon: Icons.lock_outline_rounded,
+          keyboardType: TextInputType.number,
+          maxLength: 6,
+        ),
+        const SizedBox(height: 32),
+        SizedBox(
+          height: 64,
+          child: ElevatedButton(
+            onPressed: isLoading
+                ? null
+                : () {
+                    context.read<AuthBloc>().add(
+                          OtpSubmitted(verificationId, _otpController.text),
+                        );
+                  },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.electricAmber,
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 0,
+            ),
+            child: isLoading
+                ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                      color: Colors.black,
+                      strokeWidth: 3,
+                    ),
+                  )
+                : Text(
+                    'Verify Code',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        TextButton(
+          onPressed: isLoading
+              ? null
+              : () {
+                  // Simply clear the state to go back to phone input
+                  // In a real app, you might want a specific event to reset auth state
+                  context.read<AuthBloc>().add(AuthErrorOccurred('')); 
+                },
+          child: const Text(
+            'Change Phone Number',
+            style: TextStyle(color: AppColors.textTertiary),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildTonalTextField({
     required TextEditingController controller,
     required String hint,
     required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    int? maxLength,
   }) {
     final theme = Theme.of(context);
 
@@ -227,7 +335,8 @@ class _SignInViewState extends State<SignInView> {
       ),
       child: TextField(
         controller: controller,
-        keyboardType: TextInputType.phone,
+        keyboardType: keyboardType,
+        maxLength: maxLength,
         style: theme.textTheme.bodyLarge,
         cursorColor: AppColors.electricAmber,
         decoration: InputDecoration(
@@ -235,6 +344,7 @@ class _SignInViewState extends State<SignInView> {
           hintStyle: theme.textTheme.bodyLarge?.copyWith(
             color: AppColors.textTertiary,
           ),
+          counterText: "",
           prefixIcon: Padding(
             padding: const EdgeInsets.only(left: 16, right: 12),
             child: Icon(
