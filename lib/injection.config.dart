@@ -42,7 +42,7 @@ import 'features/gig_details/bloc/gig_details_bloc.dart' as _i126;
 import 'features/performer_web/bloc/performer_bloc.dart' as _i794;
 import 'features/performer_web/data/performer_repository.dart' as _i955;
 import 'features/sign_in/bloc/auth_bloc.dart' as _i198;
-import 'features/sign_in/repository/auth_repository.dart' as _i999;
+import 'features/sign_in/repository/auth_repository.dart' as _i126;
 import 'features/sign_in/repository/auth_repository_impl.dart' as _i454;
 
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -57,7 +57,7 @@ _i174.GetIt init(
   gh.singleton<_i828.AppConfig>(() => _i828.AppConfig());
   gh.lazySingleton<_i974.FirebaseFirestore>(() => firebaseModule.firestore);
   gh.lazySingleton<_i59.FirebaseAuth>(() => firebaseModule.auth);
-  gh.lazySingleton<_i999.AuthRepository>(() => _i454.AuthRepositoryImpl());
+  gh.lazySingleton<_i126.AuthRepository>(() => _i454.AuthRepositoryImpl());
   gh.lazySingleton<_i910.CoreRepository>(() => _i1050.CoreRepositoryImpl());
   gh.lazySingleton<_i82.LinkService>(
     () => _i82.LinkService(gh<_i828.AppConfig>()),
@@ -97,7 +97,7 @@ _i174.GetIt init(
   );
   gh.lazySingleton<_i198.AuthBloc>(
     () => _i198.AuthBloc(
-      gh<_i999.AuthRepository>(),
+      gh<_i126.AuthRepository>(),
       gh<_i314.DashboardRepository>(),
     ),
   );
