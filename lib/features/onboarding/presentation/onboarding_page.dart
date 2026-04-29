@@ -122,13 +122,12 @@ class _OnboardingViewState extends State<OnboardingView> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'VENUES ONLY',
+                          'A Slicker Way to Book Your Gigs',
                           textAlign: TextAlign.center,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: AppColors.textTertiary,
-                            letterSpacing: 6,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 10,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.2,
                           ),
                         ),
                       ],
