@@ -1,4 +1,4 @@
-package com.tommysoftware.gigslick
+package com.gtcodeworks.gigslick
 
 import io.flutter.embedding.android.FlutterActivity
 

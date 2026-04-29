@@ -31,7 +31,8 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.963494089765-c7gdr0j3hj3li3i3ttujo678fp0o427m</string>
+				<string>com.googleusercontent.apps.963494089765-0q0ltn61hg6ms8aales6t2o3qkr26qpa</string>
+				<string>app-1-963494089765-ios-76c833c9a906474f189bcc</string>
 			</array>
 		</dict>
 	</array>
@@ -87,5 +88,8 @@
 		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
+
 </dict>
 </plist>

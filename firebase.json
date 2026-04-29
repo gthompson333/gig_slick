@@ -18,14 +18,14 @@
       "android": {
         "default": {
           "projectId": "gig-slick-2026-auth",
-          "appId": "1:963494089765:android:8af32c7e9b8d48fc189bcc",
+          "appId": "1:963494089765:android:0a95a7009dea1e9a189bcc",
           "fileOutput": "android/app/google-services.json"
         }
       },
       "ios": {
         "default": {
           "projectId": "gig-slick-2026-auth",
-          "appId": "1:963494089765:ios:ba81bd1e4ff1aa94189bcc",
+          "appId": "1:963494089765:ios:76c833c9a906474f189bcc",
           "uploadDebugSymbols": false,
           "fileOutput": "ios/Runner/GoogleService-Info.plist"
         }
@@ -34,8 +34,8 @@
         "lib/firebase_options.dart": {
           "projectId": "gig-slick-2026-auth",
           "configurations": {
-            "android": "1:963494089765:android:8af32c7e9b8d48fc189bcc",
-            "ios": "1:963494089765:ios:ba81bd1e4ff1aa94189bcc"
+            "android": "1:963494089765:android:0a95a7009dea1e9a189bcc",
+            "ios": "1:963494089765:ios:76c833c9a906474f189bcc"
           }
         }
       }
