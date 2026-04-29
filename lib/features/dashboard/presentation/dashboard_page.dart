@@ -37,7 +37,7 @@ class DashboardView extends StatelessWidget {
         listener: (context, state) {
           state.maybeWhen(
             noVenue: () => context.go('/create-venue'),
-            accountDeleted: () => context.go('/onboarding'),
+            accountDeleted: () => context.go('/sign-in'),
             orElse: () {},
           );
         },
@@ -317,7 +317,7 @@ class DashboardView extends StatelessWidget {
               Navigator.pop(innerContext);
               await FirebaseAuth.instance.signOut();
               if (context.mounted) {
-                context.go('/onboarding');
+                context.go('/sign-in');
               }
             },
             style: ElevatedButton.styleFrom(

@@ -3,27 +3,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../sign_in/bloc/auth_bloc.dart';
-import '../../sign_in/bloc/auth_event.dart';
-import '../../sign_in/bloc/auth_state.dart';
+import '../bloc/auth_bloc.dart';
+import '../bloc/auth_event.dart';
+import '../bloc/auth_state.dart';
 
-class OnboardingPage extends StatelessWidget {
-  const OnboardingPage({super.key});
+class SignInPage extends StatelessWidget {
+  const SignInPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const OnboardingView();
+    return const SignInView();
   }
 }
 
-class OnboardingView extends StatefulWidget {
-  const OnboardingView({super.key});
+class SignInView extends StatefulWidget {
+  const SignInView({super.key});
 
   @override
-  State<OnboardingView> createState() => _OnboardingViewState();
+  State<SignInView> createState() => _SignInViewState();
 }
 
-class _OnboardingViewState extends State<OnboardingView> {
+class _SignInViewState extends State<SignInView> {
   final _phoneController = TextEditingController();
 
   @override

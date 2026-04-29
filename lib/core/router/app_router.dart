@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../features/onboarding/presentation/onboarding_page.dart';
+import '../../features/sign_in/presentation/sign_in_page.dart';
 import '../../features/create_venue/presentation/create_venue_page.dart';
 import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/create_gig/presentation/create_gig_page.dart';
@@ -31,7 +31,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
 }
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/onboarding',
+  initialLocation: '/sign-in',
   refreshListenable: GoRouterRefreshStream(FirebaseAuth.instance.authStateChanges()),
   redirect: (context, state) {
     // Prevent GoRouter from throwing errors on Firebase Auth redirect links
@@ -40,10 +40,10 @@ final GoRouter appRouter = GoRouter(
     }
 
     final user = FirebaseAuth.instance.currentUser;
-    final isOnboarding = state.matchedLocation == '/onboarding';
+    final isSignIn = state.matchedLocation == '/sign-in';
 
     if (user != null) {
-      if (isOnboarding) {
+      if (isSignIn) {
         // If they just logged in, guest users ALWAYS go to create-venue first
         if (user.isAnonymous) {
           return '/create-venue';
@@ -55,16 +55,16 @@ final GoRouter appRouter = GoRouter(
       return null;
     }
 
-    if (user == null && !isOnboarding) {
-      return '/onboarding';
+    if (user == null && !isSignIn) {
+      return '/sign-in';
     }
 
     return null;
   },
   routes: [
     GoRoute(
-      path: '/onboarding',
-      builder: (context, state) => const OnboardingPage(),
+      path: '/sign-in',
+      builder: (context, state) => const SignInPage(),
     ),
     GoRoute(
       path: '/create-venue',
