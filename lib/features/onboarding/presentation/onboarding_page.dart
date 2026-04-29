@@ -73,10 +73,7 @@ class _OnboardingViewState extends State<OnboardingView> {
           backgroundColor: AppColors.surfaceLow,
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 32.0,
-                vertical: 40.0,
-              ),
+              padding: const EdgeInsets.fromLTRB(32, 24, 32, 40),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight:
@@ -86,7 +83,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                       80,
                 ),
                                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Hero Section
@@ -262,7 +259,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                             ),
                           ),
                           child: Text(
-                            'STAY ANONYMOUS',
+                            'CONTINUE AS GUEST',
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: AppColors.textSecondary,
                               decoration: TextDecoration.underline,
