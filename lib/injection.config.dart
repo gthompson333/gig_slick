@@ -17,9 +17,6 @@ import 'package:injectable/injectable.dart' as _i526;
 import 'core/config/app_config.dart' as _i828;
 import 'core/di/firebase_module.dart' as _i230;
 import 'core/services/link_service.dart' as _i82;
-import 'features/core/bloc/core_bloc.dart' as _i494;
-import 'features/core/repository/core_repository.dart' as _i910;
-import 'features/core/repository/core_repository_impl.dart' as _i1050;
 import 'features/create_gig/bloc/create_gig_bloc.dart' as _i82;
 import 'features/create_gig/data/repositories/create_gig_repository.dart'
     as _i258;
@@ -53,12 +50,10 @@ _i174.GetIt init(
 }) {
   final gh = _i526.GetItHelper(getIt, environment, environmentFilter);
   final firebaseModule = _$FirebaseModule();
-  gh.factory<_i494.CoreBloc>(() => _i494.CoreBloc());
   gh.singleton<_i828.AppConfig>(() => _i828.AppConfig());
   gh.lazySingleton<_i974.FirebaseFirestore>(() => firebaseModule.firestore);
   gh.lazySingleton<_i59.FirebaseAuth>(() => firebaseModule.auth);
   gh.lazySingleton<_i126.AuthRepository>(() => _i454.AuthRepositoryImpl());
-  gh.lazySingleton<_i910.CoreRepository>(() => _i1050.CoreRepositoryImpl());
   gh.lazySingleton<_i82.LinkService>(
     () => _i82.LinkService(gh<_i828.AppConfig>()),
   );
