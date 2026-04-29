@@ -1,7 +1,8 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/onboarding/presentation/onboarding_page.dart';
-import '../../features/sign_in/presentation/sign_in_page.dart';
 import '../../features/create_venue/presentation/create_venue_page.dart';
 import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/create_gig/presentation/create_gig_page.dart';
@@ -11,23 +12,51 @@ import '../../features/gig_applications/presentation/applications_page.dart';
 import '../../features/gig_applications/presentation/application_details_page.dart';
 import '../../features/gig_applications/data/entities/gig_application.dart';
 
+/// A [Listenable] that notifies when a [Stream] emits a value.
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    notifyListeners();
+    _subscription = stream.asBroadcastStream().listen(
+          (dynamic _) => notifyListeners(),
+        );
+  }
+
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
+
 final GoRouter appRouter = GoRouter(
   initialLocation: '/onboarding',
+  refreshListenable: GoRouterRefreshStream(FirebaseAuth.instance.authStateChanges()),
   redirect: (context, state) {
     // Prevent GoRouter from throwing errors on Firebase Auth redirect links
-    // This allows the AuthBloc to persist state and the user to continue the OTP flow.
     if (state.uri.host == 'firebaseauth' || state.uri.path.contains('__/')) {
-      return '/sign-in';
+      return null;
     }
 
     final user = FirebaseAuth.instance.currentUser;
-    final isLoggingIn =
-        state.matchedLocation == '/onboarding' ||
-        state.matchedLocation == '/sign-in';
+    final isOnboarding = state.matchedLocation == '/onboarding';
 
-    if (user != null && isLoggingIn) {
-      // TODO: In the future, check if user has a venue and send to /create-venue if not.
-      return '/dashboard';
+    if (user != null) {
+      if (isOnboarding) {
+        // If they just logged in, guest users ALWAYS go to create-venue first
+        if (user.isAnonymous) {
+          return '/create-venue';
+        }
+        // For phone users, the DashboardPage handles fetching the venue and 
+        // showing the appropriate state, but we can default to /dashboard.
+        return '/dashboard';
+      }
+      return null;
+    }
+
+    if (user == null && !isOnboarding) {
+      return '/onboarding';
     }
 
     return null;
@@ -37,7 +66,6 @@ final GoRouter appRouter = GoRouter(
       path: '/onboarding',
       builder: (context, state) => const OnboardingPage(),
     ),
-    GoRoute(path: '/sign-in', builder: (context, state) => const SignInPage()),
     GoRoute(
       path: '/create-venue',
       builder: (context, state) => const CreateVenuePage(),

@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
@@ -26,14 +28,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   @override
   Future<void> close() {
-    print('AuthBloc: close() called. StackTrace: ${StackTrace.current}');
+    debugPrint('AuthBloc: close() called. StackTrace: ${StackTrace.current}');
     return super.close();
   }
 
   @override
   void add(AuthEvent event) {
     if (isClosed) {
-      print('AuthBloc: Attempted to add event $event but bloc is closed!');
+      debugPrint('AuthBloc: Attempted to add event $event but bloc is closed!');
     }
     super.add(event);
   }
@@ -137,9 +139,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      await _authRepository.signInWithOtp(event.verificationId, event.smsCode);
-      final venue = await _dashboardRepository.getVenueForUser();
-      emit(AuthAuthenticated('phone', hasVenue: venue != null));
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null && currentUser.isAnonymous) {
+        // Link anonymous account to phone number to preserve data
+        try {
+          await _authRepository.linkWithOtp(event.verificationId, event.smsCode);
+          final venue = await _dashboardRepository.getVenueForUser();
+          emit(AuthAuthenticated('phone_linked', hasVenue: venue != null));
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'credential-already-in-use') {
+            // Phone number already linked to another account, just sign in to that one
+            // Note: Guest data will be lost unless we implement merging (out of scope for now)
+            await _authRepository.signInWithOtp(event.verificationId, event.smsCode);
+            final venue = await _dashboardRepository.getVenueForUser();
+            emit(AuthAuthenticated('phone', hasVenue: venue != null));
+          } else {
+            rethrow;
+          }
+        }
+      } else {
+        // Not anonymous, standard sign in
+        await _authRepository.signInWithOtp(event.verificationId, event.smsCode);
+        final venue = await _dashboardRepository.getVenueForUser();
+        emit(AuthAuthenticated('phone', hasVenue: venue != null));
+      }
     } catch (e) {
       emit(AuthError(AuthErrorMapper.mapMessage(e)));
     }

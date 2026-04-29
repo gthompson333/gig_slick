@@ -186,8 +186,6 @@ class _CreateVenueViewState extends State<CreateVenueView> {
   }
 
   void _showSecureVenueSheet(BuildContext context, String venueName) {
-    final authBloc = context.read<AuthBloc>();
-
     showModalBottomSheet(
       context: context,
       isDismissible: false,

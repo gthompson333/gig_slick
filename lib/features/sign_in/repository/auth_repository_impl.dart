@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'auth_repository.dart';
 
@@ -13,34 +15,60 @@ class AuthRepositoryImpl implements AuthRepository {
     required void Function(String error) onError,
     required void Function() onVerificationCompleted,
   }) async {
-    print('AuthRepository: Starting phone verification for $phoneNumber');
+    debugPrint('AuthRepository: Starting phone verification for $phoneNumber');
+    
+    // Tweak: For iOS, silent auth relies on APNs token. 
+    // Sometimes it takes a moment to be registered.
+    try {
+      final apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+      if (apnsToken != null) {
+        debugPrint('AuthRepository: APNs token is present: ${apnsToken.substring(0, 8)}...');
+      } else {
+        debugPrint('AuthRepository: WARNING - APNs token is NULL. Silent auth might fail/flicker.');
+        // Briefly wait to see if it arrives? 
+        // Some developers report that a small delay helps if the app just started.
+        await Future.delayed(const Duration(milliseconds: 500));
+        final retryToken = await FirebaseMessaging.instance.getAPNSToken();
+        if (retryToken != null) {
+          debugPrint('AuthRepository: APNs token arrived after delay.');
+        }
+      }
+    } catch (e) {
+      debugPrint('AuthRepository: Error checking APNs token: $e');
+    }
+
     try {
       await _firebaseAuth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
+        timeout: const Duration(seconds: 60),
         verificationCompleted: (PhoneAuthCredential credential) async {
-          print('AuthRepository: Verification completed automatically');
+          debugPrint('AuthRepository: Verification completed automatically (Silent Flow Success)');
           try {
             await _firebaseAuth.signInWithCredential(credential);
             onVerificationCompleted();
           } catch (e) {
-            print('AuthRepository: Error during auto-sign-in: $e');
+            debugPrint('AuthRepository: Error during auto-sign-in: $e');
             onError(e.toString());
           }
         },
         verificationFailed: (FirebaseAuthException e) {
-          print('AuthRepository: Verification failed: [${e.code}] ${e.message}');
-          onError(e.message ?? 'Verification failed');
+          debugPrint('AuthRepository: Verification failed: [${e.code}] ${e.message}');
+          if (e.code == 'too-many-requests') {
+            onError('Too many requests. Please try again later.');
+          } else {
+            onError(e.message ?? 'Verification failed');
+          }
         },
         codeSent: (String verificationId, int? resendToken) {
-          print('AuthRepository: Code sent. VerificationId: $verificationId');
+          debugPrint('AuthRepository: Code sent. VerificationId: $verificationId');
           onCodeSent(verificationId);
         },
         codeAutoRetrievalTimeout: (String verificationId) {
-          print('AuthRepository: Code auto-retrieval timed out');
+          debugPrint('AuthRepository: Code auto-retrieval timed out for $verificationId');
         },
       );
     } catch (e) {
-      print('AuthRepository: Unexpected error during verifyPhoneNumber: $e');
+      debugPrint('AuthRepository: Unexpected error during verifyPhoneNumber: $e');
       onError(e.toString());
     }
   }
@@ -114,7 +142,7 @@ class AuthRepositoryImpl implements AuthRepository {
           androidPackageName: 'com.example.gig_slick',
           androidInstallApp: true,
           androidMinimumVersion: '1',
-          iOSBundleId: 'com.example.gigSlick',
+          iOSBundleId: 'com.tommysoftware.gigslick',
         ),
       );
     } on FirebaseAuthException {
