@@ -13,6 +13,7 @@ abstract class PerformerRepository {
     required String performerEmail,
     required String performerLink,
   });
+  Future<List<Gig>> getLiveGigs(String venueId);
 }
 
 @LazySingleton(as: PerformerRepository)
@@ -83,5 +84,19 @@ class PerformerRepositoryImpl implements PerformerRepository {
     });
 
     await batch.commit();
+  }
+
+  @override
+  Future<List<Gig>> getLiveGigs(String venueId) async {
+    final query = await _firestore
+        .collection('gigs')
+        .where('venueId', isEqualTo: venueId)
+        .where('status', isEqualTo: 'live')
+        .orderBy('date', descending: false)
+        .get();
+
+    return query.docs
+        .map((doc) => Gig.fromJson({...doc.data(), 'id': doc.id}))
+        .toList();
   }
 }

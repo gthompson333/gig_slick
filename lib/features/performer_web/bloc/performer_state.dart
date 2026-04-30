@@ -25,6 +25,15 @@ class PerformerLoaded extends PerformerState {
   List<Object?> get props => [gig, venueName];
 }
 
+class PerformerLiveGigsLoaded extends PerformerState {
+  final List<Gig> gigs;
+  final String venueName;
+  const PerformerLiveGigsLoaded(this.gigs, this.venueName);
+
+  @override
+  List<Object?> get props => [gigs, venueName];
+}
+
 class PerformerSubmitting extends PerformerState {
   final Gig gig;
   final String venueName;

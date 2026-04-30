@@ -35,3 +35,12 @@ class SubmitApplicationRequested extends PerformerEvent {
   @override
   List<Object?> get props => [gigId, venueName, performerName, performerEmail, performerLink];
 }
+
+class LoadLiveGigsRequested extends PerformerEvent {
+  final String venueId;
+
+  const LoadLiveGigsRequested(this.venueId);
+
+  @override
+  List<Object?> get props => [venueId];
+}

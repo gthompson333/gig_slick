@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import '../../features/performer_web/presentation/performer_apply_page.dart';
+import '../../features/performer_web/presentation/performer_gigs_list_page.dart';
 
 final GoRouter performerRouter = GoRouter(
   initialLocation: '/', // fallback if needed
@@ -17,7 +18,7 @@ final GoRouter performerRouter = GoRouter(
       path: '/v/:venueId',
       builder: (context, state) {
         final venueId = state.pathParameters['venueId'] ?? 'Unknown Venue';
-        return PerformerApplyPage(venueId: venueId, gigId: '');
+        return PerformerGigsListPage(venueId: venueId);
       },
     ),
     // Fallback route in case the URL doesn't match the format

@@ -61,5 +61,16 @@ class PerformerBloc extends Bloc<PerformerEvent, PerformerState> {
         }
       }
     });
+
+    on<LoadLiveGigsRequested>((event, emit) async {
+      emit(const PerformerLoading());
+      try {
+        final venueName = await _repository.getVenueName(event.venueId) ?? 'Unknown Venue';
+        final liveGigs = await _repository.getLiveGigs(event.venueId);
+        emit(PerformerLiveGigsLoaded(liveGigs, venueName));
+      } catch (e) {
+        emit(PerformerError(e.toString()));
+      }
+    });
   }
 }
