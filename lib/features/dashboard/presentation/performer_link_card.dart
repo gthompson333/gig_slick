@@ -6,12 +6,14 @@ class PerformerLinkCard extends StatelessWidget {
   final String linkUrl;
   final bool showLink;
   final String buttonLabel;
+  final String venueName;
 
   const PerformerLinkCard({
     super.key,
     required this.linkUrl,
     this.showLink = true,
-    this.buttonLabel = 'COPY LINK',
+    this.buttonLabel = 'SHARE LINK',
+    required this.venueName,
   });
 
   @override
@@ -35,12 +37,12 @@ class PerformerLinkCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Performer Link',
+              'Live Gigs Link',
               style: textTheme.headlineMedium?.copyWith(letterSpacing: -0.5),
             ),
             const SizedBox(height: 12),
             Text(
-              'Share this link with performers to allow them to browse and apply for open gigs at your venue.',
+              'Share this link with performers to allow them to browse and apply for open gigs at $venueName.',
               style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
                 height: 1.5,
@@ -72,8 +74,8 @@ class PerformerLinkCard extends StatelessWidget {
               onTap: () {
                 Clipboard.setData(ClipboardData(text: linkUrl));
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Performer link copied to clipboard!'),
+                  SnackBar(
+                    content: Text('$buttonLabel copied to clipboard!'),
                     backgroundColor: AppColors.surfaceHigh,
                     behavior: SnackBarBehavior.floating,
                   ),
@@ -97,13 +99,13 @@ class PerformerLinkCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(
-                      Icons.copy_rounded,
+                      Icons.share_rounded,
                       color: Colors.black,
                       size: 20,
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      buttonLabel,
+                      buttonLabel.toUpperCase(),
                       style: textTheme.labelSmall?.copyWith(
                         color: Colors.black,
                         fontWeight: FontWeight.w900,
