@@ -30,8 +30,9 @@ class ScheduledGigsFeed extends StatelessWidget {
             children: [
               Text(
                 'Scheduled Gigs',
-                style: textTheme.headlineMedium?.copyWith(
+                style: textTheme.titleLarge?.copyWith(
                   color: AppColors.electricAmber,
+                  fontWeight: FontWeight.w900,
                   letterSpacing: -0.5,
                 ),
               ),

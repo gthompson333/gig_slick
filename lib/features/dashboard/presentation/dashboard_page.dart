@@ -81,10 +81,10 @@ class DashboardView extends StatelessWidget {
                           child: Text(
                             venueName,
                             overflow: TextOverflow.ellipsis,
-                            style: textTheme.headlineSmall?.copyWith(
+                            style: textTheme.headlineLarge?.copyWith(
                               color: AppColors.electricAmber,
                               fontWeight: FontWeight.w900,
-                              letterSpacing: -1,
+                              letterSpacing: -2,
                             ),
                           ),
                         ),
@@ -122,10 +122,10 @@ class DashboardView extends StatelessWidget {
                         const SizedBox(height: 16),
                         PerformerLinkCard(
                           linkUrl: gigLink,
-                          buttonLabel: 'Share Live Gigs Link',
+                          buttonLabel: 'Share Link',
                           venueName: venueName,
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 48),
                         ScheduledGigsFeed(
                           gigs: gigs,
                           gigLink: gigLink,

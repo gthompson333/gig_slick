@@ -38,11 +38,15 @@ class PerformerLinkCard extends StatelessWidget {
           children: [
             Text(
               'Live Gigs Link',
-              style: textTheme.headlineMedium?.copyWith(letterSpacing: -0.5),
+              style: textTheme.titleLarge?.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -0.5,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
-              'Share this link with performers to allow them to browse and apply for open gigs at $venueName.',
+              'Share this link with performers to allow them to browse and apply for live gigs at $venueName.',
               style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
                 height: 1.5,

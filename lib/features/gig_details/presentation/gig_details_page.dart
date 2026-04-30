@@ -545,6 +545,7 @@ class _GigDetailsViewState extends State<GigDetailsView> {
                         linkUrl: getIt<LinkService>().generateGigLink(widget.gig.venueId, widget.gig.id),
                         showLink: false,
                         buttonLabel: 'COPY GIG LINK',
+                        venueName: widget.venueName,
                       ),
                     ] else if (!_isEditing) ...[
                       const SizedBox(height: 16),
