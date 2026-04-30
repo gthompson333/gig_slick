@@ -170,10 +170,7 @@ class _ApplicationDetailsPageState extends State<ApplicationDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: Colors.redAccent,
-            content: Text(
-              'Error booking performer: $e',
-              style: const TextStyle(color: Colors.white),
-            ),
+            content: Text('Error booking performer: $e'),
           ),
         );
       }

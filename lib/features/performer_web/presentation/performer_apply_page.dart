@@ -75,7 +75,6 @@ class _PerformerApplyViewState extends State<PerformerApplyView> {
                   SnackBar(
                     content: Text(state.message),
                     backgroundColor: Colors.redAccent,
-                    behavior: SnackBarBehavior.floating,
                   ),
                 );
               }

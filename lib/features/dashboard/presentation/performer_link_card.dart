@@ -78,10 +78,8 @@ class PerformerLinkCard extends StatelessWidget {
               onTap: () {
                 Clipboard.setData(ClipboardData(text: linkUrl));
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('$buttonLabel copied to clipboard!'),
-                    backgroundColor: AppColors.surfaceHigh,
-                    behavior: SnackBarBehavior.floating,
+                  const SnackBar(
+                    content: Text('Link copied to clipboard!', style: TextStyle(color: Colors.white)),
                   ),
                 );
               },

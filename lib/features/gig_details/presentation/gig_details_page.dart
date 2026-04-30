@@ -102,9 +102,7 @@ class _GigDetailsViewState extends State<GigDetailsView> {
           deleted: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Gig successfully deleted'),
-                backgroundColor: AppColors.surfaceHigh,
-                behavior: SnackBarBehavior.floating,
+                content: Text('Gig successfully deleted', style: TextStyle(color: Colors.white)),
               ),
             );
             context.pop();
@@ -112,9 +110,14 @@ class _GigDetailsViewState extends State<GigDetailsView> {
           live: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Gig is now LIVE!'),
+                content: Text(
+                  'Gig is now LIVE!',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
                 backgroundColor: AppColors.electricAmber,
-                behavior: SnackBarBehavior.floating,
               ),
             );
             context.pop();
@@ -122,9 +125,7 @@ class _GigDetailsViewState extends State<GigDetailsView> {
           updated: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Gig details updated'),
-                backgroundColor: AppColors.surfaceHigh,
-                behavior: SnackBarBehavior.floating,
+                content: Text('Gig details updated', style: TextStyle(color: Colors.white)),
               ),
             );
             setState(() => _isEditing = false);
@@ -132,9 +133,7 @@ class _GigDetailsViewState extends State<GigDetailsView> {
           notesUpdated: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Venue notes updated'),
-                backgroundColor: AppColors.surfaceHigh,
-                behavior: SnackBarBehavior.floating,
+                content: Text('Venue notes updated', style: TextStyle(color: Colors.white)),
               ),
             );
             setState(() => _isEditing = false);
@@ -142,9 +141,8 @@ class _GigDetailsViewState extends State<GigDetailsView> {
           error: (message) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Error: $message'),
+                content: Text('Error: $message', style: const TextStyle(color: Colors.white)),
                 backgroundColor: Colors.redAccent,
-                behavior: SnackBarBehavior.floating,
               ),
             );
           },

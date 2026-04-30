@@ -82,7 +82,7 @@ class GigCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.schedule,
                         size: 14,
                         color: AppColors.textTertiary,
@@ -92,6 +92,24 @@ class GigCard extends StatelessWidget {
                         gig.setTime,
                         style: textTheme.bodyMedium?.copyWith(
                           color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.payments_outlined,
+                        size: 14,
+                        color: AppColors.textTertiary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '\$${gig.baseGuarantee.toStringAsFixed(0)} Guarantee',
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textTertiary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
