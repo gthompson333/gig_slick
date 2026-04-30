@@ -68,6 +68,13 @@ class _CreateVenueViewState extends State<CreateVenueView> {
                 } else {
                   _showSecureVenueSheet(context, state.venueName);
                 }
+              } else if (state is CreateVenueNameTaken) {
+                _nameController.clear();
+                _showErrorAlert(
+                  context,
+                  'Name Unavailable',
+                  'The venue name "${state.name}" is already claimed. Please try another name.',
+                );
               } else if (state is CreateVenueFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -104,18 +111,10 @@ class _CreateVenueViewState extends State<CreateVenueView> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Set Up Your Venue',
+                    'Claim Your Venue',
                     textAlign: TextAlign.center,
                     style: theme.textTheme.displayLarge?.copyWith(
                       color: AppColors.electricAmber,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Nearly ready to get you going.',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 56),
@@ -123,7 +122,6 @@ class _CreateVenueViewState extends State<CreateVenueView> {
                     controller: _nameController,
                     label: 'Venue Name',
                     hintText: 'e.g. The Blue Note',
-                    icon: Icons.storefront_rounded,
                   ),
                   const SizedBox(height: 64),
                   ValueListenableBuilder<TextEditingValue>(
@@ -138,10 +136,10 @@ class _CreateVenueViewState extends State<CreateVenueView> {
                           onPressed: isButtonEnabled
                               ? () {
                                   context.read<CreateVenueBloc>().add(
-                                    CreateVenueSubmitted(
-                                      name: name,
-                                    ),
-                                  );
+                                        CreateVenueSubmitted(
+                                          name: name,
+                                        ),
+                                      );
                                 }
                               : null,
                           style: ElevatedButton.styleFrom(
@@ -164,7 +162,7 @@ class _CreateVenueViewState extends State<CreateVenueView> {
                                   ),
                                 )
                               : Text(
-                                  'Create Venue',
+                                  'Claim Now',
                                   style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: isButtonEnabled
@@ -497,7 +495,8 @@ class _CreateVenueViewState extends State<CreateVenueView> {
     required TextEditingController controller,
     required String label,
     required String hintText,
-    required IconData icon,
+    void Function(String)? onChanged,
+    IconData? icon,
     TextInputType? keyboardType,
   }) {
     final theme = Theme.of(context);
@@ -529,6 +528,7 @@ class _CreateVenueViewState extends State<CreateVenueView> {
           ),
           child: TextField(
             controller: controller,
+            onChanged: onChanged,
             keyboardType: keyboardType,
             style: theme.textTheme.bodyLarge,
             cursorColor: AppColors.electricAmber,
@@ -537,13 +537,15 @@ class _CreateVenueViewState extends State<CreateVenueView> {
               hintStyle: theme.textTheme.bodyLarge?.copyWith(
                 color: AppColors.textTertiary,
               ),
-              prefixIcon: Padding(
-                padding: const EdgeInsets.only(left: 16, right: 12),
-                child: Icon(
-                  icon,
-                  color: AppColors.electricAmber.withValues(alpha: 0.7),
-                ),
-              ),
+              prefixIcon: icon != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 12),
+                      child: Icon(
+                        icon,
+                        color: AppColors.electricAmber.withValues(alpha: 0.7),
+                      ),
+                    )
+                  : null,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 24,

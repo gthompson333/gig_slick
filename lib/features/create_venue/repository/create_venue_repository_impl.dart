@@ -22,11 +22,27 @@ class CreateVenueRepositoryImpl implements CreateVenueRepository {
     try {
       await _firestore.collection('venues').add({
         'name': name,
+        'nameLowercase': name.toLowerCase(),
         'ownerId': user.uid,
         'createdAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
       throw Exception('Failed to create venue: $e');
+    }
+  }
+
+  @override
+  Future<bool> isVenueNameAvailable(String name) async {
+    try {
+      final snapshot = await _firestore
+          .collection('venues')
+          .where('nameLowercase', isEqualTo: name.toLowerCase())
+          .limit(1)
+          .get();
+
+      return snapshot.docs.isEmpty;
+    } catch (e) {
+      throw Exception('Failed to check name availability: $e');
     }
   }
 }

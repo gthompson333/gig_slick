@@ -12,6 +12,12 @@ class CreateVenueSuccess extends CreateVenueState {
   CreateVenueSuccess({required this.venueName});
 }
 
+class CreateVenueNameTaken extends CreateVenueState {
+  final String name;
+
+  CreateVenueNameTaken({required this.name});
+}
+
 class CreateVenueFailure extends CreateVenueState {
   final String error;
 

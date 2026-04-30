@@ -126,6 +126,7 @@ class _SignInViewState extends State<SignInView> {
                           textAlign: TextAlign.center,
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: AppColors.textSecondary,
+                            fontSize: 18,
                             fontWeight: FontWeight.w500,
                             letterSpacing: 0.2,
                           ),
@@ -140,7 +141,7 @@ class _SignInViewState extends State<SignInView> {
                         Padding(
                           padding: const EdgeInsets.only(left: 4, bottom: 12),
                           child: Text(
-                            'MOBILE NUMBER',
+                            'PHONE NUMBER',
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: AppColors.textTertiary,
                               fontWeight: FontWeight.w800,
@@ -224,7 +225,7 @@ class _SignInViewState extends State<SignInView> {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            'CONTINUE',
+                                            'SIGN IN / CREATE',
                                             style: TextStyle(
                                               fontWeight: FontWeight.w900,
                                               fontSize: 16,
@@ -262,6 +263,7 @@ class _SignInViewState extends State<SignInView> {
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: AppColors.textSecondary,
                               decoration: TextDecoration.underline,
+                              fontSize: 14,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 1.2,
                             ),

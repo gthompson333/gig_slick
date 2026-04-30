@@ -20,6 +20,14 @@ class CreateVenueBloc extends Bloc<CreateVenueEvent, CreateVenueState> {
   ) async {
     emit(CreateVenueLoading());
     try {
+      // Perform name availability check first
+      final isAvailable =
+          await _repository.isVenueNameAvailable(event.name.trim());
+      if (!isAvailable) {
+        emit(CreateVenueNameTaken(name: event.name.trim()));
+        return;
+      }
+
       await _repository.createVenue(name: event.name);
       emit(CreateVenueSuccess(venueName: event.name));
     } catch (e) {
