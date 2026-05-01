@@ -105,7 +105,8 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
           .where('ownerId', isEqualTo: userId)
           .get();
 
-      final batch = _firestore.batch();
+      // Collect all document references to delete
+      final refsToDelete = <DocumentReference>[];
 
       for (final venueDoc in venueQuery.docs) {
         final venueId = venueDoc.id;
@@ -119,7 +120,7 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
         for (final gigDoc in gigsQuery.docs) {
           final gigId = gigDoc.id;
 
-          // 3. Find and delete all applications for this gig
+          // 3. Find all applications for this gig
           final appsQuery = await _firestore
               .collection('gigs')
               .doc(gigId)
@@ -127,19 +128,30 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
               .get();
 
           for (final appDoc in appsQuery.docs) {
-            batch.delete(appDoc.reference);
+            refsToDelete.add(appDoc.reference);
           }
 
           // 4. Delete the gig document
-          batch.delete(gigDoc.reference);
+          refsToDelete.add(gigDoc.reference);
         }
 
         // 5. Delete the venue document
-        batch.delete(venueDoc.reference);
+        refsToDelete.add(venueDoc.reference);
       }
 
-      // Commit Firestore deletions
-      await batch.commit();
+      // Commit deletions in chunks of 450 (Firestore limit is 500 per batch)
+      const chunkSize = 450;
+      for (var i = 0; i < refsToDelete.length; i += chunkSize) {
+        final chunk = refsToDelete.sublist(
+          i,
+          (i + chunkSize > refsToDelete.length) ? refsToDelete.length : i + chunkSize,
+        );
+        final batch = _firestore.batch();
+        for (final ref in chunk) {
+          batch.delete(ref);
+        }
+        await batch.commit();
+      }
 
       // 6. Delete the Firebase Auth user
       await user.delete();

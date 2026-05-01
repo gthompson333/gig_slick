@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:injectable/injectable.dart';
 
 abstract class GigApplicationsRepository {
   Future<void> confirmApplication(String gigId, String applicationId, String performerName);
 }
 
+@LazySingleton(as: GigApplicationsRepository)
 class GigApplicationsRepositoryImpl implements GigApplicationsRepository {
   final FirebaseFirestore _firestore;
 

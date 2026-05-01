@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../injection.dart';
 import '../../features/sign_in/presentation/sign_in_page.dart';
 import '../../features/create_venue/presentation/create_venue_page.dart';
 import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/create_gig/presentation/create_gig_page.dart';
 import '../../features/dashboard/data/entities/gig.dart';
 import '../../features/gig_details/presentation/gig_details_page.dart';
+import '../../features/gig_applications/bloc/gig_applications_bloc.dart';
 import '../../features/gig_applications/presentation/applications_page.dart';
 import '../../features/gig_applications/presentation/application_details_page.dart';
 import '../../features/gig_applications/data/entities/gig_application.dart';
@@ -130,7 +133,10 @@ final GoRouter appRouter = GoRouter(
         final extras = state.extra as Map<String, dynamic>;
         final application = extras['application'] as GigApplication;
         final gig = extras['gig'] as Gig;
-        return ApplicationDetailsPage(application: application, gig: gig);
+        return BlocProvider(
+          create: (_) => getIt<GigApplicationsBloc>(),
+          child: ApplicationDetailsPage(application: application, gig: gig),
+        );
       },
     ),
   ],

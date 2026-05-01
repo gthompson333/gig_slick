@@ -1,16 +1,17 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../../injection.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../dashboard/data/entities/gig.dart';
+import '../bloc/gig_applications_bloc.dart';
+import '../bloc/gig_applications_event.dart';
+import '../bloc/gig_applications_state.dart';
 import '../data/entities/gig_application.dart';
-import '../data/repositories/gig_applications_repository.dart';
 
 
-class ApplicationDetailsPage extends StatefulWidget {
+class ApplicationDetailsPage extends StatelessWidget {
   final GigApplication application;
   final Gig gig;
 
@@ -19,13 +20,6 @@ class ApplicationDetailsPage extends StatefulWidget {
     required this.application,
     required this.gig,
   });
-
-  @override
-  State<ApplicationDetailsPage> createState() => _ApplicationDetailsPageState();
-}
-
-class _ApplicationDetailsPageState extends State<ApplicationDetailsPage> {
-  bool _isSubmitting = false;
 
   Future<void> _launchUrl(BuildContext context, String url) async {
     String finalUrl = url.trim();
@@ -103,10 +97,10 @@ class _ApplicationDetailsPageState extends State<ApplicationDetailsPage> {
     );
   }
 
-  void _showConfirmationDialog() {
+  void _showConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         backgroundColor: AppColors.surfaceHigh,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
@@ -117,7 +111,7 @@ class _ApplicationDetailsPageState extends State<ApplicationDetailsPage> {
           ),
         ),
         content: Text(
-          'Are you sure you want to book ${widget.application.performerName} for this gig? This will notify the performer and close other applications.',
+          'Are you sure you want to book ${application.performerName} for this gig? This will notify the performer and close other applications.',
           style: const TextStyle(
             color: AppColors.textSecondary,
             fontWeight: FontWeight.w500,
@@ -125,7 +119,7 @@ class _ApplicationDetailsPageState extends State<ApplicationDetailsPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: const Text(
               'Cancel',
               style: TextStyle(
@@ -136,8 +130,14 @@ class _ApplicationDetailsPageState extends State<ApplicationDetailsPage> {
           ),
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
-              _confirmBooking();
+              Navigator.of(dialogContext).pop();
+              context.read<GigApplicationsBloc>().add(
+                GigApplicationsEvent.confirmApplicationRequested(
+                  gigId: gig.id,
+                  applicationId: application.id,
+                  performerName: application.performerName,
+                ),
+              );
             },
             child: const Text(
               'Confirm & Book',
@@ -152,185 +152,213 @@ class _ApplicationDetailsPageState extends State<ApplicationDetailsPage> {
     );
   }
 
-  Future<void> _confirmBooking() async {
-    setState(() => _isSubmitting = true);
-    try {
-      final repository = GigApplicationsRepositoryImpl(getIt<FirebaseFirestore>());
-      await repository.confirmApplication(
-        widget.gig.id,
-        widget.application.id,
-        widget.application.performerName,
-      );
-      if (mounted) {
-        context.pop(true); // Return true to indicate success
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isSubmitting = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.redAccent,
-            content: Text('Error booking performer: $e'),
-          ),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
-      backgroundColor: AppColors.surfaceLow,
-      appBar: AppBar(
-        backgroundColor: AppColors.surfaceLow.withValues(alpha: 0.8),
-        surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColors.textPrimary,
-          ),
-          onPressed: () => context.pop(),
-        ),
-        centerTitle: true,
-        title: Text(
-          'Application Details',
-          style: textTheme.titleMedium?.copyWith(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 2,
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Section
-            Text(
-              widget.application.performerName,
-              style: textTheme.displayLarge?.copyWith(
-                fontSize: 36,
-                fontWeight: FontWeight.w900,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              widget.application.performerEmail,
-              style: textTheme.bodyLarge?.copyWith(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // View Social Media Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () => _launchUrl(context, widget.application.performerLink),
-                icon: const Icon(Icons.open_in_new_rounded, size: 20),
-                label: const Text('View Social Media'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.surfaceHigh,
-                  foregroundColor: AppColors.kineticCyan,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
+    return BlocConsumer<GigApplicationsBloc, GigApplicationsState>(
+      listener: (context, state) {
+        state.when(
+          initial: () {},
+          confirming: () {},
+          confirmed: () {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (dialogContext) => AlertDialog(
+                icon: const Icon(
+                  Icons.check_circle_rounded,
+                  color: AppColors.electricAmber,
+                  size: 48,
                 ),
-              ),
-            ),
-            const SizedBox(height: 40),
-
-            // Gig Summary Card
-            Text(
-              'GIG SUMMARY',
-              style: textTheme.labelSmall?.copyWith(
-                letterSpacing: 2,
-                color: AppColors.textTertiary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceMid,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.05),
-                  width: 1,
+                title: const Text('Booking Confirmed'),
+                content: Text(
+                  '${application.performerName} has been booked for this gig.',
                 ),
-              ),
-              child: Column(
-                children: [
-                  _buildSummaryRow(
-                    Icons.calendar_today_rounded,
-                    DateFormat.yMMMMEEEEd().format(widget.gig.date),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Divider(color: Colors.white10, height: 1),
-                  ),
-                  _buildSummaryRow(
-                    Icons.access_time_rounded,
-                    'Set: ${widget.gig.setTime} (Load-in: ${widget.gig.loadInTime})',
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Divider(color: Colors.white10, height: 1),
-                  ),
-                  _buildSummaryRow(
-                    Icons.payments_rounded,
-                    '\$${widget.gig.baseGuarantee.toStringAsFixed(0)} Base Guarantee',
-                    isHighlight: true,
+                actions: [
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                      context.go('/dashboard');
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.electricAmber,
+                      foregroundColor: Colors.black,
+                    ),
+                    child: const Text('OK'),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 60),
-          ],
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-          child: ElevatedButton(
-            onPressed: _isSubmitting ? null : _showConfirmationDialog,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.electricAmber,
-              foregroundColor: Colors.black,
-              disabledBackgroundColor: AppColors.electricAmber.withValues(alpha: 0.3),
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+            );
+          },
+          error: (message) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.redAccent,
+                content: Text('Error booking performer: $message'),
               ),
-              elevation: 8,
-              shadowColor: AppColors.electricAmber.withValues(alpha: 0.4),
+            );
+          },
+        );
+      },
+      builder: (context, state) {
+        final isSubmitting = state.maybeWhen(
+          confirming: () => true,
+          orElse: () => false,
+        );
+
+        return Scaffold(
+          backgroundColor: AppColors.surfaceLow,
+          appBar: AppBar(
+            backgroundColor: AppColors.surfaceLow.withValues(alpha: 0.8),
+            surfaceTintColor: Colors.transparent,
+            leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: AppColors.textPrimary,
+              ),
+              onPressed: () => context.pop(),
             ),
-            child: _isSubmitting
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.black,
-                      strokeWidth: 3,
-                    ),
-                  )
-                : Text(
-                    'Confirm & Book Performer',
-                    style: textTheme.titleMedium?.copyWith(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w900,
+            centerTitle: true,
+            title: Text(
+              'Application Details',
+              style: textTheme.titleMedium?.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 2,
+              ),
+            ),
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Section
+                Text(
+                  application.performerName,
+                  style: textTheme.displayLarge?.copyWith(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  application.performerEmail,
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // View Social Media Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () => _launchUrl(context, application.performerLink),
+                    icon: const Icon(Icons.open_in_new_rounded, size: 20),
+                    label: const Text('View Social Media'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.surfaceHigh,
+                      foregroundColor: AppColors.kineticCyan,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
                     ),
                   ),
+                ),
+                const SizedBox(height: 40),
+
+                // Gig Summary Card
+                Text(
+                  'GIG SUMMARY',
+                  style: textTheme.labelSmall?.copyWith(
+                    letterSpacing: 2,
+                    color: AppColors.textTertiary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceMid,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.05),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildSummaryRow(
+                        Icons.calendar_today_rounded,
+                        DateFormat.yMMMMEEEEd().format(gig.date),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Divider(color: Colors.white10, height: 1),
+                      ),
+                      _buildSummaryRow(
+                        Icons.access_time_rounded,
+                        'Set: ${gig.setTime} (Load-in: ${gig.loadInTime})',
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Divider(color: Colors.white10, height: 1),
+                      ),
+                      _buildSummaryRow(
+                        Icons.payments_rounded,
+                        '\$${gig.baseGuarantee.toStringAsFixed(0)} Base Guarantee',
+                        isHighlight: true,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 60),
+              ],
+            ),
           ),
-        ),
-      ),
+          bottomNavigationBar: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: ElevatedButton(
+                onPressed: isSubmitting ? null : () => _showConfirmationDialog(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.electricAmber,
+                  foregroundColor: Colors.black,
+                  disabledBackgroundColor: AppColors.electricAmber.withValues(alpha: 0.3),
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 8,
+                  shadowColor: AppColors.electricAmber.withValues(alpha: 0.4),
+                ),
+                child: isSubmitting
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.black,
+                          strokeWidth: 3,
+                        ),
+                      )
+                    : Text(
+                        'Confirm & Book Performer',
+                        style: textTheme.titleMedium?.copyWith(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

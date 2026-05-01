@@ -35,6 +35,9 @@ import 'features/dashboard/data/repositories/dashboard_repository_impl.dart'
     as _i448;
 import 'features/dashboard/data/sources/dashboard_remote_data_source.dart'
     as _i786;
+import 'features/gig_applications/bloc/gig_applications_bloc.dart' as _i373;
+import 'features/gig_applications/data/repositories/gig_applications_repository.dart'
+    as _i1053;
 import 'features/gig_details/bloc/gig_details_bloc.dart' as _i126;
 import 'features/performer_web/bloc/performer_bloc.dart' as _i794;
 import 'features/performer_web/data/performer_repository.dart' as _i955;
@@ -57,6 +60,9 @@ _i174.GetIt init(
   gh.lazySingleton<_i82.LinkService>(
     () => _i82.LinkService(gh<_i828.AppConfig>()),
   );
+  gh.lazySingleton<_i1053.GigApplicationsRepository>(
+    () => _i1053.GigApplicationsRepositoryImpl(gh<_i974.FirebaseFirestore>()),
+  );
   gh.lazySingleton<_i955.PerformerRepository>(
     () => _i955.PerformerRepositoryImpl(gh<_i974.FirebaseFirestore>()),
   );
@@ -74,6 +80,9 @@ _i174.GetIt init(
       gh<_i974.FirebaseFirestore>(),
       gh<_i59.FirebaseAuth>(),
     ),
+  );
+  gh.factory<_i373.GigApplicationsBloc>(
+    () => _i373.GigApplicationsBloc(gh<_i1053.GigApplicationsRepository>()),
   );
   gh.factory<_i794.PerformerBloc>(
     () => _i794.PerformerBloc(gh<_i955.PerformerRepository>()),
