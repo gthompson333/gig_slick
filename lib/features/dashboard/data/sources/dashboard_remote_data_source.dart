@@ -52,11 +52,30 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
         .where('venueId', isEqualTo: venueId)
         .orderBy('date', descending: false)
         .snapshots()
-        .map((snapshot) {
-          return snapshot.docs.map((doc) {
+        .asyncMap((snapshot) async {
+          final gigs = <Gig>[];
+          for (final doc in snapshot.docs) {
             final data = doc.data();
-            return Gig.fromJson({...data, 'id': doc.id});
-          }).toList();
+
+            // Query the applications subcollection for a live count
+            final appsSnapshot = await _firestore
+                .collection('gigs')
+                .doc(doc.id)
+                .collection('applications')
+                .count()
+                .get();
+            final appCount = appsSnapshot.count ?? 0;
+
+            // Derive effective status: if gig is 'live' but has
+            // applications, the venue should see it as 'pending'.
+            var effectiveData = {...data, 'id': doc.id, 'applicantCount': appCount};
+            if (data['status'] == 'live' && appCount > 0) {
+              effectiveData['status'] = 'pending';
+            }
+
+            gigs.add(Gig.fromJson(effectiveData));
+          }
+          return gigs;
         });
   }
 

@@ -59,31 +59,19 @@ class PerformerRepositoryImpl implements PerformerRepository {
     required String performerEmail,
     required String performerLink,
   }) async {
-    final batch = _firestore.batch();
-
-    // 1. Create a new document in the gig's applications sub-collection
-    final applicationRef = _firestore
+    // Create a new document in the gig's applications sub-collection.
+    // This is the ONLY write a performer is allowed to make.
+    await _firestore
         .collection('gigs')
         .doc(gigId)
         .collection('applications')
-        .doc();
-
-    batch.set(applicationRef, {
+        .add({
       'performerName': performerName,
       'performerEmail': performerEmail,
       'performerLink': performerLink,
       'appliedAt': FieldValue.serverTimestamp(),
       'status': 'pending',
     });
-
-    // 2. Update the existing Gig document
-    final gigRef = _firestore.collection('gigs').doc(gigId);
-    batch.update(gigRef, {
-      'status': 'pending',
-      'applicantCount': FieldValue.increment(1),
-    });
-
-    await batch.commit();
   }
 
   @override
