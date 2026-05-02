@@ -10,6 +10,7 @@ import '../bloc/gig_details_bloc.dart';
 import '../bloc/gig_details_event.dart';
 import '../bloc/gig_details_state.dart';
 import '../../../core/services/link_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class GigDetailsPage extends StatelessWidget {
   final Gig gig;
@@ -176,6 +177,7 @@ class _GigDetailsViewState extends State<GigDetailsView> {
                 ),
               ),
               actions: [
+                // PENDING & CONFIRMED: no menu — gig is locked
                 if (_isEditing) ...[
                   TextButton(
                     onPressed: () {
@@ -248,7 +250,8 @@ class _GigDetailsViewState extends State<GigDetailsView> {
                           ),
                         ),
                   ),
-                ] else ...[
+                ] else if (widget.gig.status == GigStatus.draft ||
+                           widget.gig.status == GigStatus.live) ...[
                   IconButton(
                     icon: const Icon(
                       Icons.more_vert_rounded,
@@ -536,31 +539,21 @@ class _GigDetailsViewState extends State<GigDetailsView> {
                     ),
                     const SizedBox(height: 40),
 
-                    if (widget.gig.status != GigStatus.draft) ...[
-                      _buildSectionHeader(textTheme, 'INVITATION'),
-                      const SizedBox(height: 16),
-                      PerformerLinkCard(
-                        linkUrl: getIt<LinkService>().generateGigLink(widget.gig.venueId, widget.gig.id),
-                        showLink: false,
-                        buttonLabel: 'COPY GIG LINK',
-                        venueName: widget.venueName,
-                      ),
-                    ] else if (!_isEditing) ...[
+                    // ── Bottom section: status-driven ──────────────────────
+                    if (widget.gig.status == GigStatus.draft && !_isEditing) ...[
+                      // DRAFT: Go Live! CTA
                       const SizedBox(height: 16),
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton(
+                        child: FilledButton(
                           onPressed: () {
                             context.read<GigDetailsBloc>().add(
-                                  GigDetailsEvent.publishRequested(
-                                    widget.gig.id,
-                                  ),
+                                  GigDetailsEvent.publishRequested(widget.gig.id),
                                 );
                           },
-                          style: ElevatedButton.styleFrom(
+                          style: FilledButton.styleFrom(
                             backgroundColor: AppColors.electricAmber,
                             foregroundColor: Colors.black,
-                            elevation: 0,
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -570,9 +563,8 @@ class _GigDetailsViewState extends State<GigDetailsView> {
                                 goingLive: () => const SizedBox(
                                   height: 20,
                                   width: 20,
-                                  child: CircularProgressIndicator(
+                                  child: CircularProgressIndicator.adaptive(
                                     strokeWidth: 2,
-                                    color: Colors.black,
                                   ),
                                 ),
                                 orElse: () => const Text(
@@ -580,11 +572,28 @@ class _GigDetailsViewState extends State<GigDetailsView> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 2,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ),
                         ),
                       ),
+                    ] else if (widget.gig.status == GigStatus.live) ...[
+                      // LIVE: Performer link
+                      _buildSectionHeader(textTheme, 'INVITATION'),
+                      const SizedBox(height: 16),
+                      PerformerLinkCard(
+                        linkUrl: getIt<LinkService>().generateGigLink(
+                            widget.gig.venueId, widget.gig.id),
+                        showLink: false,
+                        buttonLabel: 'COPY GIG LINK',
+                        venueName: widget.venueName,
+                      ),
+                    ] else if (widget.gig.status == GigStatus.confirmed) ...[
+                      // CONFIRMED: Booked Performer card
+                      _buildSectionHeader(textTheme, 'BOOKED PERFORMER'),
+                      const SizedBox(height: 16),
+                      _buildBookedPerformerCard(textTheme),
                     ],
                     const SizedBox(height: 120),
                   ],
@@ -839,6 +848,102 @@ class _GigDetailsViewState extends State<GigDetailsView> {
               style: textTheme.titleLarge?.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w700,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBookedPerformerCard(TextTheme textTheme) {
+    final name = widget.gig.confirmedPerformerName ?? 'Confirmed Performer';
+    final avatarUrl = widget.gig.confirmedPerformerAvatarUrl;
+    final socialUrl = widget.gig.appliedPerformerLink;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceMid,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: AppColors.kineticCyan.withValues(alpha: 0.25),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.kineticCyan.withValues(alpha: 0.08),
+            blurRadius: 16,
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Avatar
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.surfaceHigh,
+              border: Border.all(
+                color: AppColors.kineticCyan.withValues(alpha: 0.4),
+                width: 2,
+              ),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: avatarUrl != null
+                ? Image.network(avatarUrl, fit: BoxFit.cover)
+                : const Icon(
+                    Icons.person_rounded,
+                    color: AppColors.kineticCyan,
+                    size: 28,
+                  ),
+          ),
+          const SizedBox(width: 16),
+          // Name
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: textTheme.titleMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                if (socialUrl != null && socialUrl.isNotEmpty)
+                  Text(
+                    socialUrl,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.textTertiary,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          // Social media button
+          if (socialUrl != null && socialUrl.isNotEmpty)
+            FilledButton.tonal(
+              onPressed: () async {
+                final uri = Uri.tryParse(socialUrl);
+                if (uri != null) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                }
+              },
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.kineticCyan.withValues(alpha: 0.15),
+                foregroundColor: AppColors.kineticCyan,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Social',
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12),
               ),
             ),
         ],
