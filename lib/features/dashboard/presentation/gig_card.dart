@@ -127,13 +127,26 @@ class GigCard extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: accentColor.withValues(alpha: 0.12),
+                    color: gig.status == GigStatus.pending
+                        ? accentColor
+                        : accentColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
+                    boxShadow: gig.status == GigStatus.pending
+                        ? [
+                            BoxShadow(
+                              color: accentColor.withValues(alpha: 0.45),
+                              blurRadius: 12,
+                              spreadRadius: 0,
+                            ),
+                          ]
+                        : null,
                   ),
                   child: Text(
                     statusText,
                     style: textTheme.labelSmall?.copyWith(
-                      color: accentColor,
+                      color: gig.status == GigStatus.pending
+                          ? Colors.black
+                          : accentColor,
                       fontWeight: FontWeight.w900,
                     ),
                   ),

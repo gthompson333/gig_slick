@@ -15,9 +15,30 @@ class ScheduledGigsFeed extends StatelessWidget {
     required this.venueName,
   });
 
+  // Priority order: pending first, then live, confirmed, draft last.
+  static const _statusPriority = {
+    GigStatus.pending: 0,
+    GigStatus.live: 1,
+    GigStatus.confirmed: 2,
+    GigStatus.draft: 3,
+  };
+
+  List<Gig> _sortedGigs() {
+    final sorted = [...gigs];
+    sorted.sort((a, b) {
+      final priorityCompare =
+          (_statusPriority[a.status] ?? 99).compareTo(_statusPriority[b.status] ?? 99);
+      if (priorityCompare != 0) return priorityCompare;
+      // Secondary: ascending date (soonest first within same status group)
+      return a.date.compareTo(b.date);
+    });
+    return sorted;
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final sorted = _sortedGigs();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,10 +60,10 @@ class ScheduledGigsFeed extends StatelessWidget {
             ],
           ),
         ),
-        if (gigs.isEmpty)
+        if (sorted.isEmpty)
           _buildEmptyState(context)
         else
-          ...gigs.map((gig) => Padding(
+          ...sorted.map((gig) => Padding(
                 padding: const EdgeInsets.only(bottom: 24),
                 child: GigCard(
                   gig: gig,
