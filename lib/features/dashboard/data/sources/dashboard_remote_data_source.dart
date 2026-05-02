@@ -88,7 +88,20 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
 
   @override
   Future<void> deleteGig(String gigId) async {
-    await _firestore.collection('gigs').doc(gigId).delete();
+    final gigRef = _firestore.collection('gigs').doc(gigId);
+
+    // Delete all applications in the subcollection first
+    final appsSnapshot = await gigRef.collection('applications').get();
+    if (appsSnapshot.docs.isNotEmpty) {
+      final batch = _firestore.batch();
+      for (final doc in appsSnapshot.docs) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
+    }
+
+    // Then delete the gig document
+    await gigRef.delete();
   }
 
   @override
